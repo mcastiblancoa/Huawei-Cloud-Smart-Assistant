@@ -86,7 +86,7 @@ TEMP_DIR=tmp_audio
 
 # ---------- Frontend ----------
 VITE_API_BASE_URL=http://localhost:8003
-WHISPER_ASR_URL=http://110.238.82.203:9000/asr
+WHISPER_ASR_URL=url_ecs_whisper/asr
 ```
 
 ---
