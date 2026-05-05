@@ -123,10 +123,66 @@ const parseMarkdownTable = (lines) => {
 };
 
 const parseAssistantContent = (content) => {
-  const lines = String(content).split(/\r?\n/);
+  const fullContent = String(content);
+  const lines = fullContent.split(/\r?\n/);
   const blocks = [];
   let index = 0;
 
+  // Detectar marcador de reporte especial
+  if (fullContent.includes(":::REPORTE_RECURSOS:::")) {
+    const reportMatch = fullContent.match(/:::REPORTE_RECURSOS:::\s*([\s\S]*)/);
+    if (reportMatch) {
+      blocks.push({ type: "report-header" });
+      const reportContent = reportMatch[1];
+      const reportLines = reportContent.split(/\r?\n/);
+      let reportIndex = 0;
+
+      while (reportIndex < reportLines.length) {
+        const line = reportLines[reportIndex];
+        if (!line.trim()) {
+          reportIndex += 1;
+          continue;
+        }
+
+        if (line.includes("|") && reportIndex + 1 < reportLines.length && reportLines[reportIndex + 1].includes("|")) {
+          const tableLines = [line, reportLines[reportIndex + 1]];
+          reportIndex += 2;
+
+          while (reportIndex < reportLines.length && reportLines[reportIndex].trim() && reportLines[reportIndex].includes("|")) {
+            tableLines.push(reportLines[reportIndex]);
+            reportIndex += 1;
+          }
+
+          const table = parseMarkdownTable(tableLines);
+          if (table) {
+            blocks.push({ type: "table", table });
+          }
+          continue;
+        }
+
+        if (/^#{1,4}\s+/.test(line)) {
+          const level = line.match(/^#{1,4}/)?.[0].length || 1;
+          blocks.push({ type: "heading", level, text: line.replace(/^#{1,4}\s+/, "") });
+          reportIndex += 1;
+          continue;
+        }
+
+        const paragraphLines = [line];
+        reportIndex += 1;
+
+        while (reportIndex < reportLines.length && reportLines[reportIndex].trim() && 
+               !reportLines[reportIndex].includes("|") && !/^#{1,4}\s+/.test(reportLines[reportIndex])) {
+          paragraphLines.push(reportLines[reportIndex]);
+          reportIndex += 1;
+        }
+
+        blocks.push({ type: "text", text: paragraphLines.join("\n") });
+      }
+      return blocks;
+    }
+  }
+
+  // Parseo normal sin reporte especial
   while (index < lines.length) {
     if (isTableStart(lines, index)) {
       const tableLines = [lines[index], lines[index + 1]];
@@ -234,6 +290,14 @@ const formatCurrency = (value) => {
   }).format(value);
 };
 
+function ReportHeader() {
+  return (
+    <div className="chat-report-header">
+      <div className="chat-report-badge">📊 REPORTE DE RECURSOS</div>
+    </div>
+  );
+}
+
 function MarkdownBlock({ text }) {
   const lines = String(text).split(/\r?\n/);
   const blocks = [];
@@ -270,30 +334,39 @@ function MarkdownBlock({ text }) {
 
   flushParagraph();
 
+  const renderHTMLContent = (content) => {
+    return (
+      <span dangerouslySetInnerHTML={{ __html: content }} />
+    );
+  };
+
   return (
     <div className="chat-text-block">
       {blocks.map((block, index) => {
         if (block.type === "heading") {
           const HeadingTag = block.level === 1 ? "h3" : block.level === 2 ? "h4" : "h5";
+          const cleanText = block.text.replace(/\*\*(.*?)\*\*/g, "$1");
           return (
             <HeadingTag className={`chat-heading level-${block.level}`} key={`${block.type}-${index}`}>
-              {block.text.replace(/\*\*(.*?)\*\*/g, "$1")}
+              {renderHTMLContent(cleanText)}
             </HeadingTag>
           );
         }
 
         if (block.type === "list-item") {
+          const cleanText = block.text.replace(/\*\*(.*?)\*\*/g, "$1");
           return (
             <div className="chat-list-item" key={`${block.type}-${index}`}>
               <span className="chat-list-bullet">•</span>
-              <span>{block.text.replace(/\*\*(.*?)\*\*/g, "$1")}</span>
+              <span>{renderHTMLContent(cleanText)}</span>
             </div>
           );
         }
 
+        const cleanText = block.text.replace(/\*\*(.*?)\*\*/g, "$1");
         return (
           <p className="chat-paragraph" key={`${block.type}-${index}`}>
-            {block.text.replace(/\*\*(.*?)\*\*/g, "$1")}
+            {renderHTMLContent(cleanText)}
           </p>
         );
       })}
@@ -400,8 +473,9 @@ function ChartCard({ model, title }) {
 
 function AssistantMessage({ content, durationMs, language }) {
   const blocks = useMemo(() => parseAssistantContent(content), [content]);
+  const reportHeaderBlock = blocks.find((block) => block.type === "report-header");
   const tableBlocks = blocks.filter((block) => block.type === "table");
-  const textBlocks = blocks.filter((block) => block.type !== "table");
+  const textBlocks = blocks.filter((block) => block.type !== "table" && block.type !== "report-header");
   const chartModel = useMemo(() => buildChartModel(tableBlocks[0]?.table), [tableBlocks]);
   const hasCostLanguage = /gasto|cost|billing|factur|costos|usd|month|mayo|abril|statistics|resumen/i.test(content);
 
@@ -416,6 +490,8 @@ function AssistantMessage({ content, durationMs, language }) {
 
   return (
     <div className="chat-rendered-message">
+      {reportHeaderBlock && <ReportHeader />}
+      
       {textBlocks.map((block, index) => (
         <MarkdownBlock key={`${block.type}-${index}`} text={block.text} />
       ))}
@@ -783,7 +859,11 @@ export function ChatView({ theme, language, t }) {
             {isSending && (
               <div className="chat-row assistant">
                 <div className="chat-bubble assistant typing" style={{ borderColor: colors.border }}>
-                  {t.typing}
+                  <span className="typing-dots">
+                    <span className="dot"></span>
+                    <span className="dot"></span>
+                    <span className="dot"></span>
+                  </span>
                 </div>
               </div>
             )}
@@ -814,7 +894,7 @@ export function ChatView({ theme, language, t }) {
               disabled={isSending}
             />
             <button className="chat-send-button" type="submit" disabled={isSending || !input.trim()}>
-              <Send size={16} strokeWidth={2.2} />
+              <Send size={20} strokeWidth={2.5} />
               {t.send}
             </button>
           </form>

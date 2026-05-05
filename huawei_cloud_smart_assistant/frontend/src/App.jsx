@@ -37,7 +37,6 @@ const translations = {
     messages: "messages",
     typing: "Typing...",
     send: "Send",
-    transcription: "Transcription",
   },
   es: {
     appTitle: "Asistente de Voz",
@@ -69,7 +68,6 @@ const translations = {
     messages: "mensajes",
     typing: "Escribiendo...",
     send: "Enviar",
-    transcription: "Transcripción",
   },
 };
 

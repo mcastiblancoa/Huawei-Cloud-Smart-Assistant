@@ -16,7 +16,7 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-    app_name: str = "Audio Transcription MVP"
+    app_name: str = "Huawei Cloud Smart Assistant"
     app_env: str = "local"
     backend_cors_origins: str = "http://localhost:5173"
 

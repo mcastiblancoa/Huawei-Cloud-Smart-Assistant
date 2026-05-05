@@ -10,7 +10,7 @@ SCHEMA_DIR = Path(os.getenv(
     str(Path(__file__).parent / "services_schema")
 ))
 
-AUTO_INJECTED_PARAMS = {"cli-region", "cli-access-key", "cli-secret-key", "project_id"}
+AUTO_INJECTED_PARAMS = {"cli-region", "cli-access-key", "cli-secret-key", "project_id", "domain_id"}
 
 # ─── Diagnóstico al importar ──────────────────────────────────────────────────
 _index_path = SCHEMA_DIR / "_index.json"
@@ -395,6 +395,7 @@ def run_koocli_command(service: str, operation: str, params: dict = None) -> str
     sk = os.getenv("HUAWEI_SK")
     project_id = os.getenv("HUAWEI_PROJECT_ID")
     region = os.getenv("HUAWEI_REGION")
+    domain_id = os.getenv("CLOUD_SDK_DOMAIN_ID")
 
     if not ak or not sk or not region:
         return "Error: Faltan credenciales (HUAWEI_AK, HUAWEI_SK, HUAWEI_REGION) en el .env"
@@ -463,6 +464,9 @@ def run_koocli_command(service: str, operation: str, params: dict = None) -> str
     if actual_project_id and params and "project_id" not in params:
         cmd.append(f"--project_id={actual_project_id}")
 
+    if domain_id and service.upper() == "RMS":
+        cmd.append(f"--domain_id={domain_id}")
+
     try:
         cmd_str = " ".join(cmd)
         result = subprocess.run(
@@ -476,7 +480,7 @@ def run_koocli_command(service: str, operation: str, params: dict = None) -> str
         output = result.stdout if result.returncode == 0 else result.stderr
 
         # Limitar salida para no exceder contexto del LLM
-        max_length = 20000
+        max_length = 160000
         if len(output) > max_length:
             output = output[:max_length] + (
                 f"\n\n...[ADVERTENCIA: Salida truncada a {max_length} chars. "
