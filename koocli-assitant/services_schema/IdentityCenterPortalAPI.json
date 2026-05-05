@@ -1,0 +1,129 @@
+﻿{
+    "service":  "IdentityCenterPortalAPI",
+    "total_operations":  4,
+    "generated_at":  "2026-04-30 10:19:42",
+    "operations":  [
+                       {
+                           "operation":  "GetAgencyCredentials",
+                           "method":  "GET",
+                           "description":  "This API is used to obtain the STS short-term credentials for a specified agency or trust agency assigned to a user.",
+                           "command":  "hcloud IdentityCenterPortalAPI GetAgencyCredentials",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "access-token",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "agency_urn",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "target_account_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListAccountAgencies",
+                           "method":  "GET",
+                           "description":  "This API is used to list all agencies or trust agencies assigned to a user by an account.",
+                           "command":  "hcloud IdentityCenterPortalAPI ListAccountAgencies",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "access-token",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "account_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "limit",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "marker",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListAccounts",
+                           "method":  "GET",
+                           "description":  "This API is used to list all accounts assigned to a user.",
+                           "command":  "hcloud IdentityCenterPortalAPI ListAccounts",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "access-token",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "limit",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "marker",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "Logout",
+                           "method":  "POST",
+                           "description":  "This API is used to send an API call request to IAM Identity Center to invalidate the IAM Identity Center login session on the service side.",
+                           "command":  "hcloud IdentityCenterPortalAPI Logout",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "access-token",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       }
+                   ]
+}
