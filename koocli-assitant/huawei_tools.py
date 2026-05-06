@@ -480,7 +480,7 @@ def run_koocli_command(service: str, operation: str, params: dict = None) -> str
         output = result.stdout if result.returncode == 0 else result.stderr
 
         # Limitar salida para no exceder contexto del LLM
-        max_length = 160000
+        max_length = 198000
         if len(output) > max_length:
             output = output[:max_length] + (
                 f"\n\n...[ADVERTENCIA: Salida truncada a {max_length} chars. "

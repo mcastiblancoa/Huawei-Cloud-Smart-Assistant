@@ -2,10 +2,86 @@ import { useMemo, useRef, useState, useEffect } from "react";
 import { Sidebar } from "./components/Sidebar";
 import { VoiceView } from "./components/VoiceView";
 import { ChatView } from "./components/ChatView";
+import { Menu, Sun, Moon } from "lucide-react";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 
-// Translations
+const CHAT_THREADS_KEY = "koocliChatThreads";
+const ACTIVE_THREAD_KEY = "koocliActiveChatId";
+
+const getRandomId = (prefix) => {
+  const id = globalThis.crypto?.randomUUID?.() || `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  return `${prefix}-${id}`;
+};
+
+const safeParse = (value, fallback) => {
+  if (!value) return fallback;
+  try { return JSON.parse(value); } catch { return fallback; }
+};
+
+const createWelcomeMessage = () => null;
+
+const buildThreadTitle = (text, language) => {
+  const cleanText = text.replace(/\s+/g, " ").trim();
+  if (!cleanText) return language === "es" ? "Nuevo chat" : "New chat";
+  const short = cleanText.split(" ").slice(0, 6).join(" ");
+  return short.length > 42 ? `${short.slice(0, 39)}...` : short;
+};
+
+const normalizeMessage = (message) => ({
+  id: message.id || getRandomId("msg"),
+  role: message.role === "user" ? "user" : "assistant",
+  content: String(message.content ?? ""),
+  createdAt: message.createdAt || Date.now(),
+  durationMs: Number.isFinite(message.durationMs) ? message.durationMs : undefined,
+});
+
+const normalizeThread = (thread, language, fallbackSessionId) => {
+  const messages = Array.isArray(thread.messages) && thread.messages.length > 0
+    ? thread.messages.map(normalizeMessage)
+    : [];
+  const title = thread.title || buildThreadTitle(messages.find((item) => item.role === "user")?.content || "", language);
+  return {
+    id: thread.id || getRandomId("thread"),
+    sessionId: thread.sessionId || fallbackSessionId || getRandomId("session"),
+    title,
+    createdAt: thread.createdAt || Date.now(),
+    updatedAt: thread.updatedAt || Date.now(),
+    messages,
+  };
+};
+
+const createThread = (language, title) => ({
+  id: getRandomId("thread"),
+  sessionId: getRandomId("session"),
+  title: title || (language === "es" ? "Nuevo chat" : "New chat"),
+  createdAt: Date.now(),
+  updatedAt: Date.now(),
+  messages: [],
+});
+
+const initThreads = (language) => {
+  const persistedThreads = safeParse(localStorage.getItem(CHAT_THREADS_KEY), null);
+  if (Array.isArray(persistedThreads) && persistedThreads.length > 0) {
+    const legacySessionId = localStorage.getItem("koocliChatSessionId") || undefined;
+    return persistedThreads.map((thread) => normalizeThread(thread, language, legacySessionId));
+  }
+  const legacyMessages = safeParse(localStorage.getItem("koocliChatMessages"), null);
+  const legacySessionId = localStorage.getItem("koocliChatSessionId") || getRandomId("session");
+  if (Array.isArray(legacyMessages) && legacyMessages.length > 0) {
+    const normalizedMessages = legacyMessages.map(normalizeMessage);
+    return [normalizeThread({
+      id: getRandomId("thread"),
+      sessionId: legacySessionId,
+      title: buildThreadTitle(normalizedMessages.find((m) => m.role === "user")?.content || "", language),
+      messages: normalizedMessages,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    }, language, legacySessionId)];
+  }
+  return [createThread(language)];
+};
+
 const translations = {
   en: {
     appTitle: "Voice Assistant",
@@ -88,6 +164,9 @@ function App() {
   const [resourcesResponse, setResourcesResponse] = useState(null);
   const [billingResponse, setBillingResponse] = useState(null);
 
+  const [chatThreads, setChatThreads] = useState(() => initThreads(language));
+  const [activeThreadId, setActiveThreadId] = useState(() => localStorage.getItem(ACTIVE_THREAD_KEY) || null);
+
   const mediaRecorderRef = useRef(null);
   const mediaStreamRef = useRef(null);
   const chunksRef = useRef([]);
@@ -98,40 +177,78 @@ function App() {
 
   const t = translations[language];
 
-  // Apply theme on mount and when it changes
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("theme", theme);
   }, [theme]);
 
-  // Save language to localStorage
   useEffect(() => {
     localStorage.setItem("language", language);
   }, [language]);
 
-  // Save recording language to localStorage
   useEffect(() => {
     localStorage.setItem("recordingLanguage", recordingLanguage);
   }, [recordingLanguage]);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(max-width: 768px)");
-
-    const syncSidebarState = () => {
-      setSidebarOpen(!mediaQuery.matches);
-    };
-
+    const syncSidebarState = () => { setSidebarOpen(!mediaQuery.matches); };
     syncSidebarState();
     mediaQuery.addEventListener("change", syncSidebarState);
-
     return () => mediaQuery.removeEventListener("change", syncSidebarState);
   }, []);
+
+  useEffect(() => {
+    if (!chatThreads.length) {
+      const nextThread = createThread(language);
+      setChatThreads([nextThread]);
+      setActiveThreadId(nextThread.id);
+    }
+  }, [language, chatThreads.length]);
+
+  useEffect(() => {
+    if (!activeThreadId && chatThreads[0]) {
+      setActiveThreadId(chatThreads[0].id);
+    }
+  }, [chatThreads, activeThreadId]);
+
+  useEffect(() => {
+    localStorage.setItem(CHAT_THREADS_KEY, JSON.stringify(chatThreads));
+    if (activeThreadId) {
+      localStorage.setItem(ACTIVE_THREAD_KEY, activeThreadId);
+    }
+  }, [chatThreads, activeThreadId]);
 
   const isMobile = typeof window !== "undefined" && window.matchMedia("(max-width: 768px)").matches;
 
   const handleSelectView = (view) => {
     setActiveView(view);
     if (isMobile) setSidebarOpen(false);
+  };
+
+  const handleCreateThread = () => {
+    const nextThread = createThread(language);
+    setChatThreads((current) => [nextThread, ...current]);
+    setActiveThreadId(nextThread.id);
+  };
+
+  const handleSelectThread = (threadId) => {
+    setActiveThreadId(threadId);
+  };
+
+  const handleDeleteThread = (threadId) => {
+    setChatThreads((current) => {
+      const remaining = current.filter((thread) => thread.id !== threadId);
+      if (remaining.length === 0) {
+        const replacement = createThread(language);
+        setActiveThreadId(replacement.id);
+        return [replacement];
+      }
+      if (activeThreadId === threadId) {
+        setActiveThreadId(remaining[0].id);
+      }
+      return remaining;
+    });
   };
 
   const statusLabel = useMemo(() => {
@@ -156,42 +273,28 @@ function App() {
 
   const updateWaveform = () => {
     if (!analyzerRef.current) return;
-
     const dataArray = new Uint8Array(analyzerRef.current.frequencyBinCount);
     analyzerRef.current.getByteFrequencyData(dataArray);
-
-    // Use logarithmic frequency bucketing for more natural visualization
     const bars = 64;
     const smoothedData = new Array(bars).fill(0);
     const binSpacing = Math.floor(dataArray.length / bars);
-
     for (let i = 0; i < bars; i++) {
       const index = i * binSpacing;
       const value = dataArray[index] / 255;
-      
-      // Apply exponential smoothing for natural movement
       const smoothingFactor = 0.3;
-      waveformSmoothingRef.current[i] = 
-        waveformSmoothingRef.current[i] * (1 - smoothingFactor) + value * smoothingFactor;
-      
+      waveformSmoothingRef.current[i] = waveformSmoothingRef.current[i] * (1 - smoothingFactor) + value * smoothingFactor;
       smoothedData[i] = Math.pow(waveformSmoothingRef.current[i], 0.8);
     }
-
     setWaveformData(smoothedData);
     animationIdRef.current = requestAnimationFrame(updateWaveform);
   };
 
   const startRecording = async () => {
     resetOutput();
-    if (audioUrl) {
-      URL.revokeObjectURL(audioUrl);
-      setAudioUrl("");
-    }
-
+    if (audioUrl) { URL.revokeObjectURL(audioUrl); setAudioUrl(""); }
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       mediaStreamRef.current = stream;
-
       const audioContext = new (window.AudioContext || window.webkitAudioContext)();
       audioContextRef.current = audioContext;
       const analyzer = audioContext.createAnalyser();
@@ -199,28 +302,19 @@ function App() {
       const source = audioContext.createMediaStreamSource(stream);
       source.connect(analyzer);
       analyzerRef.current = analyzer;
-
       const preferredMimeTypes = ["audio/webm;codecs=opus", "audio/webm", "audio/ogg"];
       const mimeType = preferredMimeTypes.find((type) => MediaRecorder.isTypeSupported(type)) || "";
       const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
-
       chunksRef.current = [];
-      recorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          chunksRef.current.push(event.data);
-        }
-      };
+      recorder.ondataavailable = (event) => { if (event.data.size > 0) { chunksRef.current.push(event.data); } };
       recorder.onstop = async () => {
-        if (animationIdRef.current) {
-          cancelAnimationFrame(animationIdRef.current);
-        }
+        if (animationIdRef.current) { cancelAnimationFrame(animationIdRef.current); }
         const blob = new Blob(chunksRef.current, { type: recorder.mimeType || "audio/webm" });
         const url = URL.createObjectURL(blob);
         setAudioUrl(url);
         setWaveformData([]);
         await uploadAndTranscribe(blob);
       };
-
       mediaRecorderRef.current = recorder;
       recorder.start();
       setStatus("recording");
@@ -243,53 +337,24 @@ function App() {
   const uploadAndTranscribe = async (blob) => {
     setStatus("processing");
     setErrorMessage("");
-
     const extension = blob.type.includes("ogg") ? "ogg" : "webm";
     const file = new File([blob], `recording.${extension}`, { type: blob.type || "audio/webm" });
     const formData = new FormData();
     formData.append("file", file);
     formData.append("language", recordingLanguage);
-
     try {
-      const response = await fetch(`${API_BASE_URL}/transcribe`, {
-        method: "POST",
-        body: formData,
-      });
-
+      const response = await fetch(`${API_BASE_URL}/transcribe`, { method: "POST", body: formData });
       if (!response.ok) {
         let detail = `Backend error (${response.status}).`;
-        try {
-          const body = await response.json();
-          detail = body.detail || detail;
-        } catch {
-          // Keep fallback message.
-        }
+        try { const body = await response.json(); detail = body.detail || detail; } catch {}
         throw new Error(detail);
       }
-
       const data = await response.json();
-      
-      if (!data.text || data.text.trim() === "") {
-        throw new Error(t.noTextError);
-      }
-      
+      if (!data.text || data.text.trim() === "") { throw new Error(t.noTextError); }
       setTranscription(data.text);
-      
-      // Store intent classification if available
-      if (data.intent_classification) {
-        setIntentClassification(data.intent_classification);
-      }
-      
-      // Store resources response if available
-      if (data.resources_response) {
-        setResourcesResponse(data.resources_response);
-      }
-      
-      // Store billing response if available
-      if (data.billing_response) {
-        setBillingResponse(data.billing_response);
-      }
-      
+      if (data.intent_classification) { setIntentClassification(data.intent_classification); }
+      if (data.resources_response) { setResourcesResponse(data.resources_response); }
+      if (data.billing_response) { setBillingResponse(data.billing_response); }
       setStatus("success");
     } catch (error) {
       setStatus("error");
@@ -299,11 +364,8 @@ function App() {
   };
 
   const toggleRecording = () => {
-    if (status === "idle" || status === "success" || status === "error") {
-      startRecording();
-    } else if (status === "recording") {
-      stopRecording();
-    }
+    if (status === "idle" || status === "success" || status === "error") { startRecording(); }
+    else if (status === "recording") { stopRecording(); }
   };
 
   return (
@@ -315,9 +377,14 @@ function App() {
         theme={theme}
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
+        chatThreads={chatThreads}
+        activeThreadId={activeThreadId}
+        onSelectThread={handleSelectThread}
+        onCreateThread={handleCreateThread}
+        onDeleteThread={handleDeleteThread}
       />
 
-      {sidebarOpen && (
+      {sidebarOpen && isMobile && (
         <button
           className="sidebar-backdrop"
           type="button"
@@ -326,7 +393,7 @@ function App() {
         />
       )}
 
-      <div className="app-main">
+      <div className={`app-main ${!sidebarOpen && !isMobile ? "sidebar-collapsed" : ""}`}>
         <div className="top-bar">
           <button
             className="sidebar-toggle"
@@ -334,7 +401,7 @@ function App() {
             onClick={() => setSidebarOpen((current) => !current)}
             aria-label="Toggle sidebar"
           >
-            ☰
+            <Menu size={18} strokeWidth={1.5} />
           </button>
 
           <div className="lang-switch">
@@ -354,17 +421,7 @@ function App() {
           </div>
 
           <div className="theme-switch">
-            <svg className="theme-switch-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="12" cy="12" r="5"></circle>
-              <line x1="12" y1="1" x2="12" y2="3"></line>
-              <line x1="12" y1="21" x2="12" y2="23"></line>
-              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-              <line x1="1" y1="12" x2="3" y2="12"></line>
-              <line x1="21" y1="12" x2="23" y2="12"></line>
-              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-            </svg>
+            <Sun size={13} strokeWidth={1.5} className="theme-switch-icon" />
             <div
               className="theme-switch-track"
               role="switch"
@@ -376,13 +433,11 @@ function App() {
             >
               <div className="theme-switch-thumb" />
             </div>
-            <svg className="theme-switch-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-            </svg>
+            <Moon size={13} strokeWidth={1.5} className="theme-switch-icon" />
           </div>
         </div>
 
-        <div style={{ display: activeView === "voice" ? "block" : "none", height: "100%" }}>
+        <div style={{ display: activeView === "voice" ? "block" : "none", height: "100%", flex: 1 }}>
           <VoiceView
             t={t}
             status={status}
@@ -402,8 +457,16 @@ function App() {
           />
         </div>
         
-        <div style={{ display: activeView === "chat" ? "block" : "none", height: "100%" }}>
-          <ChatView theme={theme} language={language} t={t} />
+        <div style={{ display: activeView === "chat" ? "block" : "none", height: "100%", flex: 1 }}>
+          <ChatView
+            theme={theme}
+            language={language}
+            t={t}
+            threads={chatThreads}
+            setThreads={setChatThreads}
+            activeThreadId={activeThreadId}
+            setActiveThreadId={setActiveThreadId}
+          />
         </div>
       </div>
     </main>

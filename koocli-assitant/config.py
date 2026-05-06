@@ -19,7 +19,13 @@ from huawei_tools import (
     run_koocli_command,
 )
 
-from terraform_tools import deploy_with_terraform, destroy_infrastructure_with_terraform
+from terraform_tools import (
+    deploy_with_terraform,
+    destroy_infrastructure_with_terraform,
+    resolve_terraform_resource,
+    resolve_terraform_resources,
+    list_terraform_resources,
+)
 
 # Tools del asistente de Huawei Cloud (schema-aware)
 # Tavily está comentado: el agente depende de los JSON locales + KooCLI
@@ -31,11 +37,14 @@ tools = [
     run_koocli_command,
     deploy_with_terraform,
     destroy_infrastructure_with_terraform,
+    resolve_terraform_resource,
+    resolve_terraform_resources,
+    list_terraform_resources,
 ]
 
 # 2. Configuración para Huawei Cloud MaaS
 llm = init_chat_model(
-    model="deepseek-v3.2",
+    model="glm-5",
     model_provider="openai",
     openai_api_base=os.getenv("OPEN_API_BASE"),
     openai_api_key=os.getenv("MAAS_API_KEY"),

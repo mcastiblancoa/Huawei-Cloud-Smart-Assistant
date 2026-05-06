@@ -1,3 +1,4 @@
+import { Mic, MicOff } from "lucide-react";
 import { ResourceDashboard } from "../ResourceDashboard";
 import { BillingDashboard } from "../BillingDashboard";
 
@@ -22,7 +23,13 @@ export function VoiceView({
     <section className="view-shell">
       <div className="header">
         <h1 className="app-title">{t.appTitle}</h1>
-        <p className="app-subtitle">{t.appSubtitle}</p>
+        <p className="app-subtitle">
+          {language === "es" ? (
+            <>Graba e interactúa con tus <span className="hw-red-text">servicios de Huawei Cloud</span></>
+          ) : (
+            <>Record and ask for your <span className="hw-red-text">Huawei Cloud services</span></>
+          )}
+        </p>
       </div>
 
       <div className="interactive-zone">
@@ -32,12 +39,11 @@ export function VoiceView({
           disabled={status === "processing"}
           title={status === "processing" ? t.transcribing : statusLabel}
         >
-          <svg className="mic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M12 1a3 3 0 0 0-3 3v12a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
-            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
-            <line x1="12" y1="19" x2="12" y2="23"></line>
-            <line x1="8" y1="23" x2="16" y2="23"></line>
-          </svg>
+          {status === "recording" ? (
+            <MicOff size={40} strokeWidth={1.5} className="mic-icon" />
+          ) : (
+            <Mic size={40} strokeWidth={1.5} className="mic-icon" />
+          )}
         </button>
 
         <div className="recording-language-selector">
