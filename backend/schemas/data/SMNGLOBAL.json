@@ -1,0 +1,195 @@
+{
+    "service":  "SMNGLOBAL",
+    "total_operations":  4,
+    "generated_at":  "2026-04-30 10:34:58",
+    "operations":  [
+                       {
+                           "operation":  "CreateSubscriptionUser",
+                           "method":  "POST",
+                           "description":  "This API is used to add a subscriber. If the subscriber is in the **UNCONFIRMED** state, SMN sends a subscription confirmation message to the subscriber. After the subscriber clicks the subscription confirmation link, the subscriber\u0027s status changes to **CONFIRMED** and a subscription cancellation message is sent to the subscriber so that the subscriber can cancel the subscription at any time. After the subscriber clicks the unsubscription link, the subscriber\u0027s status changes to **CANCELED**, and a re-subscription message is sent to the subscriber so that the subscriber can subscribe again.",
+                           "command":  "hcloud SMNGLOBAL CreateSubscriptionUser",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "domain_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "email",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "group",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "http",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "http",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "https",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "https",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "sms",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "DeleteSubscriptionUser",
+                           "method":  "DELETE",
+                           "description":  "This API is used to delete a subscriber.",
+                           "command":  "hcloud SMNGLOBAL DeleteSubscriptionUser",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "domain_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListSubscriptionUser",
+                           "method":  "GET",
+                           "description":  "This API is used to query subscribers.",
+                           "command":  "hcloud SMNGLOBAL ListSubscriptionUser",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "domain_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "group",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "limit",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "offset",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "protocol",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "status",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "UpdateSubscriptionUser",
+                           "method":  "PUT",
+                           "description":  "This API is used to update a subscriber.",
+                           "command":  "hcloud SMNGLOBAL UpdateSubscriptionUser",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "domain_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "group",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       }
+                   ]
+}

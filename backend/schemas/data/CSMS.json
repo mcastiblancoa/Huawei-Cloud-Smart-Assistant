@@ -1,0 +1,1717 @@
+{
+    "service":  "CSMS",
+    "total_operations":  45,
+    "generated_at":  "2026-04-30 09:50:45",
+    "operations":  [
+                       {
+                           "operation":  "BatchCreateOrDeleteTags",
+                           "method":  "POST",
+                           "description":  "This API is used to add or delete secret tags in batches.",
+                           "command":  "hcloud CSMS BatchCreateOrDeleteTags",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "action",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "secret_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "tags",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "sequence",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "tags",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "BatchImportSecrets",
+                           "method":  "POST",
+                           "description":  "Import secrets in batches.",
+                           "command":  "hcloud CSMS BatchImportSecrets",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "secrets",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "secrets",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "secrets",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "secrets",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "secrets",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "secrets",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "secrets",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "secrets",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "secrets",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "secrets",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "secrets",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "secrets",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "CheckSecrets",
+                           "method":  "POST",
+                           "description":  "Check the Secret Strength of Incoming Secret.",
+                           "command":  "hcloud CSMS CheckSecrets",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "data",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "type",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "CreateAgency",
+                           "method":  "POST",
+                           "description":  "Create a service agency. Used to create secret management Service-related agencies and FunctionWorkflow-related agencies.",
+                           "command":  "hcloud CSMS CreateAgency",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "secret_type",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "CreateGrants",
+                           "method":  "POST",
+                           "description":  "Create Grants",
+                           "command":  "hcloud CSMS CreateGrants",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "grantee_target_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "grantee_type",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "resource_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "type",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "validity_time",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "CreateSecret",
+                           "method":  "POST",
+                           "description":  "You can create a secret and store its value in its original version. Secret values are encrypted and stored in secret versions. A version can have multiple statuses. Versions without any statuses are regarded as deprecated versions and can be automatically deleted by CSMS. The initial version is marked by the **SYSCURRENT** status tag.",
+                           "command":  "hcloud CSMS CreateSecret",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "auto_rotation",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "description",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "enterprise_project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "event_subscriptions",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "kms_key_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "rotation_config",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "rotation_func_urn",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "rotation_period",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "secret_binary",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "secret_string",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "secret_type",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "CreateSecretEvent",
+                           "method":  "POST",
+                           "description":  "Creates an event that can be configured on one or more secret objects. When an event is enabled and the basic event type contained in the event is triggered on the secret object, the cloud service sends the corresponding event notification to the notification topic specified by the event.",
+                           "command":  "hcloud CSMS CreateSecretEvent",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "event_types",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "notification",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "notification",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "notification",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "state",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "CreateSecretTag",
+                           "method":  "POST",
+                           "description":  "Add a secret tag.",
+                           "command":  "hcloud CSMS CreateSecretTag",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "secret_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "tag",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "tag",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "CreateSecretVersion",
+                           "method":  "POST",
+                           "description":  "Creates a new secret version in the specified secret to encrypt and keep the new secret value. By default, The latest secret version in **SYSCURRENT** state. The previous version is in the **SYSPREVIOUS** state. You can overwrite the default behavior by specifying the **VersionStage** parameter.",
+                           "command":  "hcloud CSMS CreateSecretVersion",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "secret_name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "expire_time",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "secret_binary",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "secret_string",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "version_stages",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "DeleteGrant",
+                           "method":  "DELETE",
+                           "description":  "Delete Grant",
+                           "command":  "hcloud CSMS DeleteGrant",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "resource_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "grantee_user",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "DeleteSecret",
+                           "method":  "DELETE",
+                           "description":  "The specified secret is deleted immediately and cannot be restored.",
+                           "command":  "hcloud CSMS DeleteSecret",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "secret_name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "DeleteSecretEvent",
+                           "method":  "DELETE",
+                           "description":  "The specified event is deleted immediately and cannot be restored. If an event is referenced by a secret, the event cannot be deleted. Disassociate the event from the secret first.",
+                           "command":  "hcloud CSMS DeleteSecretEvent",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "event_name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "DeleteSecretForSchedule",
+                           "method":  "POST",
+                           "description":  "Specify the deletion delay time and create a scheduled task for deleting secrets. You can set the deletion delay time to 7 to 30 days.",
+                           "command":  "hcloud CSMS DeleteSecretForSchedule",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "recovery_window_in_days",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "secret_name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "DeleteSecretStage",
+                           "method":  "DELETE",
+                           "description":  "Deletes the status of a specified secret version.",
+                           "command":  "hcloud CSMS DeleteSecretStage",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "secret_name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "stage_name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "DeleteSecretTag",
+                           "method":  "DELETE",
+                           "description":  "This API is used to delete a secret tag.",
+                           "command":  "hcloud CSMS DeleteSecretTag",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "key",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "secret_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "DownloadSecretBlob",
+                           "method":  "POST",
+                           "description":  "Download the backup file of a specified secret.",
+                           "command":  "hcloud CSMS DownloadSecretBlob",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "secret_name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "GenerateRandomPassword",
+                           "method":  "POST",
+                           "description":  "Generate Random Password",
+                           "command":  "hcloud CSMS GenerateRandomPassword",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "exclude_characters",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "exclude_lowercase",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "exclude_numbers",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "exclude_punctuation",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "exclude_uppercase",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "include_space",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "length",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "password_policy_name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "require_each_included_type",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListGrants",
+                           "method":  "GET",
+                           "description":  "Grants List",
+                           "command":  "hcloud CSMS ListGrants",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "resource_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListNotificationRecords",
+                           "method":  "GET",
+                           "description":  "Query all event notification records that have been triggered in the last three months.",
+                           "command":  "hcloud CSMS ListNotificationRecords",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListProjectSecretsTags",
+                           "method":  "GET",
+                           "description":  "This API is used to query all secret tags of a user in a specified project.",
+                           "command":  "hcloud CSMS ListProjectSecretsTags",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListResourceInstances",
+                           "method":  "POST",
+                           "description":  "This API is used to query secret instances. Filters user secret by tag and returns the secret list.",
+                           "command":  "hcloud CSMS ListResourceInstances",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "action",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "resource_instances",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "limit",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "matches",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "matches",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "offset",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "sequence",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "tags",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "tags",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListSecretEvents",
+                           "method":  "GET",
+                           "description":  "This API is used to query all events created by the current user in the project.",
+                           "command":  "hcloud CSMS ListSecretEvents",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "limit",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "marker",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListSecretTags",
+                           "method":  "GET",
+                           "description":  "This API is used to query secret tags.",
+                           "command":  "hcloud CSMS ListSecretTags",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "secret_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListSecretTask",
+                           "method":  "GET",
+                           "description":  "Query the task list.",
+                           "command":  "hcloud CSMS ListSecretTask",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "limit",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "marker",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "secret_name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "status",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "task_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListSecretVersions",
+                           "method":  "GET",
+                           "description":  "This API is used to query the version list of a specified secret.",
+                           "command":  "hcloud CSMS ListSecretVersions",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "secret_name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "limit",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "marker",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListSecrets",
+                           "method":  "GET",
+                           "description":  "This API is used to query all secrets created by the current user in the current project.",
+                           "command":  "hcloud CSMS ListSecrets",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "event_name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "limit",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "marker",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListUsers",
+                           "method":  "GET",
+                           "description":  "Query user list",
+                           "command":  "hcloud CSMS ListUsers",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "limit",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "offset",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "org_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "user_info",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "RestoreSecret",
+                           "method":  "POST",
+                           "description":  "The scheduled secret deletion task is canceled, and the secret object is restored to the available state.",
+                           "command":  "hcloud CSMS RestoreSecret",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "secret_name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "RotateSecret",
+                           "method":  "POST",
+                           "description":  "Executes rotation secrets immediately. Creates a new secret version in the specified secret to encrypt and store secret values randomly generated in the background. At the same time, the newly created secret version is marked as SYSCURRENT.",
+                           "command":  "hcloud CSMS RotateSecret",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "secret_name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ShowAgency",
+                           "method":  "GET",
+                           "description":  "Show agencies.",
+                           "command":  "hcloud CSMS ShowAgency",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "secret_type",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ShowSecret",
+                           "method":  "GET",
+                           "description":  "This API is used to query information about a specified secret.",
+                           "command":  "hcloud CSMS ShowSecret",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "secret_name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ShowSecretEvent",
+                           "method":  "GET",
+                           "description":  "This API is used to query information about a specified event.",
+                           "command":  "hcloud CSMS ShowSecretEvent",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "event_name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ShowSecretFunctionTemplates",
+                           "method":  "GET",
+                           "description":  "Obtains the secret rotation function template.",
+                           "command":  "hcloud CSMS ShowSecretFunctionTemplates",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "secret_sub_type",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "secret_type",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "engine",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ShowSecretStage",
+                           "method":  "GET",
+                           "description":  "Queries the version information of a specified secret version status flag.",
+                           "command":  "hcloud CSMS ShowSecretStage",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "secret_name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "stage_name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ShowSecretVersion",
+                           "method":  "GET",
+                           "description":  "This API is used to query information about a specified secret version and plaintext secret values in the version. Only secrets in the ENABLED state can be queried. You can use /v1/{project_id}/secrets/{secret_name}/versions/latest (that is, set {version_id} in the URL of the current interface to latest) to access the secret value of the latest version.",
+                           "command":  "hcloud CSMS ShowSecretVersion",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "secret_name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "version_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ShowSecretsConfig",
+                           "method":  "GET",
+                           "description":  "Get the Secrets Checking Configuration for a Tenant.",
+                           "command":  "hcloud CSMS ShowSecretsConfig",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ShowUserDetail",
+                           "method":  "GET",
+                           "description":  "This interface is used to query user details based on the user id.",
+                           "command":  "hcloud CSMS ShowUserDetail",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "user_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "UpdateGrant",
+                           "method":  "PUT",
+                           "description":  "Update Grants",
+                           "command":  "hcloud CSMS UpdateGrant",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "grantee_target_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "grantee_type",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "resource_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "resource_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "type",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "validity_time",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "UpdateSecret",
+                           "method":  "PUT",
+                           "description":  "Updates the metadata of a specified secret.",
+                           "command":  "hcloud CSMS UpdateSecret",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "secret_name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "auto_rotation",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "description",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "event_subscriptions",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "kms_key_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "rotation_func_urn",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "rotation_period",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "UpdateSecretEvent",
+                           "method":  "PUT",
+                           "description":  "This API is used to update the metadata of a specified event. Metadata that can be updated includes the event enabling status, basic type list, and notification topic.",
+                           "command":  "hcloud CSMS UpdateSecretEvent",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "event_name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "event_types",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "notification",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "notification",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "notification",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "state",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "UpdateSecretStage",
+                           "method":  "PUT",
+                           "description":  "Update the version status of a secret.",
+                           "command":  "hcloud CSMS UpdateSecretStage",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "secret_name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "stage_name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "version_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "UpdateSecretsConfig",
+                           "method":  "POST",
+                           "description":  "Update the Secrets Checking Configuration for a Tenant.",
+                           "command":  "hcloud CSMS UpdateSecretsConfig",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "checking_secret_strength",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "UpdateUserPassword",
+                           "method":  "POST",
+                           "description":  "Changing a User Password.",
+                           "command":  "hcloud CSMS UpdateUserPassword",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "old_password",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "password",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "UpdateVersion",
+                           "method":  "PUT",
+                           "description":  "Currently, the validity period of a specified secret version can be updated. Only secrets in the ENABLED state can be updated. If the associated subscription events contain the basic event type Version Expiration, only one event notification is triggered each time the version validity period is updated.",
+                           "command":  "hcloud CSMS UpdateVersion",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "expire_time",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "secret_name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "version_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "UploadSecretBlob",
+                           "method":  "POST",
+                           "description":  "Restore the secret object by uploading the secret backup file.",
+                           "command":  "hcloud CSMS UploadSecretBlob",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "secret_blob",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       }
+                   ]
+}

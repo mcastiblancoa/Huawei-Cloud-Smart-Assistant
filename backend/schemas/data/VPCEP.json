@@ -1,0 +1,1541 @@
+{
+    "service":  "VPCEP",
+    "total_operations":  32,
+    "generated_at":  "2026-04-30 10:41:52",
+    "operations":  [
+                       {
+                           "operation":  "AcceptOrRejectEndpoint",
+                           "method":  "POST",
+                           "description":  "This API is used to accept or reject a VPC endpoint for a VPC endpoint service.",
+                           "command":  "hcloud VPCEP AcceptOrRejectEndpoint",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "action",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "endpoints",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "vpc_endpoint_service_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "AddEndpointServiceServerResource",
+                           "method":  "POST",
+                           "description":  "This API is used to add backend resources to a VPC endpoint service.",
+                           "command":  "hcloud VPCEP AddEndpointServiceServerResource",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "server_resources",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "vpc_endpoint_service_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "server_resources",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "AddOrRemoveServicePermissions",
+                           "method":  "POST",
+                           "description":  "This API is used to batch add or delete whitelist records of a VPC endpoint service. Note Your account is in the whitelist of your own VPC endpoint service by default.",
+                           "command":  "hcloud VPCEP AddOrRemoveServicePermissions",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "action",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "permissions",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "vpc_endpoint_service_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "permission_type",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "BatchAddEndpointServicePermissions",
+                           "method":  "POST",
+                           "description":  "This API is used to batch add whitelist records for VPC endpoint services of the current user. The description can be added. Note Your account is in the whitelist of your own VPC endpoint service by default.",
+                           "command":  "hcloud VPCEP BatchAddEndpointServicePermissions",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "permissions",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "permissions",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "vpc_endpoint_service_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "permission_type",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "BatchAddOrRemoveResourceInstance",
+                           "method":  "POST",
+                           "description":  "This API is used to batch add or delete tags to and from a specified VPC endpoint service or VPC endpoint. - A resource can have up to 10 tags.",
+                           "command":  "hcloud VPCEP BatchAddOrRemoveResourceInstance",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "action",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "resource_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "resource_type",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "tags",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "tags",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "BatchRemoveEndpointServicePermissions",
+                           "method":  "POST",
+                           "description":  "This API is used to batch delete whitelist records of a VPC endpoint service.",
+                           "command":  "hcloud VPCEP BatchRemoveEndpointServicePermissions",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "permissions",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "vpc_endpoint_service_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "CreateEndpoint",
+                           "method":  "POST",
+                           "description":  "This API is used to create a VPC endpoint for accessing a VPC endpoint service.",
+                           "command":  "hcloud VPCEP CreateEndpoint",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "endpoint_service_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "vpc_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "description",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "enable_dns",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "enable_whitelist",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "ip_version",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "ipv6_address",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "policy_document",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "policy_statement",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "policy_statement",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "policy_statement",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "policy_statement",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "policy_statement",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "port_ip",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "routetables",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "subnet_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "tags",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "tags",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "whitelist",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "CreateEndpointService",
+                           "method":  "POST",
+                           "description":  "This API is used to create a VPC endpoint service. Other users can create a VPC endpoint to connect to the VPC endpoint service. Note: This API is asynchronous. If it is successfully invoked, status code **200** is returned, indicating that the request has been successfully delivered. It takes 1 to 2 minutes for the system to provision a VPC endpoint service. You can view the creation result by querying the details about the VPC endpoint service.",
+                           "command":  "hcloud VPCEP CreateEndpointService",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "port_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "server_type",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "vpc_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "approval_enabled",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "description",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "ip",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "ip_version",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "ports",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "ports",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "ports",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "service_name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "service_type",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "snat_network_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "tags",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "tags",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "tcp_proxy",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "DeleteEndpoint",
+                           "method":  "DELETE",
+                           "description":  "This API is used to delete a VPC endpoint.",
+                           "command":  "hcloud VPCEP DeleteEndpoint",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "vpc_endpoint_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "DeleteEndpointPolicy",
+                           "method":  "DELETE",
+                           "description":  "This API is used to delete the policy of a gateway VPC endpoint. This API will not be used anymore and is not recommended.",
+                           "command":  "hcloud VPCEP DeleteEndpointPolicy",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "vpc_endpoint_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "DeleteEndpointService",
+                           "method":  "DELETE",
+                           "description":  "This API is used to delete a VPC endpoint service.",
+                           "command":  "hcloud VPCEP DeleteEndpointService",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "vpc_endpoint_service_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListEndpointInfoDetails",
+                           "method":  "GET",
+                           "description":  "This API is used to query details of a VPC endpoint.",
+                           "command":  "hcloud VPCEP ListEndpointInfoDetails",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "vpc_endpoint_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListEndpointService",
+                           "method":  "GET",
+                           "description":  "This API is used to query VPC endpoint services.",
+                           "command":  "hcloud VPCEP ListEndpointService",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "endpoint_service_name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "limit",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "net_type",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "offset",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "public_border_group",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "sort_dir",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "sort_key",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "status",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListEndpoints",
+                           "method":  "GET",
+                           "description":  "This API is used to query VPC endpoints.",
+                           "command":  "hcloud VPCEP ListEndpoints",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "endpoint_service_name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "limit",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "offset",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "sort_dir",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "sort_key",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "vpc_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListQueryProjectResourceTags",
+                           "method":  "GET",
+                           "description":  "This API is used to query tags of resources of a tenant based on the tenant ID and resource type.",
+                           "command":  "hcloud VPCEP ListQueryProjectResourceTags",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "resource_type",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListQuotaDetails",
+                           "method":  "GET",
+                           "description":  "This API is used to query the quota of your resources, including the quota of VPC endpoint services and the quota of VPC endpoints.",
+                           "command":  "hcloud VPCEP ListQuotaDetails",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "type",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListResourceInstances",
+                           "method":  "POST",
+                           "description":  "This API is used to query resources of a tenant by tag.",
+                           "command":  "hcloud VPCEP ListResourceInstances",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "action",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "resource_type",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "limit",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "matches",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "matches",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "not_tags",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "not_tags",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "not_tags_any",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "not_tags_any",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "offset",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "sys_tags",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "sys_tags",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "tags",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "tags",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "tags_any",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "tags_any",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "without_any_tag",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListServiceConnections",
+                           "method":  "GET",
+                           "description":  "This API is used to query connections to a VPC endpoint service. The marker ID is the unique ID of each connection.",
+                           "command":  "hcloud VPCEP ListServiceConnections",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "vpc_endpoint_service_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "limit",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "marker_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "offset",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "sort_dir",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "sort_key",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "status",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListServiceDescribeDetails",
+                           "method":  "GET",
+                           "description":  "This API is used to query basic information about a VPC endpoint service. You can use this API to query the target VPC endpoint service. This API can also be used by other users to query basic information about your VPC endpoint service, without exposing your server information.",
+                           "command":  "hcloud VPCEP ListServiceDescribeDetails",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "endpoint_service_name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListServiceDetails",
+                           "method":  "GET",
+                           "description":  "This API is used to query details of a VPC endpoint service.",
+                           "command":  "hcloud VPCEP ListServiceDetails",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "vpc_endpoint_service_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListServicePermissionsDetails",
+                           "method":  "GET",
+                           "description":  "This API is used to query whitelist records of a VPC endpoint service. Note Your account is in the whitelist of your own VPC endpoint service by default.",
+                           "command":  "hcloud VPCEP ListServicePermissionsDetails",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "vpc_endpoint_service_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "limit",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "offset",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "permission",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "sort_dir",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "sort_key",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListServicePublicDetails",
+                           "method":  "GET",
+                           "description":  "This API is used to query public VPC endpoint services. These services are created by O\u0026M personnel and can be visible to and assessed by all users.",
+                           "command":  "hcloud VPCEP ListServicePublicDetails",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "endpoint_service_name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "limit",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "offset",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "sort_dir",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "sort_key",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListSpecifiedVersionDetails",
+                           "method":  "GET",
+                           "description":  "This API is used to query the version of a VPC Endpoint API.",
+                           "command":  "hcloud VPCEP ListSpecifiedVersionDetails",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "version",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListVersionDetails",
+                           "method":  "GET",
+                           "description":  "This API is used to query versions of VPC Endpoint APIs.",
+                           "command":  "hcloud VPCEP ListVersionDetails",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "UpdateEndpointConnectionsDesc",
+                           "method":  "PUT",
+                           "description":  "This API is used to update descriptions of VPC endpoint connections.",
+                           "command":  "hcloud VPCEP UpdateEndpointConnectionsDesc",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "connections",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "connections",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "vpc_endpoint_service_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "UpdateEndpointPolicy",
+                           "method":  "PUT",
+                           "description":  "This API is used to modify the policy of a VPC endpoint.",
+                           "command":  "hcloud VPCEP UpdateEndpointPolicy",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "vpc_endpoint_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "policy_document",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "policy_statement",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "policy_statement",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "policy_statement",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "policy_statement",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "policy_statement",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "UpdateEndpointRoutetable",
+                           "method":  "PUT",
+                           "description":  "This API is used to modify route tables associated with a VPC endpoint.",
+                           "command":  "hcloud VPCEP UpdateEndpointRoutetable",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "routetables",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "vpc_endpoint_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "UpdateEndpointService",
+                           "method":  "PUT",
+                           "description":  "This API is used to modify a VPC endpoint service.",
+                           "command":  "hcloud VPCEP UpdateEndpointService",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "vpc_endpoint_service_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "approval_enabled",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "description",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "ip",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "port_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "ports",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "ports",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "ports",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "service_name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "tcp_proxy",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "UpdateEndpointServiceName",
+                           "method":  "PUT",
+                           "description":  "This API is used to change the name of a VPC endpoint service.",
+                           "command":  "hcloud VPCEP UpdateEndpointServiceName",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "vpc_endpoint_service_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "endpoint_service_name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "UpdateEndpointServicePermissionDesc",
+                           "method":  "PUT",
+                           "description":  "This API is used to update the whitelist description of a VPC endpoint service.",
+                           "command":  "hcloud VPCEP UpdateEndpointServicePermissionDesc",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "permission",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "permission_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "vpc_endpoint_service_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "UpdateEndpointWhite",
+                           "method":  "PUT",
+                           "description":  "This API is used to update or delete the whitelist of a VPC endpoint.",
+                           "command":  "hcloud VPCEP UpdateEndpointWhite",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "vpc_endpoint_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "enable_whitelist",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "whitelist",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "UpgradeEndpoint",
+                           "method":  "POST",
+                           "description":  "Upgrading a basic VPC endpoint to a professional VPC endpoint.",
+                           "command":  "hcloud VPCEP UpgradeEndpoint",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "action",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "vpc_endpoint_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       }
+                   ]
+}

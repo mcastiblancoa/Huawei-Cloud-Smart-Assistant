@@ -1,0 +1,1451 @@
+{
+    "service":  "CSE",
+    "total_operations":  26,
+    "generated_at":  "2026-04-30 09:50:27",
+    "operations":  [
+                       {
+                           "operation":  "CreateEngine",
+                           "method":  "POST",
+                           "description":  "This API is used to create a microservice engine, including Exclusive ServiceComb/Configuration Center/Application Gateway",
+                           "command":  "hcloud CSE CreateEngine",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "authType",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "flavor",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "networkId",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "payment",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "specType",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "subnetCidr",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "vpc",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "X-Enterprise-Project-ID",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "auth_cred",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "azList",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "capacityProductId",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "description",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "elbid",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "enginestateInfo",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "enginestateInfo",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "enginestateInfo",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "enterpriseProject",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "enterpriseProject",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "enterpriseProject",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "enterpriseProject",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "enterpriseProject",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "enterpriseProject",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "enterpriseProject",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "flavorType",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "flavorType",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "flavorType",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "flavorType",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "flavorType",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "flavorType",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "flavorType",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "flavorType",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "flavorType",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "flavorType",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "flavorType",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "flavorType",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "flavorType",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "flavorType",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "inputs",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "isFree",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "maintenanceConfig",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "maintenanceConfig",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "periodType",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "productId",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "publicIpId",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "resourceParams",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "subnetName",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "tags",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "vpcCidr",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "vpcId",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "CreateGovernancePolicy",
+                           "method":  "POST",
+                           "description":  "This API is used to create a governance policy.",
+                           "command":  "hcloud CSE CreateGovernancePolicy",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "X-Enterprise-Project-ID",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "kind",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "x-engine-id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "selector",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "selector",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "selector",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "spec",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "x-environment",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "CreateMicroserviceRouteRule",
+                           "method":  "PUT",
+                           "description":  "This API is used to create a dark launch policy.",
+                           "command":  "hcloud CSE CreateMicroserviceRouteRule",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "X-Enterprise-Project-ID",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "service_name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "x-engine-id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "app_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "environment",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "CreateNacosNamespaces",
+                           "method":  "POST",
+                           "description":  "This API is used to create the nacos namespace.",
+                           "command":  "hcloud CSE CreateNacosNamespaces",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "X-Enterprise-Project-ID",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "customNamespaceId",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "namespaceName",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "x-engine-id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "namespaceDesc",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "DeleteEngine",
+                           "method":  "DELETE",
+                           "description":  "This API is used to delete an microservice engine.",
+                           "command":  "hcloud CSE DeleteEngine",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "engine_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "X-Enterprise-Project-ID",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "DeleteGovernancePolicy",
+                           "method":  "DELETE",
+                           "description":  "This API is used to delete a governance policy.",
+                           "command":  "hcloud CSE DeleteGovernancePolicy",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "X-Enterprise-Project-ID",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "kind",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "policy_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "x-engine-id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "x-environment",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "DeleteMicroserviceRouteRule",
+                           "method":  "DELETE",
+                           "description":  "This API is used to delete a dark launch policy.",
+                           "command":  "hcloud CSE DeleteMicroserviceRouteRule",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "X-Enterprise-Project-ID",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "service_name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "x-engine-id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "app_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "environment",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "DeleteNacosNamespaces",
+                           "method":  "DELETE",
+                           "description":  "This API is used to delete the nacos namespace.",
+                           "command":  "hcloud CSE DeleteNacosNamespaces",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "X-Enterprise-Project-ID",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "namespaceId",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "x-engine-id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "DownloadKie",
+                           "method":  "POST",
+                           "description":  "This API is used to export kie configurations.",
+                           "command":  "hcloud CSE DownloadKie",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "ids",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "x-engine-id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "X-Enterprise-Project-ID",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "label",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "match",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListEngines",
+                           "method":  "GET",
+                           "description":  "This API is used to query the microservice engine list.",
+                           "command":  "hcloud CSE ListEngines",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "limit",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "offset",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "type",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListFlavors",
+                           "method":  "GET",
+                           "description":  "This API is used to query the flavor list of a microservice engine.",
+                           "command":  "hcloud CSE ListFlavors",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "spec_type",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListGovernancePolicy",
+                           "method":  "GET",
+                           "description":  "This API is used to query the governance policy list of a specified kind.",
+                           "command":  "hcloud CSE ListGovernancePolicy",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "X-Enterprise-Project-ID",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "kind",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "x-engine-id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "x-environment",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListGovernancePolicyByPolicyId",
+                           "method":  "GET",
+                           "description":  "This API is used to query governance policy details.",
+                           "command":  "hcloud CSE ListGovernancePolicyByPolicyId",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "X-Enterprise-Project-ID",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "kind",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "policy_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "x-engine-id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "x-environment",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListGovernancePolicys",
+                           "method":  "GET",
+                           "description":  "This API is used to query the governance policy list.",
+                           "command":  "hcloud CSE ListGovernancePolicys",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "X-Enterprise-Project-ID",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "environment",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "x-engine-id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "app",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListMicroserviceRouteRule",
+                           "method":  "GET",
+                           "description":  "This API is used to query a dark launch rule of a microservice.",
+                           "command":  "hcloud CSE ListMicroserviceRouteRule",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "X-Enterprise-Project-ID",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "service_name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "x-engine-id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "app_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "environment",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListNacosNamespaces",
+                           "method":  "GET",
+                           "description":  "This API is used to query the nacos namespace.",
+                           "command":  "hcloud CSE ListNacosNamespaces",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "X-Enterprise-Project-ID",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "limit",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "offset",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "x-engine-id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ResizeEngine",
+                           "method":  "PUT",
+                           "description":  "This API is used to change microservice engine specifications.",
+                           "command":  "hcloud CSE ResizeEngine",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "Accept",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "engine_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "flavor",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "X-Enterprise-Project-ID",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "inputs",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "RetryEngine",
+                           "method":  "PUT",
+                           "description":  "retry the engine",
+                           "command":  "hcloud CSE RetryEngine",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "action",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "engine_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "X-Enterprise-Project-ID",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ShowEngine",
+                           "method":  "GET",
+                           "description":  "This API is used to query details about an microservice engine.",
+                           "command":  "hcloud CSE ShowEngine",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "engine_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "X-Enterprise-Project-ID",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ShowEngineJob",
+                           "method":  "GET",
+                           "description":  "This API is used to query details about a microservice engine job.",
+                           "command":  "hcloud CSE ShowEngineJob",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "engine_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "job_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "X-Enterprise-Project-ID",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ShowEngineQuotas",
+                           "method":  "GET",
+                           "description":  "Querying Details About CSE Engines Quota",
+                           "command":  "hcloud CSE ShowEngineQuotas",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "UpdateGovernancePolicy",
+                           "method":  "PUT",
+                           "description":  "This API is used to change a governance policy.",
+                           "command":  "hcloud CSE UpdateGovernancePolicy",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "X-Enterprise-Project-ID",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "kind",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "policy_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "x-engine-id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "selector",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "selector",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "selector",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "spec",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "x-environment",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "UpdateNacosNamespaces",
+                           "method":  "PUT",
+                           "description":  "This API is used to update the nacos namespace.",
+                           "command":  "hcloud CSE UpdateNacosNamespaces",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "X-Enterprise-Project-ID",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "namespace",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "namespaceDesc",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "namespaceShowName",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "x-engine-id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "UpgradeEngine",
+                           "method":  "PUT",
+                           "description":  "upgrade the version of engine",
+                           "command":  "hcloud CSE UpgradeEngine",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "engine_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "version",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "X-Enterprise-Project-ID",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "UpgradeEngineConfig",
+                           "method":  "PUT",
+                           "description":  "This API is used to update the configuration of an Exclusive ServiceComb engine or a Configuration Center engine",
+                           "command":  "hcloud CSE UpgradeEngineConfig",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "authType",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "engine_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "X-Enterprise-Project-ID",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "UploadKie",
+                           "method":  "POST",
+                           "description":  "This API is used to import kie configurations.",
+                           "command":  "hcloud CSE UploadKie",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "override",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "upload_file",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "x-engine-id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "X-Enterprise-Project-ID",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "label",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       }
+                   ]
+}

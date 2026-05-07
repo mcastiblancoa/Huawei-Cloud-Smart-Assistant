@@ -1,0 +1,88 @@
+{
+ "value": [
+  {
+   "region_id": "af-north-1",
+   "display_name": "AF-Cairo"
+  },
+  {
+   "region_id": "af-south-1",
+   "display_name": "AF-Johannesburg"
+  },
+  {
+   "region_id": "ap-southeast-2",
+   "display_name": "AP-Bangkok"
+  },
+  {
+   "region_id": "ap-southeast-4",
+   "display_name": "AP-Jakarta"
+  },
+  {
+   "region_id": "ap-southeast-5",
+   "display_name": "AP-Manila"
+  },
+  {
+   "region_id": "ap-southeast-3",
+   "display_name": "AP-Singapore"
+  },
+  {
+   "region_id": "cn-east-5",
+   "display_name": "CN East-Qingdao"
+  },
+  {
+   "region_id": "cn-east-3",
+   "display_name": "CN East-Shanghai1"
+  },
+  {
+   "region_id": "cn-east-4",
+   "display_name": "CN East2"
+  },
+  {
+   "region_id": "cn-north-4",
+   "display_name": "CN North-Beijing4"
+  },
+  {
+   "region_id": "cn-north-12",
+   "display_name": "CN North3"
+  },
+  {
+   "region_id": "cn-south-1",
+   "display_name": "CN South-Guangzhou"
+  },
+  {
+   "region_id": "cn-southwest-2",
+   "display_name": "CN Southwest-Guiyang1"
+  },
+  {
+   "region_id": "ap-southeast-1",
+   "display_name": "CN-Hong Kong"
+  },
+  {
+   "region_id": "na-mexico-1",
+   "display_name": "LA-Mexico City1"
+  },
+  {
+   "region_id": "la-north-2",
+   "display_name": "LA-Mexico City2"
+  },
+  {
+   "region_id": "la-south-2",
+   "display_name": "LA-Santiago"
+  },
+  {
+   "region_id": "sa-brazil-1",
+   "display_name": "LA-Sao Paulo1"
+  },
+  {
+   "region_id": "me-east-1",
+   "display_name": "ME-Riyadh"
+  },
+  {
+   "region_id": "tr-west-1",
+   "display_name": "TR-Istanbul"
+  }
+ ],
+ "page_info": {
+  "current_count": 20,
+  "next_marker": null
+ }
+}

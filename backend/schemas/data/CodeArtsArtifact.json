@@ -1,0 +1,1891 @@
+{
+    "service":  "CodeArtsArtifact",
+    "total_operations":  54,
+    "generated_at":  "2026-04-30 09:53:13",
+    "operations":  [
+                       {
+                           "operation":  "BatchDeleteTrashes",
+                           "method":  "DELETE",
+                           "description":  "Delete components in the recycle bin in batches",
+                           "command":  "hcloud CodeArtsArtifact BatchDeleteTrashes",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "BatchRestoreRepo",
+                           "method":  "PUT",
+                           "description":  "Restore components in the recycle bin in batches",
+                           "command":  "hcloud CodeArtsArtifact BatchRestoreRepo",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "CreateArtifactory",
+                           "method":  "POST",
+                           "description":  "Create a non-Maven repository",
+                           "command":  "hcloud CodeArtsArtifact CreateArtifactory",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "format",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "includes_pattern",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "repository_name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "type",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "description",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "share_right",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "CreateAttention",
+                           "method":  "POST",
+                           "description":  "Follow/unfollow components",
+                           "command":  "hcloud CodeArtsArtifact CreateAttention",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "attention",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "ids",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "format",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "CreateDockerRepositories",
+                           "method":  "POST",
+                           "description":  "Create a Docker repository",
+                           "command":  "hcloud CodeArtsArtifact CreateDockerRepositories",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "display_name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "format",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "type",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "description",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "CreateMavenRepo",
+                           "method":  "POST",
+                           "description":  "Create a Maven repository",
+                           "command":  "hcloud CodeArtsArtifact CreateMavenRepo",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "format",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "repository_name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "type",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "description",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "includes_pattern",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "release",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "share_right",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "snapshot",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "CreateProjectRelatedRepository",
+                           "method":  "POST",
+                           "description":  "Associate a project with a repository",
+                           "command":  "hcloud CodeArtsArtifact CreateProjectRelatedRepository",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "ids",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "DeleteArtifactFile",
+                           "method":  "DELETE",
+                           "description":  "Non-Maven file deletion",
+                           "command":  "hcloud CodeArtsArtifact DeleteArtifactFile",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "path",
+                                                  "location":  "path",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "DeleteRepository",
+                           "method":  "DELETE",
+                           "description":  "Move a repository to the recycle bin",
+                           "command":  "hcloud CodeArtsArtifact DeleteRepository",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "format",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "repository_ids",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListAllRepositories",
+                           "method":  "GET",
+                           "description":  "Skip the number of artifacts in the repository when querying repository details",
+                           "command":  "hcloud CodeArtsArtifact ListAllRepositories",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "tenant_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "format",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "format_list",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "group_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "in_project",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "is_need_paging",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "is_recycle_bin",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "page_no",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "page_size",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "qname",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "sort",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "type",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListArtifactoryComponent",
+                           "method":  "GET",
+                           "description":  "Query repository file details",
+                           "command":  "hcloud CodeArtsArtifact ListArtifactoryComponent",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "format",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "path",
+                                                  "location":  "path",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "repo_name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "tenant_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "instance_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListArtifactoryStorageStatistic",
+                           "method":  "GET",
+                           "description":  "Query storage capacity trend",
+                           "command":  "hcloud CodeArtsArtifact ListArtifactoryStorageStatistic",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "tenant_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "end_time",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "instance_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "repo",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "start_time",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListAttentions",
+                           "method":  "GET",
+                           "description":  "Query the following list",
+                           "command":  "hcloud CodeArtsArtifact ListAttentions",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "page_no",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "page_size",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListCapacityMessageSetting",
+                           "method":  "GET",
+                           "description":  "Query tenant capacity notification settings.",
+                           "command":  "hcloud CodeArtsArtifact ListCapacityMessageSetting",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListChildProxyRepositoriesList",
+                           "method":  "GET",
+                           "description":  "Obtain proxy repositories in a virtual repository.",
+                           "command":  "hcloud CodeArtsArtifact ListChildProxyRepositoriesList",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "repo_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "type",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListDomainIpConfig",
+                           "method":  "GET",
+                           "description":  "Query the tenant IP address whitelist.",
+                           "command":  "hcloud CodeArtsArtifact ListDomainIpConfig",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "page_no",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "page_size",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListFiles",
+                           "method":  "POST",
+                           "description":  "Query the file or project list.",
+                           "command":  "hcloud CodeArtsArtifact ListFiles",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "category",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "extension",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "order_by",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "page_no",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "page_size",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "parent_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "search_name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "search_type",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "sort",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "status",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListLatestVersionFiles",
+                           "method":  "GET",
+                           "description":  "Query the latest versions of all files in a project.",
+                           "command":  "hcloud CodeArtsArtifact ListLatestVersionFiles",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "limit",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "offset",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "sort_by",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "sort_dir",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListMavenList",
+                           "method":  "GET",
+                           "description":  "Query Maven repositories.",
+                           "command":  "hcloud CodeArtsArtifact ListMavenList",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "access",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "default",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "policy",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "repo_ids",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListMavenUser",
+                           "method":  "GET",
+                           "description":  "Query the user list of self-hosted repos.",
+                           "command":  "hcloud CodeArtsArtifact ListMavenUser",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "page_no",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "page_size",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "user_name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListNetProxy",
+                           "method":  "GET",
+                           "description":  "Query the network proxy list.",
+                           "command":  "hcloud CodeArtsArtifact ListNetProxy",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListProjectRolePermissions",
+                           "method":  "GET",
+                           "description":  "View role permissions of a project.",
+                           "command":  "hcloud CodeArtsArtifact ListProjectRolePermissions",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListProjectUsers",
+                           "method":  "GET",
+                           "description":  "Query users in a project.",
+                           "command":  "hcloud CodeArtsArtifact ListProjectUsers",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "repo_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "page_no",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "page_size",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "scene",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListSecGuardList",
+                           "method":  "GET",
+                           "description":  "Query the artifact security scanning tasks.",
+                           "command":  "hcloud CodeArtsArtifact ListSecGuardList",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "date",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "page_no",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "page_size",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListUserPrivileges",
+                           "method":  "GET",
+                           "description":  "This API is used to query the roles and permissions of a user in a project, such as creating and editing a repository, uploading, downloading, importing, and exporting packages.",
+                           "command":  "hcloud CodeArtsArtifact ListUserPrivileges",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ModifyRepository",
+                           "method":  "PUT",
+                           "description":  "Edit a repository",
+                           "command":  "hcloud CodeArtsArtifact ModifyRepository",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "includes_pattern",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "repo_name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "tab_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "description",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "release",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "snapshot",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ResetUserPassword",
+                           "method":  "POST",
+                           "description":  "Reset a user password",
+                           "command":  "hcloud CodeArtsArtifact ResetUserPassword",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "SearchArtifacts",
+                           "method":  "POST",
+                           "description":  "Coordinated search",
+                           "command":  "hcloud CodeArtsArtifact SearchArtifacts",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "artifact_name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "artifact_type",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "in_project",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "page_no",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "page_size",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "SearchByChecksum",
+                           "method":  "GET",
+                           "description":  "Search for files using checksum",
+                           "command":  "hcloud CodeArtsArtifact SearchByChecksum",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "checksum",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "format",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "in_project",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "page_no",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "page_size",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ShowAudit",
+                           "method":  "GET",
+                           "description":  "Query audit logs about a repository or file",
+                           "command":  "hcloud CodeArtsArtifact ShowAudit",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "module",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "repo",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "tenant_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "instance_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "page_num",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "page_size",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "user_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ShowDomainReleaseRepoStorage",
+                           "method":  "GET",
+                           "description":  "Tenant storage capacity (Release Repos)",
+                           "command":  "hcloud CodeArtsArtifact ShowDomainReleaseRepoStorage",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ShowFileDetail",
+                           "method":  "GET",
+                           "description":  "Query details about a file.",
+                           "command":  "hcloud CodeArtsArtifact ShowFileDetail",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ShowFileDetailByFullName",
+                           "method":  "GET",
+                           "description":  "Query details about a file.",
+                           "command":  "hcloud CodeArtsArtifact ShowFileDetailByFullName",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "file_name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ShowFileTree",
+                           "method":  "GET",
+                           "description":  "Query the repository folder directory",
+                           "command":  "hcloud CodeArtsArtifact ShowFileTree",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "path",
+                                                  "location":  "path",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "repo_name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "tenant_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "instance_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "is_recycle_bin",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ShowLatestVersionFilesCount",
+                           "method":  "GET",
+                           "description":  "Query the latest versions of all files in a project.",
+                           "command":  "hcloud CodeArtsArtifact ShowLatestVersionFilesCount",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ShowMavenInfo",
+                           "method":  "GET",
+                           "description":  "Query the Maven repository list and account password of a tenant. Cross-tenant Maven repository list and account password are supported",
+                           "command":  "hcloud CodeArtsArtifact ShowMavenInfo",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "access",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "default",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "ids",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "policy",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ShowMultiRolesUserPermissions",
+                           "method":  "GET",
+                           "description":  "Query permissions of a multi-role user.",
+                           "command":  "hcloud CodeArtsArtifact ShowMultiRolesUserPermissions",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ShowOpenSourceEnabled",
+                           "method":  "GET",
+                           "description":  "Check whether the central repository is enabled or not.",
+                           "command":  "hcloud CodeArtsArtifact ShowOpenSourceEnabled",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ShowProjectList",
+                           "method":  "GET",
+                           "description":  "Query repositories associated with projects",
+                           "command":  "hcloud CodeArtsArtifact ShowProjectList",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ShowProjectRelatedRepository",
+                           "method":  "GET",
+                           "description":  "This API is used to quickly query the project list, including the association between repositories and projects, for repository management and collaboration.",
+                           "command":  "hcloud CodeArtsArtifact ShowProjectRelatedRepository",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "limit",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "offset",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "repo_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "search_name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ShowProjectReleaseFiles",
+                           "method":  "GET",
+                           "description":  "Get a list of file version information under the project",
+                           "command":  "hcloud CodeArtsArtifact ShowProjectReleaseFiles",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "file_name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "limit",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "offset",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ShowProjectStorageInfo",
+                           "method":  "GET",
+                           "description":  "Query the storage capacity in a project.",
+                           "command":  "hcloud CodeArtsArtifact ShowProjectStorageInfo",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "parent_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ShowProjectVersionsCount",
+                           "method":  "GET",
+                           "description":  "When there are many versions in release repos, you can query the number of versions in release repos by project ID to manage and track the release of different versions. You can also use this API to filter versions by version name.",
+                           "command":  "hcloud CodeArtsArtifact ShowProjectVersionsCount",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "build_version",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ShowReleaseProjectFiles",
+                           "method":  "GET",
+                           "description":  "Get a list of file version information under the project",
+                           "command":  "hcloud CodeArtsArtifact ShowReleaseProjectFiles",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "file_name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "limit",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "offset",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ShowRepoUserInfo",
+                           "method":  "GET",
+                           "description":  "Query the password of a tenant\u0027s repository.",
+                           "command":  "hcloud CodeArtsArtifact ShowRepoUserInfo",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ShowRepository",
+                           "method":  "GET",
+                           "description":  "Collect the number of artifacts in the repository when querying details about a repository",
+                           "command":  "hcloud CodeArtsArtifact ShowRepository",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "repo_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "tenant_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ShowRepositoryInfo",
+                           "method":  "GET",
+                           "description":  "View repository information",
+                           "command":  "hcloud CodeArtsArtifact ShowRepositoryInfo",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "repo_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ShowRepositoryRolesPrivilege",
+                           "method":  "GET",
+                           "description":  "Query repository permissions.",
+                           "command":  "hcloud CodeArtsArtifact ShowRepositoryRolesPrivilege",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "repo_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "x-language",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ShowStorage",
+                           "method":  "GET",
+                           "description":  "Query repository usage",
+                           "command":  "hcloud CodeArtsArtifact ShowStorage",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "format_list",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "in_project",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ShowUserPrivileges",
+                           "method":  "GET",
+                           "description":  "This API is used to query permissions of a user for a project.",
+                           "command":  "hcloud CodeArtsArtifact ShowUserPrivileges",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ShowUserTicket",
+                           "method":  "GET",
+                           "description":  "Query user tickets.",
+                           "command":  "hcloud CodeArtsArtifact ShowUserTicket",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ShowVersionList",
+                           "method":  "GET",
+                           "description":  "When there are many release repo versions, you can query the versions of the release repo by project ID on different pages. This API is used for fuzzy search by version name.",
+                           "command":  "hcloud CodeArtsArtifact ShowVersionList",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "build_version",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "limit",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "offset",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "UpdateArtifactory",
+                           "method":  "PUT",
+                           "description":  "Edit non-Maven repository information",
+                           "command":  "hcloud CodeArtsArtifact UpdateArtifactory",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "format",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "includes_pattern",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "repo_name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "repository_ids",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "allow_anonymous",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "auto_clean_snapshot",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "deployment_policy",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "description",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "max_unique_snapshots",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "project_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "snapshot_alive_days",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "UpdateRepoRolesPrivilege",
+                           "method":  "PUT",
+                           "description":  "Update repository permissions.",
+                           "command":  "hcloud CodeArtsArtifact UpdateRepoRolesPrivilege",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "privileges",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "privileges",
+                                                  "location":  "path",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "privileges",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "privileges",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "privileges",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "privileges",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "role_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       }
+                   ]
+}

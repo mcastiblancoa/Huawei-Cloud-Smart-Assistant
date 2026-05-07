@@ -8,15 +8,30 @@ wheels/
 
 # Virtual environments
 .venv
+venv
 
 # Environment variables
 .env
 
 # Dependencies
 node_modules/
-frontend/node_modules/
-backend/__pycache__/
 
 # Build outputs
 dist/
 build/
+
+# Temporary files
+tmp_audio/
+
+# IDE
+.vscode/
+.idea/
+
+# Terraform (removed - no longer used)
+terraform_workspace/
+terraform_resources/
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.pem
+.terraform.lock.hcl

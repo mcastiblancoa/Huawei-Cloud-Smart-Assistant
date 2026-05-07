@@ -1,0 +1,632 @@
+[
+    {
+        "service":  "AAD",
+        "total_operations":  42,
+        "file":  "AAD.json"
+    },
+    {
+        "service":  "Anti-DDoS",
+        "total_operations":  19,
+        "file":  "Anti-DDoS.json"
+    },
+    {
+        "service":  "AOM",
+        "total_operations":  82,
+        "file":  "AOM.json"
+    },
+    {
+        "service":  "AOS",
+        "total_operations":  75,
+        "file":  "AOS.json"
+    },
+    {
+        "service":  "APIG",
+        "total_operations":  214,
+        "file":  "APIG.json"
+    },
+    {
+        "service":  "APM",
+        "total_operations":  46,
+        "file":  "APM.json"
+    },
+    {
+        "service":  "AS",
+        "total_operations":  71,
+        "file":  "AS.json"
+    },
+    {
+        "service":  "AstroZero",
+        "total_operations":  1,
+        "file":  "AstroZero.json"
+    },
+    {
+        "service":  "BMS",
+        "total_operations":  28,
+        "file":  "BMS.json"
+    },
+    {
+        "service":  "BSSINTL",
+        "total_operations":  53,
+        "file":  "BSSINTL.json"
+    },
+    {
+        "service":  "CAE",
+        "total_operations":  55,
+        "file":  "CAE.json"
+    },
+    {
+        "service":  "CBH",
+        "total_operations":  49,
+        "file":  "CBH.json"
+    },
+    {
+        "service":  "CBS",
+        "total_operations":  4,
+        "file":  "CBS.json"
+    },
+    {
+        "service":  "CC",
+        "total_operations":  111,
+        "file":  "CC.json"
+    },
+    {
+        "service":  "CCE",
+        "total_operations":  178,
+        "file":  "CCE.json"
+    },
+    {
+        "service":  "CCI",
+        "total_operations":  148,
+        "file":  "CCI.json"
+    },
+    {
+        "service":  "CCM",
+        "total_operations":  42,
+        "file":  "CCM.json"
+    },
+    {
+        "service":  "CDM",
+        "total_operations":  27,
+        "file":  "CDM.json"
+    },
+    {
+        "service":  "CDN",
+        "total_operations":  66,
+        "file":  "CDN.json"
+    },
+    {
+        "service":  "CES",
+        "total_operations":  64,
+        "file":  "CES.json"
+    },
+    {
+        "service":  "CFW",
+        "total_operations":  168,
+        "file":  "CFW.json"
+    },
+    {
+        "service":  "CloudBuild",
+        "total_operations":  9,
+        "file":  "CloudBuild.json"
+    },
+    {
+        "service":  "CloudDC",
+        "total_operations":  32,
+        "file":  "CloudDC.json"
+    },
+    {
+        "service":  "CloudPond",
+        "total_operations":  20,
+        "file":  "CloudPond.json"
+    },
+    {
+        "service":  "CloudRTC",
+        "total_operations":  42,
+        "file":  "CloudRTC.json"
+    },
+    {
+        "service":  "CloudTest",
+        "total_operations":  80,
+        "file":  "CloudTest.json"
+    },
+    {
+        "service":  "COC",
+        "total_operations":  144,
+        "file":  "COC.json"
+    },
+    {
+        "service":  "CodeArtsArtifact",
+        "total_operations":  54,
+        "file":  "CodeArtsArtifact.json"
+    },
+    {
+        "service":  "CodeArtsBuild",
+        "total_operations":  135,
+        "file":  "CodeArtsBuild.json"
+    },
+    {
+        "service":  "CodeArtsCheck",
+        "total_operations":  29,
+        "file":  "CodeArtsCheck.json"
+    },
+    {
+        "service":  "CodeArtsDeploy",
+        "total_operations":  65,
+        "file":  "CodeArtsDeploy.json"
+    },
+    {
+        "service":  "CodeArtsPipeline",
+        "total_operations":  87,
+        "file":  "CodeArtsPipeline.json"
+    },
+    {
+        "service":  "CodeArtsRepo",
+        "total_operations":  350,
+        "file":  "CodeArtsRepo.json"
+    },
+    {
+        "service":  "CodeCheck",
+        "total_operations":  29,
+        "file":  "CodeCheck.json"
+    },
+    {
+        "service":  "Config",
+        "total_operations":  106,
+        "file":  "Config.json"
+    },
+    {
+        "service":  "CPH",
+        "total_operations":  51,
+        "file":  "CPH.json"
+    },
+    {
+        "service":  "CPTS",
+        "total_operations":  29,
+        "file":  "CPTS.json"
+    },
+    {
+        "service":  "CSE",
+        "total_operations":  26,
+        "file":  "CSE.json"
+    },
+    {
+        "service":  "CSMS",
+        "total_operations":  45,
+        "file":  "CSMS.json"
+    },
+    {
+        "service":  "CSS",
+        "total_operations":  116,
+        "file":  "CSS.json"
+    },
+    {
+        "service":  "CTS",
+        "total_operations":  16,
+        "file":  "CTS.json"
+    },
+    {
+        "service":  "DAS",
+        "total_operations":  102,
+        "file":  "DAS.json"
+    },
+    {
+        "service":  "DataArtsStudio",
+        "total_operations":  346,
+        "file":  "DataArtsStudio.json"
+    },
+    {
+        "service":  "DBSS",
+        "total_operations":  167,
+        "file":  "DBSS.json"
+    },
+    {
+        "service":  "DC",
+        "total_operations":  58,
+        "file":  "DC.json"
+    },
+    {
+        "service":  "DCC",
+        "total_operations":  1,
+        "file":  "DCC.json"
+    },
+    {
+        "service":  "DCS",
+        "total_operations":  69,
+        "file":  "DCS.json"
+    },
+    {
+        "service":  "DDM",
+        "total_operations":  112,
+        "file":  "DDM.json"
+    },
+    {
+        "service":  "DDS",
+        "total_operations":  127,
+        "file":  "DDS.json"
+    },
+    {
+        "service":  "DeH",
+        "total_operations":  16,
+        "file":  "DeH.json"
+    },
+    {
+        "service":  "DIS",
+        "total_operations":  38,
+        "file":  "DIS.json"
+    },
+    {
+        "service":  "DLI",
+        "total_operations":  160,
+        "file":  "DLI.json"
+    },
+    {
+        "service":  "DNS",
+        "total_operations":  117,
+        "file":  "DNS.json"
+    },
+    {
+        "service":  "DRS",
+        "total_operations":  156,
+        "file":  "DRS.json"
+    },
+    {
+        "service":  "DSC",
+        "total_operations":  35,
+        "file":  "DSC.json"
+    },
+    {
+        "service":  "DWS",
+        "total_operations":  39,
+        "file":  "DWS.json"
+    },
+    {
+        "service":  "ECS",
+        "total_operations":  124,
+        "file":  "ECS.json"
+    },
+    {
+        "service":  "EdgeSec",
+        "total_operations":  60,
+        "file":  "EdgeSec.json"
+    },
+    {
+        "service":  "EIP",
+        "total_operations":  66,
+        "file":  "EIP.json"
+    },
+    {
+        "service":  "ELB",
+        "total_operations":  88,
+        "file":  "ELB.json"
+    },
+    {
+        "service":  "EPS",
+        "total_operations":  17,
+        "file":  "EPS.json"
+    },
+    {
+        "service":  "ER",
+        "total_operations":  49,
+        "file":  "ER.json"
+    },
+    {
+        "service":  "ESW",
+        "total_operations":  17,
+        "file":  "ESW.json"
+    },
+    {
+        "service":  "EVS",
+        "total_operations":  38,
+        "file":  "EVS.json"
+    },
+    {
+        "service":  "FRS",
+        "total_operations":  26,
+        "file":  "FRS.json"
+    },
+    {
+        "service":  "FunctionGraph",
+        "total_operations":  92,
+        "file":  "FunctionGraph.json"
+    },
+    {
+        "service":  "GA",
+        "total_operations":  49,
+        "file":  "GA.json"
+    },
+    {
+        "service":  "GaussDB",
+        "total_operations":  102,
+        "file":  "GaussDB.json"
+    },
+    {
+        "service":  "GaussDBforNoSQL",
+        "total_operations":  89,
+        "file":  "GaussDBforNoSQL.json"
+    },
+    {
+        "service":  "GaussDBforopenGauss",
+        "total_operations":  128,
+        "file":  "GaussDBforopenGauss.json"
+    },
+    {
+        "service":  "GES",
+        "total_operations":  34,
+        "file":  "GES.json"
+    },
+    {
+        "service":  "HSS",
+        "total_operations":  557,
+        "file":  "HSS.json"
+    },
+    {
+        "service":  "IAM",
+        "total_operations":  222,
+        "file":  "IAM.json"
+    },
+    {
+        "service":  "IAMAccessAnalyzer",
+        "total_operations":  31,
+        "file":  "IAMAccessAnalyzer.json"
+    },
+    {
+        "service":  "IdentityCenter",
+        "total_operations":  81,
+        "file":  "IdentityCenter.json"
+    },
+    {
+        "service":  "IdentityCenterOIDC",
+        "total_operations":  3,
+        "file":  "IdentityCenterOIDC.json"
+    },
+    {
+        "service":  "IdentityCenterPortalAPI",
+        "total_operations":  4,
+        "file":  "IdentityCenterPortalAPI.json"
+    },
+    {
+        "service":  "IdentityCenterSCIM",
+        "total_operations":  12,
+        "file":  "IdentityCenterSCIM.json"
+    },
+    {
+        "service":  "IdentityCenterStore",
+        "total_operations":  54,
+        "file":  "IdentityCenterStore.json"
+    },
+    {
+        "service":  "Image",
+        "total_operations":  1,
+        "file":  "Image.json"
+    },
+    {
+        "service":  "IMS",
+        "total_operations":  51,
+        "file":  "IMS.json"
+    },
+    {
+        "service":  "IoTDA",
+        "total_operations":  172,
+        "file":  "IoTDA.json"
+    },
+    {
+        "service":  "IoTDM",
+        "total_operations":  13,
+        "file":  "IoTDM.json"
+    },
+    {
+        "service":  "Kafka",
+        "total_operations":  110,
+        "file":  "Kafka.json"
+    },
+    {
+        "service":  "KMS",
+        "total_operations":  59,
+        "file":  "KMS.json"
+    },
+    {
+        "service":  "KPS",
+        "total_operations":  18,
+        "file":  "KPS.json"
+    },
+    {
+        "service":  "Live",
+        "total_operations":  120,
+        "file":  "Live.json"
+    },
+    {
+        "service":  "LTS",
+        "total_operations":  82,
+        "file":  "LTS.json"
+    },
+    {
+        "service":  "Marketplace",
+        "total_operations":  6,
+        "file":  "Marketplace.json"
+    },
+    {
+        "service":  "Meeting",
+        "total_operations":  160,
+        "file":  "Meeting.json"
+    },
+    {
+        "service":  "ModelArts",
+        "total_operations":  155,
+        "file":  "ModelArts.json"
+    },
+    {
+        "service":  "Moderation",
+        "total_operations":  8,
+        "file":  "Moderation.json"
+    },
+    {
+        "service":  "MPC",
+        "total_operations":  41,
+        "file":  "MPC.json"
+    },
+    {
+        "service":  "MRS",
+        "total_operations":  51,
+        "file":  "MRS.json"
+    },
+    {
+        "service":  "NAT",
+        "total_operations":  67,
+        "file":  "NAT.json"
+    },
+    {
+        "service":  "OCR",
+        "total_operations":  16,
+        "file":  "OCR.json"
+    },
+    {
+        "service":  "OMS",
+        "total_operations":  33,
+        "file":  "OMS.json"
+    },
+    {
+        "service":  "Organizations",
+        "total_operations":  69,
+        "file":  "Organizations.json"
+    },
+    {
+        "service":  "ProjectMan",
+        "total_operations":  70,
+        "file":  "ProjectMan.json"
+    },
+    {
+        "service":  "RabbitMQ",
+        "total_operations":  49,
+        "file":  "RabbitMQ.json"
+    },
+    {
+        "service":  "RAM",
+        "total_operations":  30,
+        "file":  "RAM.json"
+    },
+    {
+        "service":  "RDS",
+        "total_operations":  271,
+        "file":  "RDS.json"
+    },
+    {
+        "service":  "RFS",
+        "total_operations":  75,
+        "file":  "RFS.json"
+    },
+    {
+        "service":  "RGC",
+        "total_operations":  51,
+        "file":  "RGC.json"
+    },
+    {
+        "service":  "RMS",
+        "total_operations":  62,
+        "file":  "RMS.json"
+    },
+    {
+        "service":  "RocketMQ",
+        "total_operations":  70,
+        "file":  "RocketMQ.json"
+    },
+    {
+        "service":  "ROMA",
+        "total_operations":  143,
+        "file":  "ROMA.json"
+    },
+    {
+        "service":  "SCM",
+        "total_operations":  27,
+        "file":  "SCM.json"
+    },
+    {
+        "service":  "SecMaster",
+        "total_operations":  360,
+        "file":  "SecMaster.json"
+    },
+    {
+        "service":  "ServiceStage",
+        "total_operations":  54,
+        "file":  "ServiceStage.json"
+    },
+    {
+        "service":  "SFSTurbo",
+        "total_operations":  52,
+        "file":  "SFSTurbo.json"
+    },
+    {
+        "service":  "SIS",
+        "total_operations":  1,
+        "file":  "SIS.json"
+    },
+    {
+        "service":  "SMN",
+        "total_operations":  71,
+        "file":  "SMN.json"
+    },
+    {
+        "service":  "SMNGLOBAL",
+        "total_operations":  4,
+        "file":  "SMNGLOBAL.json"
+    },
+    {
+        "service":  "SMS",
+        "total_operations":  52,
+        "file":  "SMS.json"
+    },
+    {
+        "service":  "STS",
+        "total_operations":  3,
+        "file":  "STS.json"
+    },
+    {
+        "service":  "SWR",
+        "total_operations":  164,
+        "file":  "SWR.json"
+    },
+    {
+        "service":  "TMS",
+        "total_operations":  15,
+        "file":  "TMS.json"
+    },
+    {
+        "service":  "UCS",
+        "total_operations":  75,
+        "file":  "UCS.json"
+    },
+    {
+        "service":  "UGO",
+        "total_operations":  22,
+        "file":  "UGO.json"
+    },
+    {
+        "service":  "VOD",
+        "total_operations":  68,
+        "file":  "VOD.json"
+    },
+    {
+        "service":  "VPC",
+        "total_operations":  179,
+        "file":  "VPC.json"
+    },
+    {
+        "service":  "VPCEP",
+        "total_operations":  32,
+        "file":  "VPCEP.json"
+    },
+    {
+        "service":  "VPN",
+        "total_operations":  85,
+        "file":  "VPN.json"
+    },
+    {
+        "service":  "WAF",
+        "total_operations":  143,
+        "file":  "WAF.json"
+    },
+    {
+        "service":  "Workspace",
+        "total_operations":  336,
+        "file":  "Workspace.json"
+    }
+]

@@ -1,0 +1,2023 @@
+{
+    "service":  "Organizations",
+    "total_operations":  69,
+    "generated_at":  "2026-04-30 10:28:21",
+    "operations":  [
+                       {
+                           "operation":  "AcceptHandshake",
+                           "method":  "POST",
+                           "description":  "This API is used to accept an invitation to join an organization. After you accept an invitation, the invitation information continues to appear in the results of relevant APIs for 30 days.",
+                           "command":  "hcloud Organizations AcceptHandshake",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "handshake_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "AttachDryRunPolicy",
+                           "method":  "POST",
+                           "description":  "This API is used to attach a dry-run policy to the root, an OU, or an individual account. It can be called only from the organization\u0027s management account.",
+                           "command":  "hcloud Organizations AttachDryRunPolicy",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "entity_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "policy_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "AttachPolicy",
+                           "method":  "POST",
+                           "description":  "This API is used to attach a policy to a root, OU, or individual account. It can be called only from the organization\u0027s management account.",
+                           "command":  "hcloud Organizations AttachPolicy",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "entity_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "policy_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "CancelHandshake",
+                           "method":  "POST",
+                           "description":  "This API is used to cancel an invitation. This sets the invitation state to Canceled. This API can be called only from the account that initiated the invitation. After you cancel an invitation, the invitation information continues to appear in the results of relevant APIs for 30 days.",
+                           "command":  "hcloud Organizations CancelHandshake",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "handshake_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "CloseAccount",
+                           "method":  "POST",
+                           "description":  "This API is used to close an account.",
+                           "command":  "hcloud Organizations CloseAccount",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "account_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "CreateAccount",
+                           "method":  "POST",
+                           "description":  "This API is used to create an account. The generated account automatically becomes a member account of the organization holding the account that calls this API. This API can be called only from the organization\u0027s management account. The Organizations service creates the required service-linked agency and account-accessed agency in the new account.",
+                           "command":  "hcloud Organizations CreateAccount",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "agency_name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "description",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "email",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "phone",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "tags",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "tags",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "CreateDryRunPolicy",
+                           "method":  "POST",
+                           "description":  "This API is used to create a dry-run policy of a specified type. It can be called only from the organization\u0027s management account",
+                           "command":  "hcloud Organizations CreateDryRunPolicy",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "content",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "description",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "type",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "X-Language",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "tags",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "tags",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "CreateOrganization",
+                           "method":  "POST",
+                           "description":  "This API is used to create an organization. The account whose user is calling this API automatically becomes the management account of the new organization. This API must be called using the credentials from the account that is to become the new organization\u0027s management account.",
+                           "command":  "hcloud Organizations CreateOrganization",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "CreateOrganizationalUnit",
+                           "method":  "POST",
+                           "description":  "This API is used to create an OU in a root or a parent OU. An OU is a container of accounts. It enables you to group your accounts to apply policies based on your business requirements. This API can be called only from the organization\u0027s management account.",
+                           "command":  "hcloud Organizations CreateOrganizationalUnit",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "parent_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "tags",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "tags",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "CreatePolicy",
+                           "method":  "POST",
+                           "description":  "This API is used to create a policy of the specified type. It can be called only from the organization\u0027s management account.",
+                           "command":  "hcloud Organizations CreatePolicy",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "content",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "description",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "type",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "X-Language",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "tags",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "tags",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "CreateResourceAccount",
+                           "method":  "POST",
+                           "description":  "This API is used to create an account. The generated account automatically becomes a member account of the organization holding the account that calls this API. This API can be called only from the organization\u0027s management account. The Organizations service creates the required service-linked agency and account-accessed agency in the new account.",
+                           "command":  "hcloud Organizations CreateResourceAccount",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "agency_name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "description",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "tags",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "tags",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "CreateTagResource",
+                           "method":  "POST",
+                           "description":  "This API is used to add one or more tags to the specified resource. You can attach tags to any of the following organization resources: accounts, OUs, roots, and policies. This API can be called only from the organization\u0027s management account.",
+                           "command":  "hcloud Organizations CreateTagResource",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "resource_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "resource_type",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "tags",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "tags",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "DeclineHandshake",
+                           "method":  "POST",
+                           "description":  "This API is used to decline an invitation to join an organization. This sets the invitation state to Declined and deactivates the invitation. This API can be called only from the account that received the invitation. The invitation initiator cannot re-activate a declined invitation but can re-initiate a new invitation.",
+                           "command":  "hcloud Organizations DeclineHandshake",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "handshake_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "DeleteDryRunPolicy",
+                           "method":  "DELETE",
+                           "description":  "This API is used to delete a specified dry-run policy from an organization. Before calling this API, you must detach the policy from all OUs, roots, and accounts. It can be called only from the organization\u0027s management account.",
+                           "command":  "hcloud Organizations DeleteDryRunPolicy",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "policy_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "DeleteOrganization",
+                           "method":  "DELETE",
+                           "description":  "This API is used to delete an organization. You must use the management account call this API. The organization must be empty of accounts, organizational units (OUs), and policies.",
+                           "command":  "hcloud Organizations DeleteOrganization",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "DeleteOrganizationalUnit",
+                           "method":  "DELETE",
+                           "description":  "This API is used to delete an OU from the root or another OU. Before deleting an OU, you must remove all member accounts from the OU or move them to another OU, and also remove the child OUs from the OU. This API can be called only from the organization\u0027s management account.",
+                           "command":  "hcloud Organizations DeleteOrganizationalUnit",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "organizational_unit_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "DeletePolicy",
+                           "method":  "DELETE",
+                           "description":  "This API is used to delete the specified account from an organization. Before calling this API, you must detach the policy from all OUs, roots, and accounts. This API can be called only from the organization\u0027s management account.",
+                           "command":  "hcloud Organizations DeletePolicy",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "policy_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "DeleteTagResource",
+                           "method":  "POST",
+                           "description":  "This API is used to delete any tags with the specified key from the specified resource. You can attach tags to any of the following organization resources: accounts, OUs, roots, and policies. This API can be called only from the organization\u0027s management account.",
+                           "command":  "hcloud Organizations DeleteTagResource",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "resource_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "resource_type",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "tags",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "tags",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "DeregisterDelegatedAdministrator",
+                           "method":  "POST",
+                           "description":  "This API is used to remove the specified member account as the delegated administrator for the specified service. It can be called only from the organization\u0027s management account.",
+                           "command":  "hcloud Organizations DeregisterDelegatedAdministrator",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "account_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "service_principal",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "DetachDryRunPolicy",
+                           "method":  "POST",
+                           "description":  "This API is used to detach a dry-run policy from a root, an OU, or an account. It can be called only from the organization\u0027s management account.",
+                           "command":  "hcloud Organizations DetachDryRunPolicy",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "entity_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "policy_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "DetachPolicy",
+                           "method":  "POST",
+                           "description":  "This API is used to detach a policy from a root, OU, or account. It can be called only from the organization\u0027s management account.",
+                           "command":  "hcloud Organizations DetachPolicy",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "entity_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "policy_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "DisablePolicyType",
+                           "method":  "POST",
+                           "description":  "This API is used to disable a policy type in a root. A policy of a specific type can be attached to entities in a root only if that policy type is enabled in the root. After you call this API, you can no longer attach any policies of the specified type to that root or any OU or account in the root. This is an asynchronous request executed in the background. You can use ListRoots to view the status of the policy types for the specified root. This API can be called only from the organization\u0027s management account.",
+                           "command":  "hcloud Organizations DisablePolicyType",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "policy_type",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "root_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "DisableTrustedService",
+                           "method":  "POST",
+                           "description":  "This API is used to disable the integration of a cloud service (specified by service_principal) with Organizations. After you disable a trusted service, the service no longer can create a service-linked agency in new accounts in your organization. This means the service no longer can perform operations on your behalf on any new accounts in your organization. The service can still perform operations in the old accounts until the service completes its cleanup from Organizations. This API can be called only from the organization\u0027s management account.",
+                           "command":  "hcloud Organizations DisableTrustedService",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "service_principal",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "EnablePolicyType",
+                           "method":  "POST",
+                           "description":  "This API is used to enable a policy type for a root of an organization. After you enable a policy type for the root, you can attach the policies of this type to the root, or any OU or account under the root. This is an asynchronous request executed in the background. You can use ListRoots to view the status of the policy types for the specified root. This API can be called only from the organization\u0027s management account.",
+                           "command":  "hcloud Organizations EnablePolicyType",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "policy_type",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "root_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "EnableTrustedService",
+                           "method":  "POST",
+                           "description":  "This API is used to enable the integration of a cloud service (specified by service_principal) with Organizations. When you enable a trusted service, you allow the trusted service to create a service-linked agency in all accounts in your organization. This allows the trusted service to perform operations on your behalf in your organization and its accounts. This API can be called only from the organization\u0027s management account.",
+                           "command":  "hcloud Organizations EnableTrustedService",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "service_principal",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "InviteAccount",
+                           "method":  "POST",
+                           "description":  "This API is used to send an invitation to another account. The invited account will join your organization as a member account. This API can be called only from the organization\u0027s management account.",
+                           "command":  "hcloud Organizations InviteAccount",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "notes",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "target",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "target",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "tags",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "tags",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "LeaveOrganization",
+                           "method":  "POST",
+                           "description":  "This API is used to leave the current organization. It can be called only from a member account in the organization. You can leave an organization as a member account only if the account is configured with the information required for operating as a standalone account. The account to leave must not be a delegated administrator account for any cloud service enabled for your organization.",
+                           "command":  "hcloud Organizations LeaveOrganization",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListAccounts",
+                           "method":  "GET",
+                           "description":  "This API is used to list all the accounts in an organization. It can be called only from the organization\u0027s management account or from a member account that is a delegated administrator for a cloud service. If a parent OU is specified, this API will return a list of all the accounts contained in the specified parent OU.",
+                           "command":  "hcloud Organizations ListAccounts",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "limit",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "marker",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "parent_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "with_register_contact_info",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListCloseAccountStatuses",
+                           "method":  "GET",
+                           "description":  "This API is used to query the CloseAccount requests in the specified state for an organization. This API can be called only from the organization\u0027s management account or a delegated administrator account.",
+                           "command":  "hcloud Organizations ListCloseAccountStatuses",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "states",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListCreateAccountStatuses",
+                           "method":  "GET",
+                           "description":  "This API is used to query the account creation requests in the specified state for an organization. This API can be called only from the organization\u0027s management account or a delegated administrator account.",
+                           "command":  "hcloud Organizations ListCreateAccountStatuses",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "limit",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "marker",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "states",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListDelegatedAdministrators",
+                           "method":  "GET",
+                           "description":  "This API is used to list the accounts that are designated as delegated administrators in an organization. It can be called only from the organization\u0027s management account or from a member account that is a delegated administrator for a cloud service.",
+                           "command":  "hcloud Organizations ListDelegatedAdministrators",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "limit",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "marker",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "service_principal",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListDelegatedServices",
+                           "method":  "GET",
+                           "description":  "This API is used to list the services for which the specified account is a delegated administrator. It can be called only from the organization\u0027s management account or from a member account that is a delegated administrator for a cloud service.",
+                           "command":  "hcloud Organizations ListDelegatedServices",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "account_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "limit",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "marker",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListDryRunPolicies",
+                           "method":  "GET",
+                           "description":  "This API is used to list all dry-run policies of an organization. If a resource ID (such as an OU ID or account ID) is specified, this API will return a list of policies attached to the resource. It can be called only from the organization\u0027s management account or from a delegated administrator account of a cloud service.",
+                           "command":  "hcloud Organizations ListDryRunPolicies",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "X-Language",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "attached_entity_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "limit",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "marker",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListEntities",
+                           "method":  "GET",
+                           "description":  "This API is used to list all the entities (roots, OUs, and accounts) in an organization. It can be called only from the organization\u0027s management account or from a member account that is a delegated administrator for a cloud service. You can filter entities you want to view by specifying the parent OU ID and child OU ID.",
+                           "command":  "hcloud Organizations ListEntities",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "child_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "limit",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "marker",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "parent_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListEntitiesForDryRunPolicy",
+                           "method":  "GET",
+                           "description":  "This API is used to list all the entities (roots, OUs, and accounts) that the specified dry-run policy is attached to. It can be called only from the organization\u0027s management account or from a delegated administrator account of a cloud service.",
+                           "command":  "hcloud Organizations ListEntitiesForDryRunPolicy",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "policy_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "limit",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "marker",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListEntitiesForPolicy",
+                           "method":  "GET",
+                           "description":  "This API is used to list all the entities (roots, OUs, and accounts) that the specified policy is attached to. It can be called only from the organization\u0027s management account or from a member account that is a delegated administrator for a cloud service.",
+                           "command":  "hcloud Organizations ListEntitiesForPolicy",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "policy_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "limit",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "marker",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListHandshakes",
+                           "method":  "GET",
+                           "description":  "This API is used to list all the invitations sent by an organization. It can be called only from the organization\u0027s management account or from a member account that is a delegated administrator for a cloud service.",
+                           "command":  "hcloud Organizations ListHandshakes",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "limit",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "marker",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListOrganizationalUnits",
+                           "method":  "GET",
+                           "description":  "This API is used to list all OUs in an organization. If a parent OU is specified, this API will return a list of all the OUs contained in the specified parent OU. This API can be called only from the organization\u0027s management account or from a member account that is a delegated administrator for a cloud service.",
+                           "command":  "hcloud Organizations ListOrganizationalUnits",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "limit",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "marker",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "parent_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListPolicies",
+                           "method":  "GET",
+                           "description":  "This API is used to list all policies in an organization. If a resource ID (such as an OU ID or account ID) is specified, this API will return a list of policies attached to the resource. This API can be called only from the organization\u0027s management account or from a member account that is a delegated administrator for a cloud service.",
+                           "command":  "hcloud Organizations ListPolicies",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "X-Language",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "attached_entity_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "limit",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "marker",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListQuotas",
+                           "method":  "GET",
+                           "description":  "This API is used to list Organizations quotas. It can be called only from the management account or a delegated administrator account.",
+                           "command":  "hcloud Organizations ListQuotas",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListReceivedHandshakes",
+                           "method":  "GET",
+                           "description":  "This API is used to list all the invitations associated with the specified account. It can be called by any account.",
+                           "command":  "hcloud Organizations ListReceivedHandshakes",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "limit",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "marker",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListResourceInstances",
+                           "method":  "POST",
+                           "description":  "This API is used to query the list of resource instances by resource type and tag.",
+                           "command":  "hcloud Organizations ListResourceInstances",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "resource_type",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "limit",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "matches",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "matches",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "offset",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "tags",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "tags",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "without_any_tag",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListResourceTags",
+                           "method":  "GET",
+                           "description":  "This API is used to query tags attached to the specified resource.",
+                           "command":  "hcloud Organizations ListResourceTags",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "resource_type",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListRoots",
+                           "method":  "GET",
+                           "description":  "This API is used to list the roots of an organization. It can be called only from the organization\u0027s management account or from a member account that is a delegated administrator for a cloud service.",
+                           "command":  "hcloud Organizations ListRoots",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "limit",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "marker",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListServices",
+                           "method":  "GET",
+                           "description":  "This API is used to list all cloud services that can be integrated with Organizations. After a service on this list is integrated with Organizations, that service becomes a trusted service for Organizations.",
+                           "command":  "hcloud Organizations ListServices",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListTagPolicyServices",
+                           "method":  "GET",
+                           "description":  "This API is used to list the resources types that support enforcement with tag policies.",
+                           "command":  "hcloud Organizations ListTagPolicyServices",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListTagResources",
+                           "method":  "GET",
+                           "description":  "This API is used to list the tags that are attached to the specified resource. You can attach tags to any of the following organization resources: accounts, OUs, roots, and policies. This API can be called only from the organization\u0027s management account or a delegated administrator account.",
+                           "command":  "hcloud Organizations ListTagResources",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "resource_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "resource_type",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "limit",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "marker",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListTagsForResource",
+                           "method":  "GET",
+                           "description":  "This API is used to list the tags that are attached to the specified resource. You can attach tags to the following resources in Organizations: accounts, OUs, roots, and policies. This API can be called only from the organization\u0027s management account or from a member account that is a delegated administrator for a cloud service.",
+                           "command":  "hcloud Organizations ListTagsForResource",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "resource_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "limit",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "marker",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ListTrustedServices",
+                           "method":  "GET",
+                           "description":  "This API returns a list of trusted services that are integrated with Organizations. It can be called only from the organization\u0027s management account or from a member account that is a delegated administrator for a cloud service.",
+                           "command":  "hcloud Organizations ListTrustedServices",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "limit",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "marker",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "MoveAccount",
+                           "method":  "POST",
+                           "description":  "This API is used to move an account from its current source location (root or OU) to the specified destination location (root or OU).",
+                           "command":  "hcloud Organizations MoveAccount",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "account_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "destination_parent_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "source_parent_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "RegisterDelegatedAdministrator",
+                           "method":  "POST",
+                           "description":  "This API is used to register the specified member account as a delegated administrator to manage the Organizations functions of a specified service. This API grants the delegated administrator the read-only access to Organizations service data. IAM users in the delegated administrator account still need IAM permissions to access and manage the specified service. This API can be called only from the organization\u0027s management account.",
+                           "command":  "hcloud Organizations RegisterDelegatedAdministrator",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "account_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "service_principal",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "RemoveAccount",
+                           "method":  "POST",
+                           "description":  "This API is used to remove the specified account from an organization. The removed account becomes a standalone account that is not a member account of any organization. This API can be called only from the organization\u0027s management account. You can remove an account from an organization only if the account is configured with the information required to operation as a standalone account. The account you want to remove must not be a delegated administrator account for any cloud service enabled for your organization.",
+                           "command":  "hcloud Organizations RemoveAccount",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "account_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ShowAccount",
+                           "method":  "GET",
+                           "description":  "This API is used to get the information about the specified account. It can be called only from the organization\u0027s management account or from a member account that is a delegated administrator for a cloud service.",
+                           "command":  "hcloud Organizations ShowAccount",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "account_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ShowCreateAccountStatus",
+                           "method":  "GET",
+                           "description":  "This API is used to query the status of the asynchronous request to create an account. This API can be called only from the organization\u0027s management account or a delegated administrator account.",
+                           "command":  "hcloud Organizations ShowCreateAccountStatus",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "create_account_status_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ShowDryRunConfig",
+                           "method":  "GET",
+                           "description":  "This API is used to query policy dry run configurations of an organization. It can be called only from the organization\u0027s management account or from a delegated administrator account of a cloud service.",
+                           "command":  "hcloud Organizations ShowDryRunConfig",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "policy_type",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "root_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ShowDryRunPolicy",
+                           "method":  "GET",
+                           "description":  "This API is used to query information about a dry-run policy. It can be called only from the organization\u0027s management account or from a delegated administrator account of a cloud service.",
+                           "command":  "hcloud Organizations ShowDryRunPolicy",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "policy_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "X-Language",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ShowEffectivePolicies",
+                           "method":  "GET",
+                           "description":  "This API is used to query the effective policy of a specific type for the specified account. This API cannot be used to query the information about service control policies. This API can be called only from the organization\u0027s management account or a delegated administrator account.",
+                           "command":  "hcloud Organizations ShowEffectivePolicies",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "entity_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "policy_type",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ShowHandshake",
+                           "method":  "GET",
+                           "description":  "This API is used to get the information about existing invitations in an organization. It can be called by all accounts in an organization.",
+                           "command":  "hcloud Organizations ShowHandshake",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "handshake_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ShowOrganization",
+                           "method":  "GET",
+                           "description":  "This API is used to get the information about the organization holding the account. It can be called by all accounts in an organization.",
+                           "command":  "hcloud Organizations ShowOrganization",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ShowOrganizationalUnit",
+                           "method":  "GET",
+                           "description":  "This API is used to get OU information. It can be called only from the organization\u0027s management account or from a member account that is a delegated administrator for a cloud service.",
+                           "command":  "hcloud Organizations ShowOrganizationalUnit",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "organizational_unit_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ShowPolicy",
+                           "method":  "GET",
+                           "description":  "This API is used to get the information about the specified policy. It can be called only from the organization\u0027s management account or from a member account that is a delegated administrator for a cloud service.",
+                           "command":  "hcloud Organizations ShowPolicy",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "policy_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "X-Language",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "ShowResourceInstancesCount",
+                           "method":  "POST",
+                           "description":  "This API is used to query the number of resource instances by resource type and tag.",
+                           "command":  "hcloud Organizations ShowResourceInstancesCount",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "resource_type",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "matches",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "matches",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "tags",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "tags",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "without_any_tag",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "TagResource",
+                           "method":  "POST",
+                           "description":  "This API is used to add one or more tags to the specified resource. You can attach tags to the following resources in Organizations: accounts, OUs, roots, and policies. This API can be called only from the organization\u0027s management account.",
+                           "command":  "hcloud Organizations TagResource",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "resource_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "tags",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "tags",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "UntagResource",
+                           "method":  "POST",
+                           "description":  "This API is used to remove any tags with the specified key from the specified resource. You can attach tags to the following resources in Organizations: accounts, OUs, roots, and policies. This API can be called only from the organization\u0027s management account.",
+                           "command":  "hcloud Organizations UntagResource",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "resource_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "tag_keys",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "UpdateAccount",
+                           "method":  "PATCH",
+                           "description":  "This API is used to update an account.",
+                           "command":  "hcloud Organizations UpdateAccount",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "account_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "description",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "UpdateDryRunConfig",
+                           "method":  "POST",
+                           "description":  "This API is used to update policy dry run configurations of an organization. It can be called only from the organization\u0027s management account.",
+                           "command":  "hcloud Organizations UpdateDryRunConfig",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "policy_type",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "root_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "agency_name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "bucket_name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "bucket_prefix",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "region_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "status",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "UpdateDryRunPolicy",
+                           "method":  "PATCH",
+                           "description":  "This API is used to update the name, description, or content of a dry-run policy. If no parameters are provided, the policy remains unchanged. You cannot change the policy type. It can be called only from the organization\u0027s management account.",
+                           "command":  "hcloud Organizations UpdateDryRunPolicy",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "policy_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "X-Language",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "content",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "description",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "UpdateOrganizationalUnit",
+                           "method":  "PATCH",
+                           "description":  "This API is used to rename the specified OU. After an OU is renamed, its ID does not change, its child OUs and accounts remain in place, and any attached policies of the OU remain unchanged. This API can be called only from the organization\u0027s management account.",
+                           "command":  "hcloud Organizations UpdateOrganizationalUnit",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "organizational_unit_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       },
+                       {
+                           "operation":  "UpdatePolicy",
+                           "method":  "PATCH",
+                           "description":  "This API is used to update the name, description, or content of a policy. If no parameter is provided, the policy remains unchanged. A policy\u0027s type cannot be changed. This API can be called only from the organization\u0027s management account.",
+                           "command":  "hcloud Organizations UpdatePolicy",
+                           "parameters":  [
+                                              {
+                                                  "name":  "cli-region",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "policy_id",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "X-Language",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "content",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "description",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              },
+                                              {
+                                                  "name":  "name",
+                                                  "location":  "",
+                                                  "type":  "string",
+                                                  "required":  false
+                                              }
+                                          ]
+                       }
+                   ]
+}
