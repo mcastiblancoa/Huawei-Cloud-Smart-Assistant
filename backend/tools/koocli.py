@@ -14,6 +14,7 @@ DEPLOY_REDIRECTS = {
     ("ELB", "CreateLoadBalancer"): "deploy_elb_loadbalancer",
     ("ECS", "NovaCreateServers"): "deploy_ecs_instance",
     ("ECS", "CreateServers"): "deploy_ecs_instance",
+    ("ECS", "CreatePostPaidServers"): "deploy_ecs_instance",
     ("VPC", "CreateVpc"): "deploy_vpc",
 }
 

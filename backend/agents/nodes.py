@@ -1,3 +1,5 @@
+import time
+
 from langchain_core.messages import SystemMessage, AIMessage, ToolMessage
 from langchain.chat_models import init_chat_model
 
@@ -11,6 +13,9 @@ logger = get_logger("agents.nodes")
 
 _settings = get_settings()
 
+RATE_LIMIT_RETRIES = 5
+RATE_LIMIT_BASE_DELAY = 2.0
+
 
 def _get_llm_with_tools():
     llm = init_chat_model(
@@ -18,6 +23,7 @@ def _get_llm_with_tools():
         model_provider="openai",
         openai_api_base=_settings.open_api_base,
         openai_api_key=_settings.maas_api_key,
+        max_retries=2,
     )
     tools = get_all_tools()
     return llm.bind_tools(tools), tools
@@ -38,7 +44,26 @@ def chatbot_node(state: AgentState) -> dict:
         }},
     )
 
-    message = llm_with_tools.invoke(messages_with_system)
+    message = None
+    for attempt in range(RATE_LIMIT_RETRIES + 1):
+        try:
+            message = llm_with_tools.invoke(messages_with_system)
+            break
+        except Exception as e:
+            error_name = type(e).__name__
+            is_rate_limit = "RateLimit" in error_name or "429" in str(e) or "TooMany" in str(e)
+            if is_rate_limit and attempt < RATE_LIMIT_RETRIES:
+                delay = RATE_LIMIT_BASE_DELAY * (2 ** attempt)
+                logger.warning(
+                    "Rate limit hit, retrying in %.1fs (attempt %d/%d)",
+                    delay, attempt + 1, RATE_LIMIT_RETRIES,
+                )
+                time.sleep(delay)
+                continue
+            if is_rate_limit:
+                logger.error("Rate limit exhausted after %d retries", RATE_LIMIT_RETRIES)
+                return {"messages": [AIMessage(content="The AI service is temporarily busy. Please try again in a moment.")]}
+            raise
 
     has_tool_calls = hasattr(message, "tool_calls") and bool(message.tool_calls)
     logger.info(
