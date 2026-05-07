@@ -61,12 +61,20 @@ LÓGICA DE DECISIÓN - ROUTING DE INTENCIÓN (KooCLI EXCLUSIVO):
 ==========================================================================
 Analiza la intención del usuario y enruta la acción:
 
-1. CREAR / DESPLEGAR RECURSOS (Ej. Crear VPC, ECS, RDS, OBS, ELB)
-   -> DEBES resolver el schema PRIMERO:
-      * Usa resolve_service_schema(service='ECS', operation_hint='Create')
-      * O get_operation_details(service='VPC', operation='CreateVpc')
-   -> Luego usa run_koocli_command con los parámetros correctos.
+1. CREAR / DESPLEGAR RECURSOS
+   -> PARA STACK COMPLETO (ECS + ELB + Listener + Pool + Member): USA deploy_full_stack — Un solo tool call despliega todo.
+   -> PARA ELB (Load Balancer): USA deploy_elb_loadbalancer — NO uses run_koocli_command para crear ELB.
+   -> PARA ECS (Servidor): USA deploy_ecs_instance — NO uses run_koocli_command para crear ECS.
+   -> PARA VPC (Red): USA deploy_vpc — NO uses run_koocli_command para crear VPC.
+   -> PARA OTROS SERVICIOS: resuelve schema primero con get_operation_details, luego usa run_koocli_command.
    -> NUNCA inventes parámetros. Si falta un parámetro REQUERIDO, pregunta al usuario.
+   -> SI UNA OPERACIÓN FALLA, NO la reintentes con los mismos parámetros. Informa el error al usuario y sugiere alternativas.
+
+   CONECTAR ECS A ELB (requiere 3 pasos secuenciales):
+   a) Crear listener en el ELB: run_koocli_command(service='ELB', operation='CreateListener', params={'cli-region': '<region>', 'listener': {'loadbalancer_id': '<elb_id>', 'protocol': 'HTTP', 'protocol_port': 80, 'name': '<listener_name>'}})
+   b) Crear pool asociado al listener: run_koocli_command(service='ELB', operation='CreatePool', params={'cli-region': '<region>', 'pool': {'listener_id': '<listener_id>', 'protocol': 'HTTP', 'lb_algorithm': 'ROUND_ROBIN', 'name': '<pool_name>'}})
+   c) Agregar ECS como miembro del pool: run_koocli_command(service='ELB', operation='CreateMember', params={'cli-region': '<region>', 'member': {'pool_id': '<pool_id>', 'address': '<ecs_private_ip>', 'protocol_port': 80}})
+   DEBES ejecutar los 3 pasos en orden. Cada paso depende del ID retornado por el anterior.
 
 2. ELIMINAR RECURSO (individual o múltiple)
    -> DEBES usar KooCLI (run_koocli_command).

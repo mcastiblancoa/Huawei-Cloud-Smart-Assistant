@@ -11,8 +11,10 @@ logger = get_logger("agents.graph")
 
 _checkpointer = MemorySaver()
 
+MAX_ITERATIONS = 50
 
-def build_graph(use_memory: bool = True) -> StateGraph:
+
+def build_graph(use_memory: bool = True, max_iterations: int = MAX_ITERATIONS) -> StateGraph:
     tools = get_all_tools()
 
     graph_builder = StateGraph(AgentState)
@@ -31,7 +33,10 @@ def build_graph(use_memory: bool = True) -> StateGraph:
         checkpointer=_checkpointer if use_memory else None,
     )
 
-    logger.info("LangGraph compiled successfully with %d tools (memory=%s)", len(tools), use_memory)
+    logger.info(
+        "LangGraph compiled with %d tools, max_iterations=%d, memory=%s",
+        len(tools), max_iterations, use_memory,
+    )
 
     return compiled
 

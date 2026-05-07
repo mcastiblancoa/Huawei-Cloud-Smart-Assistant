@@ -7,6 +7,7 @@ from tools.discovery import (
     resolve_service_schema,
 )
 from tools.koocli import run_koocli_command
+from tools.deploy import deploy_elb_loadbalancer, deploy_ecs_instance, deploy_vpc, deploy_full_stack
 
 
 DEFAULT_TOOLS: list[BaseTool] = [
@@ -15,6 +16,10 @@ DEFAULT_TOOLS: list[BaseTool] = [
     list_service_operations,
     get_operation_details,
     run_koocli_command,
+    deploy_elb_loadbalancer,
+    deploy_ecs_instance,
+    deploy_vpc,
+    deploy_full_stack,
 ]
 
 

@@ -9,6 +9,14 @@ from config.logging import get_logger
 
 logger = get_logger("tools.koocli")
 
+DEPLOY_REDIRECTS = {
+    ("ELB", "BatchCreateLoadBalancers"): "deploy_elb_loadbalancer",
+    ("ELB", "CreateLoadBalancer"): "deploy_elb_loadbalancer",
+    ("ECS", "NovaCreateServers"): "deploy_ecs_instance",
+    ("ECS", "CreateServers"): "deploy_ecs_instance",
+    ("VPC", "CreateVpc"): "deploy_vpc",
+}
+
 
 @tool
 def run_koocli_command(service: str, operation: str, params: dict = None) -> str:
@@ -17,6 +25,10 @@ def run_koocli_command(service: str, operation: str, params: dict = None) -> str
     IMPORTANT: Before using this tool, ALWAYS verify required parameters
     with get_operation_details(). If any required parameter is missing,
     ask the user first; do NOT invent values.
+
+    IMPORTANT: For creating resources (ELB, ECS, VPC), use the dedicated
+    deploy tools instead: deploy_elb_loadbalancer, deploy_ecs_instance, deploy_vpc.
+    Do NOT use this tool for resource creation.
 
     Nested body parameters are passed as dicts and automatically converted
     to KooCLI dot notation.
@@ -33,6 +45,16 @@ def run_koocli_command(service: str, operation: str, params: dict = None) -> str
         operation = validate_operation_name(operation)
     except ValueError as e:
         return str(e)
+
+    redirect = DEPLOY_REDIRECTS.get((service.upper(), operation))
+    if redirect:
+        msg = (
+            f"STOP: Do not use run_koocli_command for {service}/{operation}. "
+            f"Use the dedicated tool `{redirect}` instead. "
+            f"It handles parameter construction correctly and prevents errors."
+        )
+        logger.warning("Deploy operation redirected: %s", msg)
+        return msg
 
     if params:
         params = sanitize_params(params)

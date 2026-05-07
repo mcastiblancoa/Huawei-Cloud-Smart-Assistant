@@ -1,9 +1,8 @@
-from functools import lru_cache
 from typing import Any
 
 from langchain_core.messages import BaseMessage
 
-from agents.graph import build_graph
+from agents.graph import build_graph, MAX_ITERATIONS
 from config.logging import get_logger
 
 logger = get_logger("api.chat")
@@ -52,16 +51,43 @@ def run_chat_turn(user_input: str, session_id: str) -> dict[str, Any]:
         extra={"structured_extra": {"session_id": session_id, "input_len": len(user_input)}},
     )
 
-    result = graph.invoke(
+    iteration_count = 0
+    messages = []
+
+    for event in graph.stream(
         {"messages": [{"role": "user", "content": user_input}]},
         config={"configurable": {"thread_id": session_id}},
-    )
-    messages = result.get("messages", [])
+        stream_mode="values",
+    ):
+        iteration_count += 1
+        messages = event.get("messages", [])
+
+        if iteration_count >= MAX_ITERATIONS:
+            logger.warning(
+                "Max iterations reached (%d), stopping graph execution",
+                MAX_ITERATIONS,
+                extra={"structured_extra": {"session_id": session_id}},
+            )
+            break
+
     reply = _extract_reply(messages)
+
+    if not reply:
+        for message in reversed(messages):
+            msg_type = getattr(message, "type", None)
+            if msg_type == "ai":
+                content = getattr(message, "content", "")
+                if content:
+                    reply = str(content).strip()
+                    break
 
     logger.info(
         "Chat turn completed",
-        extra={"structured_extra": {"session_id": session_id, "reply_len": len(reply)}},
+        extra={"structured_extra": {
+            "session_id": session_id,
+            "reply_len": len(reply),
+            "iterations": iteration_count,
+        }},
     )
 
     return {
