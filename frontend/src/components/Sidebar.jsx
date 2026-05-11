@@ -122,14 +122,6 @@ export function Sidebar({
                       exit={{ opacity: 0, x: -10 }}
                       transition={{ delay: index * 0.05 }}
                     >
-                      <button
-                        type="button"
-                        className="sidebar-thread-btn"
-                        onClick={() => onSelectThread(thread.id)}
-                      >
-                        <MessageSquare size={16} strokeWidth={1.5} className="flex-shrink-0" />
-                        <span className="sidebar-thread-name">{thread.title}</span>
-                      </button>
                       <div className="sidebar-thread-actions">
                         <motion.button
                           type="button"
@@ -152,6 +144,14 @@ export function Sidebar({
                           <Trash2 size={14} strokeWidth={1.5} />
                         </motion.button>
                       </div>
+                      <button
+                        type="button"
+                        className="sidebar-thread-btn"
+                        onClick={() => onSelectThread(thread.id)}
+                      >
+                        <MessageSquare size={16} strokeWidth={1.5} className="flex-shrink-0" />
+                        <span className="sidebar-thread-name">{thread.title}</span>
+                      </button>
                     </motion.div>
                   );
                 })}

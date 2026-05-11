@@ -1,5 +1,35 @@
 from pydantic import BaseModel, Field
 from typing import Optional, Any
+from enum import Enum
+
+
+class IntentType(str, Enum):
+    LIST = "list"
+    DESCRIBE = "describe"
+    CREATE = "create"
+    DELETE = "delete"
+    MANAGE = "manage"
+    BILLING = "billing"
+    DISCOVERY = "discovery"
+    CHAT = "chat"
+    UNKNOWN = "unknown"
+
+
+class CloudService(str, Enum):
+    ECS = "ECS"
+    VPC = "VPC"
+    ELB = "ELB"
+    EIP = "EIP"
+    RDS = "RDS"
+    OBS = "OBS"
+    IAM = "IAM"
+    BSSINTL = "BSSINTL"
+    RMS = "RMS"
+    SG = "SG"
+    CCE = "CCE"
+    DNS = "DNS"
+    AS = "AS"
+    MONITOR = "MONITOR"
 
 
 class HealthResponse(BaseModel):
@@ -72,3 +102,6 @@ class ChatResponse(BaseModel):
     session_id: str
     reply: str
     raw_messages: Optional[list[dict[str, Any]]] = None
+    latency_ms: Optional[int] = None
+    tool_calls: Optional[int] = None
+    path: Optional[str] = None

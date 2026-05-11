@@ -7,6 +7,8 @@ from langchain_core.tools import tool
 
 from koocli.executor import execute_koocli
 from utils.sanitize import sanitize_params
+from tools.registry import ToolMeta, ToolCategory
+from cloud.validation import extract_id
 from config.logging import get_logger
 
 logger = get_logger("tools.deploy")
@@ -21,7 +23,7 @@ REGION_DEFAULTS = {
     "la-north-2": {
         "vpc_id": "41d89d5c-9f93-43c7-9e41-a67e46f74fae",
         "subnet_id": "6fd217ab-bfae-4587-a786-f0f6991bdec9",
-        "image_id": "",
+        "image_id": "b1eecdf6-a943-43f3-9d47-a538231d1442",
         "az": "la-north-2a",
     },
 }
@@ -37,94 +39,12 @@ def _resolve_defaults(region: str, vpc_id: str, subnet_id: str, image_id: str, a
     }
 
 
-def _extract_id(result: str, patterns: list[str]) -> str:
-    for pattern in patterns:
-        match = re.search(pattern, result)
-        if match:
-            return match.group(1)
-    return ""
-
-
-@tool
-def deploy_elb_loadbalancer(
-    name: str,
-    region: str = "ap-southeast-3",
-    availability_zone: str = "ap-southeast-3a",
-    vpc_id: str = "",
-    subnet_id: str = "",
-    guaranteed: bool = True,
-    public_ip: bool = False,
-    bandwidth_size: int = 5,
-    bandwidth_charge_mode: str = "traffic",
-    publicip_pool_name: str = "",
-) -> str:
-    """Deploys an ELB Load Balancer on Huawei Cloud with validated parameters.
-    Use this tool INSTEAD of run_koocli_command for creating load balancers.
-    It handles parameter construction and validation automatically.
-
-    Args:
-        name: Name for the load balancer (required).
-        region: Huawei Cloud region, e.g. 'ap-southeast-3', 'la-north-2'.
-        availability_zone: AZ for the load balancer, e.g. 'ap-southeast-3a'.
-        vpc_id: VPC ID to attach to (required for dedicated ELB).
-        subnet_id: Subnet ID. If empty, uses default subnet.
-        guaranteed: True for dedicated (default, recommended), False for shared.
-        public_ip: True to assign a public EIP. Requires publicip_pool_name in some regions.
-        bandwidth_size: Bandwidth size in Mbit/s for the EIP (default 5).
-        bandwidth_charge_mode: 'traffic' (pay-by-traffic) or 'bandwidth' (pay-by-bandwidth).
-        publicip_pool_name: EIP pool name (required in some regions for public IP).
-    """
-    name = sanitize_params({"n": name})["n"]
-
-    defaults = _resolve_defaults(region, vpc_id, subnet_id, "", availability_zone)
-    if not vpc_id:
-        vpc_id = defaults["vpc_id"]
-    if not subnet_id:
-        subnet_id = defaults["subnet_id"]
-    if not availability_zone:
-        availability_zone = defaults["az"]
-
-    loadbalancer = {
-        "name": name,
-        "guaranteed": str(guaranteed).lower(),
-        "availability_zone_list": [availability_zone],
-    }
-
-    if vpc_id:
-        loadbalancer["vpc_id"] = vpc_id
-    if subnet_id:
-        loadbalancer["elb_virsubnet_ids"] = [subnet_id]
-
-    if public_ip:
-        publicip = {
-            "bandwidth": {
-                "size": str(bandwidth_size),
-                "charge_mode": bandwidth_charge_mode,
-            }
-        }
-        if publicip_pool_name:
-            publicip["publicip_pool_name"] = publicip_pool_name
-        loadbalancer["publicip"] = publicip
-
-    params = {
-        "cli-region": region,
-        "loadbalancer": loadbalancer,
-    }
-
-    logger.info(
-        "Deploying ELB load balancer",
-        extra={"structured_extra": {
-            "name": name,
-            "region": region,
-            "az": availability_zone,
-            "guaranteed": guaranteed,
-            "public_ip": public_ip,
-        }},
-    )
-
-    result = execute_koocli("ELB", "CreateLoadBalancer", params)
-
-    return result
+def _extract_private_ips(detail: str) -> list[str]:
+    all_ips = re.findall(r'"ip_address":\s*"(\d+\.\d+\.\d+\.\d+)"', detail)
+    if not all_ips:
+        all_ips = re.findall(r'(\d+\.\d+\.\d+\.\d+)', detail)
+    private_ips = [ip for ip in all_ips if not ip.startswith("100.") and (ip.startswith("192.168.") or ip.startswith("10.") or ip.startswith("172."))]
+    return private_ips, all_ips
 
 
 @tool
@@ -136,23 +56,23 @@ def deploy_ecs_instance(
     image_id: str = "",
     vpc_id: str = "",
     subnet_id: str = "",
+    security_group_id: str = "",
     root_volume_type: str = "SAS",
     root_volume_size: int = 40,
     admin_pass: str = "",
 ) -> str:
     """Deploys an ECS (Elastic Cloud Server) instance on Huawei Cloud.
     Use this tool INSTEAD of run_koocli_command for creating ECS instances.
-    It handles parameter construction, validation, and region defaults automatically.
-    Uses CreatePostPaidServers API which returns the server directly (no job_id polling).
 
     Args:
         name: Server name (required).
         region: Huawei Cloud region.
         availability_zone: AZ, e.g. 'ap-southeast-3a'. Auto-resolved if empty.
         flavor: Instance flavor, e.g. 's6.small.1', 's6.medium.2'.
-        image_id: Image ID. Auto-resolved per region if empty.
+        image_id: Image ID or name. Auto-resolved per region if empty.
         vpc_id: VPC ID. Auto-resolved per region if empty.
         subnet_id: Subnet ID. Auto-resolved per region if empty.
+        security_group_id: Security Group ID to attach. Optional.
         root_volume_type: Root disk type: 'SAS', 'SSD', 'GPSSD', 'ESSD'.
         root_volume_size: Root disk size in GB (default 40).
         admin_pass: Admin password. If empty, auto-generated.
@@ -175,7 +95,7 @@ def deploy_ecs_instance(
         "availability_zone": resolved_az,
         "imageRef": resolved_image,
         "root_volume": {
-            "volume_type": root_volume_type,
+            "volumetype": root_volume_type,
             "size": root_volume_size,
         },
         "adminPass": admin_pass,
@@ -185,27 +105,24 @@ def deploy_ecs_instance(
         server["vpcid"] = resolved_vpc
     if resolved_subnet:
         server["nics"] = [{"subnet_id": resolved_subnet}]
+    if security_group_id:
+        server["security_groups"] = [{"id": security_group_id}]
 
     params = {
         "cli-region": region,
         "server": server,
     }
 
-    logger.info(
-        "Deploying ECS instance",
-        extra={"structured_extra": {
-            "name": name, "region": region, "flavor": flavor,
-            "vpc_id": resolved_vpc, "subnet_id": resolved_subnet,
-            "image_id": resolved_image, "az": resolved_az,
-        }},
-    )
+    logger.info("Deploying ECS", extra={"structured_extra": {
+        "name": name, "region": region, "flavor": flavor,
+    }})
 
     result = execute_koocli("ECS", "CreatePostPaidServers", params)
 
     if "Error" in result:
         return f"ECS creation FAILED.\n{result}"
 
-    server_id = _extract_id(result, [
+    server_id = extract_id(result, [
         r'"id":\s*"([^"]+)"',
         r'"server_id":\s*"([^"]+)"',
     ])
@@ -216,9 +133,8 @@ def deploy_ecs_instance(
             "cli-region": region,
             "server_id": server_id,
         })
-        private_ip = _extract_id(detail, [
-            r'"ip_address":\s*"(\d+\.\d+\.\d+\.\d+)"',
-        ])
+        private_ips, all_ips = _extract_private_ips(detail)
+        private_ip = private_ips[0] if private_ips else (all_ips[0] if all_ips else "")
         status = "ACTIVE" if '"status":"ACTIVE"' in detail or '"ACTIVE"' in detail else "BUILD"
 
         ip_info = f" | Private IP: {private_ip}" if private_ip else ""
@@ -233,133 +149,96 @@ def deploy_ecs_instance(
 
 
 @tool
-def deploy_vpc(
-    name: str,
-    cidr: str = "10.0.0.0/16",
-    region: str = "ap-southeast-3",
-) -> str:
-    """Deploys a VPC (Virtual Private Cloud) on Huawei Cloud.
-    Use this tool INSTEAD of run_koocli_command for creating VPCs.
-
-    Args:
-        name: VPC name (required).
-        cidr: VPC CIDR block (default '10.0.0.0/16').
-        region: Huawei Cloud region.
-    """
-    params = {
-        "cli-region": region,
-        "vpc": {
-            "name": name,
-            "cidr": cidr,
-        },
-    }
-
-    logger.info(
-        "Deploying VPC",
-        extra={"structured_extra": {"name": name, "cidr": cidr, "region": region}},
-    )
-
-    return execute_koocli("VPC", "CreateVpc", params)
-
-
-@tool
-def deploy_full_stack(
-    ecs_name: str,
+def setup_elb_for_ecs(
     elb_name: str,
-    region: str = "ap-southeast-3",
+    ecs_server_id: str = "",
+    ecs_server_name: str = "",
+    region: str = "la-north-2",
     availability_zone: str = "",
-    flavor: str = "s6.small.1",
-    image_id: str = "",
     vpc_id: str = "",
     subnet_id: str = "",
-    root_volume_type: str = "SAS",
-    root_volume_size: int = 40,
-    elb_public_ip: bool = True,
     listener_protocol: str = "HTTP",
     listener_port: int = 80,
     pool_algorithm: str = "ROUND_ROBIN",
-    admin_pass: str = "",
+    create_public_ip: bool = True,
+    bandwidth_size: int = 5,
 ) -> str:
-    """Deploys a complete stack: ECS + ELB + Listener + Pool + Member + EIP in one call.
-    Use this tool when the user wants to deploy a server with a load balancer and public IP.
-    It handles all steps sequentially, extracting IDs between steps.
+    """Sets up a complete ELB configuration for an EXISTING ECS instance in one call.
+    Creates: ELB -> Listener -> Pool -> Member (ECS) -> EIP (optional).
+    Use this tool INSTEAD of calling multiple tools when the user wants to configure a load balancer for an existing server.
 
     Args:
-        ecs_name: Name for the ECS instance (required).
         elb_name: Name for the ELB load balancer (required).
-        region: Huawei Cloud region.
+        ecs_server_id: ECS server ID. If empty, resolves by ecs_server_name.
+        ecs_server_name: ECS server name to search for if server_id is empty.
+        region: Huawei Cloud region (default la-north-2).
         availability_zone: AZ. Auto-resolved if empty.
-        flavor: ECS flavor, e.g. 's6.small.1'.
-        image_id: Image ID. Auto-resolved per region if empty.
         vpc_id: VPC ID. Auto-resolved per region if empty.
         subnet_id: Subnet ID. Auto-resolved per region if empty.
-        root_volume_type: Root disk type: 'SAS', 'SSD', 'GPSSD', 'ESSD'.
-        root_volume_size: Root disk size in GB.
-        elb_public_ip: True to create and bind a public EIP to the ELB.
         listener_protocol: Protocol for the listener (HTTP, HTTPS, TCP).
-        listener_port: Port for the listener.
+        listener_port: Port for the listener (default 80).
         pool_algorithm: LB algorithm (ROUND_ROBIN, LEAST_CONNECTIONS, SOURCE_IP).
-        admin_pass: ECS admin password. Auto-generated if empty.
+        create_public_ip: True to create and bind a public EIP to the ELB (default True).
+        bandwidth_size: Bandwidth size in Mbit/s for the EIP (default 5).
     """
-    defaults = _resolve_defaults(region, vpc_id, subnet_id, image_id, availability_zone)
-    resolved_vpc = defaults["vpc_id"]
-    resolved_subnet = defaults["subnet_id"]
-    resolved_image = defaults["image_id"]
-    resolved_az = defaults["az"]
-
-    if not resolved_image:
-        resolved_image = "Ubuntu 22.04 server 64bit"
-    if not admin_pass:
-        admin_pass = f"Huawei@{int(time.time()) % 100000}!"
+    defaults = _resolve_defaults(region, vpc_id, subnet_id, "", availability_zone)
+    resolved_vpc = vpc_id or defaults["vpc_id"]
+    resolved_subnet = subnet_id or defaults["subnet_id"]
+    resolved_az = availability_zone or defaults["az"]
 
     summary = []
     errors = []
 
-    # Step 1: Create ECS via CreatePostPaidServers
-    logger.info("Full Stack Step 1/7: Creating ECS instance")
-    server = {
-        "name": ecs_name,
-        "flavorRef": flavor,
-        "availability_zone": resolved_az,
-        "imageRef": resolved_image,
-        "root_volume": {"volume_type": root_volume_type, "size": root_volume_size},
-        "adminPass": admin_pass,
-    }
-    if resolved_vpc:
-        server["vpcid"] = resolved_vpc
-    if resolved_subnet:
-        server["nics"] = [{"subnet_id": resolved_subnet}]
+    if not ecs_server_id and not ecs_server_name:
+        return "Either ecs_server_id or ecs_server_name must be provided."
 
-    ecs_result = execute_koocli("ECS", "CreatePostPaidServers", {"cli-region": region, "server": server})
-    ecs_server_id = ""
-    if "Error" not in ecs_result:
-        ecs_server_id = _extract_id(ecs_result, [r'"id":\s*"([^"]+)"', r'"server_id":\s*"([^"]+)"'])
-
-    if ecs_server_id:
-        summary.append(f"ECS created: {ecs_name} (ID: {ecs_server_id})")
-    else:
-        errors.append(f"ECS creation failed: {ecs_result[:300]}")
-
-    # Step 2: Get ECS private IP
-    ecs_private_ip = ""
-    if ecs_server_id:
-        logger.info("Full Stack Step 2/7: Getting ECS private IP")
-        time.sleep(8)
-        detail = execute_koocli("ECS", "ShowServer", {
+    if not ecs_server_id:
+        logger.info("ELB Setup Step 0/6: Resolving ECS by name")
+        list_result = execute_koocli("ECS", "NovaListServers", {
             "cli-region": region,
-            "server_id": ecs_server_id,
+            "name": ecs_server_name,
         })
-        all_ips = re.findall(r'"ip_address":\s*"(\d+\.\d+\.\d+\.\d+)"', detail)
-        private_ips = [ip for ip in all_ips if not ip.startswith("100.") and ip.startswith("192.168.") or ip.startswith("10.") or ip.startswith("172.")]
-        if private_ips:
-            ecs_private_ip = private_ips[0]
-        elif all_ips:
-            ecs_private_ip = all_ips[0]
-        if ecs_private_ip:
-            summary.append(f"ECS private IP: {ecs_private_ip}")
+        ecs_server_id = extract_id(list_result, [r'"id":\s*"([^"]+)"'])
+        if not ecs_server_id:
+            all_ids = re.findall(r'"id":\s*"([^"]+)"', list_result)
+            all_names = re.findall(r'"name":\s*"([^"]+)"', list_result)
+            for sid, sname in zip(all_ids, all_names):
+                if ecs_server_name.lower() in sname.lower():
+                    ecs_server_id = sid
+                    break
+        if not ecs_server_id:
+            return f"ECS server '{ecs_server_name}' not found in region {region}."
 
-    # Step 3: Create ELB (dedicated, no public_ip - we bind EIP separately)
-    logger.info("Full Stack Step 3/7: Creating ELB load balancer")
+    logger.info("ELB Setup Step 1/6: Getting ECS details")
+    detail = execute_koocli("ECS", "ShowServer", {
+        "cli-region": region,
+        "server_id": ecs_server_id,
+    })
+    if "Error" in detail:
+        return f"Could not get ECS details for {ecs_server_id}.\n{detail[:300]}"
+
+    ecs_name = extract_id(detail, [r'"name":\s*"([^"]+)"'])
+    ecs_status = extract_id(detail, [r'"status":\s*"([^"]+)"'])
+    private_ips, all_ips = _extract_private_ips(detail)
+    ecs_private_ip = private_ips[0] if private_ips else (all_ips[0] if all_ips else "")
+
+    logger.info("ECS IP extraction", extra={"structured_extra": {
+        "all_ips_count": len(all_ips), "private_ips": private_ips, "selected": ecs_private_ip,
+    }})
+
+    if not ecs_private_ip:
+        errors.append(f"Could not find private IP for ECS {ecs_server_id}. Raw IPs found: {all_ips[:5]}")
+    else:
+        summary.append(f"ECS: {ecs_name or ecs_server_id} | IP: {ecs_private_ip} | Status: {ecs_status}")
+
+    if not resolved_vpc:
+        resolved_vpc = extract_id(detail, [r'"vpc_id":\s*"([^"]+)"'])
+    if not resolved_subnet:
+        subnet_matches = re.findall(r'"subnet_id":\s*"([^"]+)"', detail)
+        if subnet_matches:
+            resolved_subnet = subnet_matches[0]
+
+    logger.info("ELB Setup Step 2/6: Creating ELB load balancer")
     elb_name_safe = sanitize_params({"n": elb_name})["n"]
     lb = {
         "name": elb_name_safe,
@@ -372,35 +251,39 @@ def deploy_full_stack(
         lb["elb_virsubnet_ids"] = [resolved_subnet]
 
     elb_result = execute_koocli("ELB", "CreateLoadBalancer", {"cli-region": region, "loadbalancer": lb})
-    elb_id = _extract_id(elb_result, [r'"id":\s*"([^"]+)"'])
+    elb_id = extract_id(elb_result, [r'"id":\s*"([^"]+)"'])
     if elb_id:
         summary.append(f"ELB created: {elb_name_safe} (ID: {elb_id})")
     else:
         errors.append(f"ELB creation failed: {elb_result[:300]}")
+        result_parts = ["=== ELB Setup for ECS - FAILED ==="] + summary
+        if errors:
+            result_parts.append("\n--- Errors ---")
+            result_parts.extend(errors)
+        return "\n".join(result_parts)
 
-    # Step 4: Create Listener
     listener_id = ""
-    if elb_id:
-        logger.info("Full Stack Step 4/7: Creating Listener")
-        listener_result = execute_koocli("ELB", "CreateListener", {
-            "cli-region": region,
-            "listener": {
-                "loadbalancer_id": elb_id,
-                "protocol": listener_protocol,
-                "protocol_port": listener_port,
-                "name": f"{elb_name_safe}-listener",
-            },
-        })
-        listener_id = _extract_id(listener_result, [r'"id":\s*"([^"]+)"'])
-        if listener_id:
-            summary.append(f"Listener: {elb_name_safe}-listener (port {listener_port})")
-        else:
-            errors.append(f"Listener creation failed: {listener_result[:300]}")
+    logger.info("ELB Setup Step 3/6: Creating Listener")
+    time.sleep(2)
+    listener_result = execute_koocli("ELB", "CreateListener", {
+        "cli-region": region,
+        "listener": {
+            "loadbalancer_id": elb_id,
+            "protocol": listener_protocol,
+            "protocol_port": listener_port,
+            "name": f"{elb_name_safe}-listener",
+        },
+    })
+    listener_id = extract_id(listener_result, [r'"id":\s*"([^"]+)"'])
+    if listener_id:
+        summary.append(f"Listener: {elb_name_safe}-listener (port {listener_port})")
+    else:
+        errors.append(f"Listener creation failed: {listener_result[:300]}")
 
-    # Step 5: Create Pool
     pool_id = ""
     if listener_id:
-        logger.info("Full Stack Step 5/7: Creating Pool")
+        logger.info("ELB Setup Step 4/6: Creating Pool")
+        time.sleep(2)
         pool_result = execute_koocli("ELB", "CreatePool", {
             "cli-region": region,
             "pool": {
@@ -410,15 +293,15 @@ def deploy_full_stack(
                 "name": f"{elb_name_safe}-pool",
             },
         })
-        pool_id = _extract_id(pool_result, [r'"id":\s*"([^"]+)"'])
+        pool_id = extract_id(pool_result, [r'"id":\s*"([^"]+)"'])
         if pool_id:
             summary.append(f"Pool: {elb_name_safe}-pool ({pool_algorithm})")
         else:
             errors.append(f"Pool creation failed: {pool_result[:300]}")
 
-    # Step 6: Add ECS as Member
     if pool_id and ecs_private_ip:
-        logger.info("Full Stack Step 6/7: Adding ECS as Member")
+        logger.info("ELB Setup Step 5/6: Adding ECS as Member")
+        time.sleep(2)
         member_result = execute_koocli("ELB", "BatchCreateMembers", {
             "cli-region": region,
             "pool_id": pool_id,
@@ -428,17 +311,20 @@ def deploy_full_stack(
             summary.append(f"Member: {ecs_private_ip}:{listener_port}")
         else:
             errors.append(f"Member creation failed: {member_result[:300]}")
+    elif pool_id and not ecs_private_ip:
+        errors.append("Step 5 SKIPPED: no ECS private IP available to add as member")
+        logger.warning("Step 5 skipped: ecs_private_ip is empty, pool_id=%s", pool_id)
 
-    # Step 7: Create EIP and bind to ELB via AssociatePublicips
     elb_public_address = ""
-    if elb_public_ip and elb_id:
-        logger.info("Full Stack Step 7/7: Creating and binding EIP to ELB")
+    if create_public_ip and elb_id:
+        logger.info("ELB Setup Step 6/6: Creating and binding EIP to ELB")
+        time.sleep(2)
         eip_result = execute_koocli("EIP", "CreatePublicip", {
             "cli-region": region,
             "publicip": {"type": "5_bgp"},
-            "bandwidth": {"name": f"{elb_name_safe}-bw", "size": 5, "charge_mode": "traffic"},
+            "bandwidth": {"name": f"{elb_name_safe}-bw", "size": bandwidth_size, "charge_mode": "traffic", "share_type": "PER"},
         })
-        eip_id = _extract_id(eip_result, [r'"id":\s*"([^"]+)"'])
+        eip_id = extract_id(eip_result, [r'"id":\s*"([^"]+)"'])
 
         if eip_id:
             summary.append(f"EIP created: {eip_id}")
@@ -448,16 +334,16 @@ def deploy_full_stack(
                 "publicip_id": eip_id,
                 "publicip": {
                     "associate_instance_id": elb_id,
-                    "associate_instance_type": "LOADBALANCER",
+                    "associate_instance_type": "ELB",
                 },
             })
-            if "Error" not in assoc_result:
+            if "Error" not in assoc_result and "USE_ERROR" not in assoc_result:
                 time.sleep(3)
                 eip_detail = execute_koocli("EIP", "ShowPublicip", {
                     "cli-region": region,
                     "publicip_id": eip_id,
                 })
-                elb_public_address = _extract_id(eip_detail, [
+                elb_public_address = extract_id(eip_detail, [
                     r'"public_ip_address":\s*"([^"]+)"',
                     r'"ip_address":\s*"(\d+\.\d+\.\d+\.\d+)"',
                 ])
@@ -470,7 +356,7 @@ def deploy_full_stack(
         else:
             errors.append(f"EIP creation failed: {eip_result[:300]}")
 
-    result_parts = ["=== Full Stack Deployment ==="]
+    result_parts = ["=== ELB Setup for ECS - COMPLETE ==="]
     result_parts.extend(summary)
     if errors:
         result_parts.append("\n--- Errors ---")
@@ -478,6 +364,8 @@ def deploy_full_stack(
     if elb_public_address:
         result_parts.append(f"\nELB Public IP: {elb_public_address}")
     result_parts.append(f"\nRegion: {region} | AZ: {resolved_az}")
+    if not errors:
+        result_parts.append("\n[ALL STEPS DONE. Do NOT call additional tools to repeat these steps.]")
 
     return "\n".join(result_parts)
 
@@ -491,7 +379,6 @@ def manage_ecs(
 ) -> str:
     """Manages ECS instances: start, stop, reboot, or get status.
     Use this tool INSTEAD of run_koocli_command for common ECS operations.
-    It finds the server by ID or name automatically.
 
     Args:
         action: Operation to perform: 'start', 'stop', 'reboot', 'status'.
@@ -506,7 +393,7 @@ def manage_ecs(
             "cli-region": region,
             "name": server_name,
         })
-        server_id = _extract_id(list_result, [r'"id":\s*"([^"]+)"'])
+        server_id = extract_id(list_result, [r'"id":\s*"([^"]+)"'])
         if not server_id:
             all_ids = re.findall(r'"id":\s*"([^"]+)"', list_result)
             all_names = re.findall(r'"name":\s*"([^"]+)"', list_result)
@@ -525,9 +412,9 @@ def manage_ecs(
             "cli-region": region,
             "server_id": server_id,
         })
-        status = _extract_id(result, [r'"status":\s*"([^"]+)"'])
-        private_ip = _extract_id(result, [r'"ip_address":\s*"(\d+\.\d+\.\d+\.\d+)"'])
-        name = _extract_id(result, [r'"name":\s*"([^"]+)"'])
+        status = extract_id(result, [r'"status":\s*"([^"]+)"'])
+        private_ip = extract_id(result, [r'"ip_address":\s*"(\d+\.\d+\.\d+\.\d+)"'])
+        name = extract_id(result, [r'"name":\s*"([^"]+)"'])
         return (
             f"ECS Status: {status}\n"
             f"Name: {name} | ID: {server_id}\n"
@@ -569,7 +456,6 @@ def manage_eip(
 ) -> str:
     """Manages Elastic IPs: create, associate to ECS/ELB, or show status.
     Use this tool INSTEAD of run_koocli_command for EIP operations.
-    It handles CreatePublicip and AssociatePublicips automatically.
 
     Args:
         action: Operation: 'create', 'associate', 'show', 'delete'.
@@ -584,12 +470,12 @@ def manage_eip(
         result = execute_koocli("EIP", "CreatePublicip", {
             "cli-region": region,
             "publicip": {"type": "5_bgp"},
-            "bandwidth": {"name": f"eip-bw-{int(time.time()) % 100000}", "size": 5, "charge_mode": "traffic"},
+            "bandwidth": {"name": f"eip-bw-{int(time.time()) % 100000}", "size": 5, "charge_mode": "traffic", "share_type": "PER"},
         })
         if "Error" in result:
             return f"EIP creation FAILED.\n{result}"
-        new_eip_id = _extract_id(result, [r'"id":\s*"([^"]+)"'])
-        public_ip = _extract_id(result, [r'"public_ip_address":\s*"([^"]+)"'])
+        new_eip_id = extract_id(result, [r'"id":\s*"([^"]+)"'])
+        public_ip = extract_id(result, [r'"public_ip_address":\s*"([^"]+)"'])
         return (
             f"EIP created SUCCESSFULLY.\n"
             f"EIP ID: {new_eip_id}\n"
@@ -607,7 +493,7 @@ def manage_eip(
                 "publicip_id": eip_id,
                 "publicip": {
                     "associate_instance_id": resource_id,
-                    "associate_instance_type": "LOADBALANCER",
+                    "associate_instance_type": "ELB",
                 },
             })
         else:
@@ -615,7 +501,7 @@ def manage_eip(
                 "cli-region": region,
                 "server_id": resource_id,
             })
-            port_id = _extract_id(detail, [r'"port_id":\s*"([^"]+)"'])
+            port_id = extract_id(detail, [r'"port_id":\s*"([^"]+)"'])
             if not port_id:
                 all_ports = re.findall(r'"port_id":\s*"([^"]+)"', detail)
                 port_id = all_ports[0] if all_ports else ""
@@ -650,3 +536,27 @@ def manage_eip(
         return result
 
     return f"Unknown action '{action}'. Use: create, associate, show, delete."
+
+
+DEPLOY_TOOLS: list[ToolMeta] = [
+    ToolMeta(
+        tool=deploy_ecs_instance, service="DEPLOY", category=ToolCategory.DEPLOY,
+        keywords=["deploy ecs", "create ecs", "crear ecs", "create server", "desplegar ecs"],
+        is_read_only=False, cacheable=False,
+    ),
+    ToolMeta(
+        tool=setup_elb_for_ecs, service="DEPLOY", category=ToolCategory.DEPLOY,
+        keywords=["setup elb", "configure elb", "configurar elb", "elb for ecs", "load balancer for", "asociar elb", "crear elb para"],
+        is_read_only=False, cacheable=False,
+    ),
+    ToolMeta(
+        tool=manage_ecs, service="DEPLOY", category=ToolCategory.MANAGE,
+        keywords=["manage ecs", "start ecs", "stop ecs", "reboot ecs", "ecs status"],
+        is_read_only=False, cacheable=False,
+    ),
+    ToolMeta(
+        tool=manage_eip, service="DEPLOY", category=ToolCategory.MANAGE,
+        keywords=["manage eip", "associate eip", "create eip", "release eip"],
+        is_read_only=False, cacheable=False,
+    ),
+]

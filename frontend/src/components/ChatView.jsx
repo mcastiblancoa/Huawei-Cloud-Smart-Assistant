@@ -194,7 +194,7 @@ function DataTable({ table }) {
         <thead>
           <tr>
             {table.headers.map((header, index) => (
-              <th key={`${header}-${index}`}>{header}</th>
+              <th key={`${header}-${index}`}><MarkdownRenderer content={header} /></th>
             ))}
           </tr>
         </thead>
@@ -202,7 +202,7 @@ function DataTable({ table }) {
           {table.rows.map((row, rowIndex) => (
             <tr key={`row-${rowIndex}`}>
               {row.map((cell, cellIndex) => (
-                <td key={`cell-${rowIndex}-${cellIndex}`}>{cell}</td>
+                <td key={`cell-${rowIndex}-${cellIndex}`}><MarkdownRenderer content={cell} /></td>
               ))}
             </tr>
           ))}
@@ -292,11 +292,11 @@ function AssistantMessage({ content, durationMs, language }) {
       {chartModel && hasCostLanguage && <ChartCard model={chartModel} title={chartTitle} />}
       {durationLabel && (
         <motion.div
-          className="text-xs text-huawei-gray-500 dark:text-huawei-gray-400 pt-2 border-t border-huawei-gray-200 dark:border-huawei-gray-700"
+          className="text-[10px] text-huawei-gray-500 dark:text-huawei-gray-400 pt-2 border-t border-huawei-gray-200 dark:border-huawei-gray-700"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         >
-          ⚡ {durationLabel}
+          {durationLabel}
         </motion.div>
       )}
     </div>

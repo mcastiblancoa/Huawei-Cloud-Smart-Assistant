@@ -1,24 +1,16 @@
-import re
-
 from langgraph.graph import StateGraph, START, END
 from langgraph.prebuilt import ToolNode, tools_condition
 from langgraph.checkpoint.memory import MemorySaver
 
 from models.state import AgentState
 from agents.nodes import chatbot_node
-from tools.registry import get_all_tools
+from tools.registry import ToolRegistry
 from config.logging import get_logger
+from config.settings import get_settings
 
 logger = get_logger("agents.graph")
 
 _checkpointer = MemorySaver()
-
-MAX_ITERATIONS = 80
-
-_THINKING_PATTERNS = re.compile(
-    r"(voy a |intentar|necesito|primero|luego|déjame|permíteme|let me|i'll|i need to|first,|then,)",
-    re.IGNORECASE,
-)
 
 
 def _route_after_chatbot(state: AgentState) -> str:
@@ -31,22 +23,12 @@ def _route_after_chatbot(state: AgentState) -> str:
     if hasattr(last_message, "tool_calls") and last_message.tool_calls:
         return "tools"
 
-    content = getattr(last_message, "content", "")
-    if isinstance(content, list):
-        content = " ".join(
-            item.get("text", "") for item in content
-            if isinstance(item, dict) and item.get("type") == "text"
-        )
-
-    if _THINKING_PATTERNS.search(content):
-        logger.info("Thinking message detected, continuing to chatbot")
-        return "chatbot"
-
     return END
 
 
-def build_graph(use_memory: bool = True, max_iterations: int = MAX_ITERATIONS) -> StateGraph:
-    tools = get_all_tools()
+def build_graph(use_memory: bool = True) -> StateGraph:
+    registry = ToolRegistry.get()
+    tools = registry.get_all_tools()
 
     graph_builder = StateGraph(AgentState)
 
@@ -60,13 +42,14 @@ def build_graph(use_memory: bool = True, max_iterations: int = MAX_ITERATIONS) -
     graph_builder.add_edge("tools", "chatbot")
     graph_builder.add_edge(START, "chatbot")
 
+    settings = get_settings()
     compiled = graph_builder.compile(
         checkpointer=_checkpointer if use_memory else None,
     )
 
     logger.info(
-        "LangGraph compiled with %d tools, max_iterations=%d, memory=%s",
-        len(tools), max_iterations, use_memory,
+        "LangGraph compiled: %d tools, max_iterations=%d, memory=%s",
+        len(tools), settings.max_graph_iterations, use_memory,
     )
 
     return compiled

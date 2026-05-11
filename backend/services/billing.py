@@ -1,5 +1,6 @@
 import logging
 import json
+import time
 from typing import Any
 
 import httpx
@@ -13,70 +14,88 @@ from config.settings import Settings
 
 logger = logging.getLogger(__name__)
 
+MAX_RETRIES = 3
+RETRY_BASE_DELAY = 5.0
+
 
 def get_monthly_billing_summary(settings: Settings, bill_cycle: str) -> dict[str, Any]:
-    try:
-        ak = settings.huawei_ak
-        sk = settings.huawei_sk
-        region = "ap-southeast-1"
+    ak = settings.huawei_ak
+    sk = settings.huawei_sk
 
-        if not all([ak, sk]):
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Huawei Cloud credentials not configured (AK or SK missing).",
-            )
-
-        credentials = GlobalCredentials(ak, sk)
-        client = BssintlClient.new_builder() \
-            .with_credentials(credentials) \
-            .with_region(BssintlRegion.value_of(region)) \
-            .build()
-
-        request = ShowCustomerMonthlySumRequest()
-        request.bill_cycle = bill_cycle
-        response = client.show_customer_monthly_sum(request)
-
-        currency = response.currency if hasattr(response, 'currency') else "USD"
-        total = 0.0
-        services_dict = {}
-
-        if hasattr(response, 'bill_sums') and response.bill_sums:
-            for item in response.bill_sums:
-                amount = float(getattr(item, 'consume_amount', 0.0))
-                service_name = getattr(item, 'service_type_name', 'Unknown Service')
-                if service_name in services_dict:
-                    services_dict[service_name] += amount
-                else:
-                    services_dict[service_name] = amount
-                total += amount
-
-        total = round(total, 2)
-        services = []
-        for name, amount in services_dict.items():
-            if amount > 0:
-                services.append({"name": name, "amount": round(amount, 2)})
-
-        return {
-            "month": bill_cycle,
-            "total": total,
-            "currency": currency,
-            "services": sorted(services, key=lambda x: x['amount'], reverse=True),
-            "error": None,
-        }
-
-    except exceptions.ClientRequestException as exc:
-        logger.exception("Huawei Cloud BSS API error")
-        error_detail = f"Error {exc.status_code}: {exc.error_msg}"
+    if not all([ak, sk]):
         return {
             "month": bill_cycle, "total": 0.0, "currency": "USD",
-            "services": [], "error": f"Failed to fetch billing: {error_detail}",
+            "services": [], "error": "Credentials not configured (AK or SK missing).",
         }
-    except Exception as exc:
-        logger.exception("Unexpected error when calling BSS API")
-        return {
-            "month": bill_cycle, "total": 0.0, "currency": "USD",
-            "services": [], "error": f"Unexpected error: {str(exc)}",
-        }
+
+    for attempt in range(MAX_RETRIES + 1):
+        try:
+            credentials = GlobalCredentials(ak, sk)
+            client = BssintlClient.new_builder() \
+                .with_credentials(credentials) \
+                .with_region(BssintlRegion.value_of("ap-southeast-1")) \
+                .build()
+
+            request = ShowCustomerMonthlySumRequest()
+            request.bill_cycle = bill_cycle
+            response = client.show_customer_monthly_sum(request)
+
+            currency = response.currency if hasattr(response, 'currency') else "USD"
+            total = 0.0
+            services_dict = {}
+
+            if hasattr(response, 'bill_sums') and response.bill_sums:
+                for item in response.bill_sums:
+                    amount = float(getattr(item, 'consume_amount', 0.0))
+                    service_name = getattr(item, 'service_type_name', 'Unknown Service')
+                    if service_name in services_dict:
+                        services_dict[service_name] += amount
+                    else:
+                        services_dict[service_name] = amount
+                    total += amount
+
+            total = round(total, 2)
+            services = []
+            for name, amount in services_dict.items():
+                if amount > 0:
+                    services.append({"name": name, "amount": round(amount, 2)})
+
+            return {
+                "month": bill_cycle,
+                "total": total,
+                "currency": currency,
+                "services": sorted(services, key=lambda x: x['amount'], reverse=True),
+                "error": None,
+            }
+
+        except exceptions.ClientRequestException as exc:
+            is_rate_limit = exc.status_code == 429 or "429" in str(exc.error_msg)
+            if is_rate_limit and attempt < MAX_RETRIES:
+                delay = RETRY_BASE_DELAY * (2 ** attempt)
+                logger.warning("Billing 429 rate limit, retrying in %.1fs (attempt %d/%d)", delay, attempt + 1, MAX_RETRIES)
+                time.sleep(delay)
+                continue
+
+            logger.exception("Huawei Cloud BSS API error")
+            error_detail = f"Error {exc.status_code}: {exc.error_msg}"
+            if is_rate_limit:
+                error_detail = "Rate limit exceeded. Please try again in a moment."
+            return {
+                "month": bill_cycle, "total": 0.0, "currency": "USD",
+                "services": [], "error": f"Failed to fetch billing: {error_detail}",
+            }
+
+        except Exception as exc:
+            logger.exception("Unexpected error when calling BSS API")
+            return {
+                "month": bill_cycle, "total": 0.0, "currency": "USD",
+                "services": [], "error": f"Unexpected error: {str(exc)}",
+            }
+
+    return {
+        "month": bill_cycle, "total": 0.0, "currency": "USD",
+        "services": [], "error": "Rate limit exceeded after all retries. Please try again later.",
+    }
 
 
 def generate_natural_billing_response(settings: Settings, billing_data: dict, language: str) -> str:

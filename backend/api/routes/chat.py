@@ -25,17 +25,22 @@ def chat(request: ChatRequest) -> ChatResponse:
             extra={"structured_extra": {
                 "session_id": request.session_id,
                 "reply_preview": result["reply"][:100] if result["reply"] else "EMPTY",
+                "latency_ms": result.get("latency_ms"),
+                "path": result.get("path"),
             }},
         )
         return ChatResponse(
             session_id=request.session_id,
             reply=result["reply"],
             raw_messages=result.get("raw_messages"),
+            latency_ms=result.get("latency_ms"),
+            tool_calls=result.get("tool_calls"),
+            path=result.get("path"),
         )
     except Exception as exc:
         logger.exception("Chat endpoint error")
         return ChatResponse(
             session_id=request.session_id,
-            reply=f"Error processing your request. Please try again.",
+            reply="Error processing your request. Please try again.",
             raw_messages=None,
         )
