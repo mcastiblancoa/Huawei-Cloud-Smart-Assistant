@@ -1,13 +1,25 @@
-import { Bot, Mic, X, Plus, MessageSquare, Trash2 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Bot, Mic, X, Plus, MessageSquare, Trash2, Pencil } from "lucide-react";
+import { ScrollArea } from "./ui/ScrollArea";
 
-export function Sidebar({ activeView, onSelectView, language, theme, isOpen, onClose, chatThreads, activeThreadId, onSelectThread, onCreateThread, onDeleteThread }) {
+export function Sidebar({
+  activeView,
+  onSelectView,
+  language,
+  theme,
+  isOpen,
+  onClose,
+  chatThreads,
+  activeThreadId,
+  onSelectThread,
+  onCreateThread,
+  onDeleteThread,
+  onRenameThread,
+}) {
   const items = [
-    { id: "voice", label: "Voice Assistant", icon: Mic },
-    { id: "chat", label: "Chat Assistant", icon: Bot },
+    { id: "voice", label: language === "es" ? "Asistente de Voz" : "Voice Assistant", icon: Mic },
+    { id: "chat", label: language === "es" ? "Asistente de Chat" : "Chat Assistant", icon: Bot },
   ];
-
-  const isMobile = typeof window !== "undefined" && window.matchMedia("(max-width: 768px)").matches;
-  const showThreads = activeView === "chat" && chatThreads && chatThreads.length > 0;
 
   const t = {
     conversations: language === "es" ? "Conversaciones" : "Conversations",
@@ -15,72 +27,139 @@ export function Sidebar({ activeView, onSelectView, language, theme, isOpen, onC
     messages: language === "es" ? "mensajes" : "messages",
     newChat: language === "es" ? "Nuevo" : "New",
     deleteChat: language === "es" ? "Borrar chat" : "Delete chat",
+    renameChat: language === "es" ? "Editar nombre" : "Edit name",
   };
 
+  const showThreads = activeView === "chat" && chatThreads && chatThreads.length > 0;
+  const isMobile = typeof window !== "undefined" && window.matchMedia("(max-width: 768px)").matches;
+  const sidebarStateClass = isMobile ? (isOpen ? "is-open" : "is-closed") : (!isOpen ? "is-collapsed" : "");
+
   return (
-    <aside className={`app-sidebar ${isOpen ? "is-open" : "is-closed"}`}>
+    <motion.aside
+      className={`app-sidebar ${sidebarStateClass}`}
+      animate={{
+        width: isOpen && !isMobile ? "16rem" : undefined,
+      }}
+    >
+      {/* Brand */}
       <div className="sidebar-brand">
-        <div className="sidebar-brand-mark">HC</div>
+        <motion.div
+          className="sidebar-brand-mark"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          HC
+        </motion.div>
         <div className="sidebar-brand-copy">
-          <span className="sidebar-brand-title">Huawei Cloud</span>
-          <span className="sidebar-brand-subtitle">Smart Assistant</span>
+          <div className="sidebar-brand-title">Huawei Cloud</div>
+          <div className="sidebar-brand-subtitle">Smart Assistant</div>
         </div>
         {isMobile && (
-          <button className="sidebar-close" type="button" onClick={onClose} aria-label="Close sidebar">
-            <X size={16} strokeWidth={1.5} />
-          </button>
+          <motion.button
+            className="ml-auto p-2 hover:bg-huawei-gray-200 dark:hover:bg-huawei-gray-700 rounded-lg transition-colors"
+            whileTap={{ scale: 0.95 }}
+            onClick={onClose}
+            aria-label="Close sidebar"
+          >
+            <X size={20} strokeWidth={1.5} />
+          </motion.button>
         )}
       </div>
 
+      {/* Navigation */}
       <nav className="sidebar-nav" aria-label="Assistant views">
         {items.map((item) => {
           const Icon = item.icon;
           const isActive = activeView === item.id;
           return (
-            <button
+            <motion.button
               key={item.id}
               className={`sidebar-nav-item ${isActive ? "active" : ""}`}
-              onClick={() => onSelectView(item.id)}
+              onClick={() => {
+                onSelectView(item.id);
+                if (isMobile) {
+                  onClose();
+                }
+              }}
+              whileHover={{ x: 4 }}
+              whileTap={{ scale: 0.98 }}
               aria-pressed={isActive}
             >
-              <Icon size={18} strokeWidth={1.5} />
+              <Icon size={20} strokeWidth={1.5} />
               <span>{item.label}</span>
-            </button>
+            </motion.button>
           );
         })}
       </nav>
 
+      {/* Chat History */}
       {showThreads && (
         <div className="sidebar-threads">
           <div className="sidebar-threads-header">
             <span className="sidebar-threads-label">{t.chatHistory}</span>
-            <button className="sidebar-thread-new" type="button" onClick={onCreateThread} title={t.newChat}>
-              <Plus size={14} strokeWidth={1.5} />
-            </button>
+            <motion.button
+              className="sidebar-thread-new"
+              onClick={onCreateThread}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              title={t.newChat}
+            >
+              <Plus size={16} strokeWidth={2} />
+            </motion.button>
           </div>
-          <div className="sidebar-threads-list">
-            {chatThreads.map((thread) => {
-              const isActive = thread.id === activeThreadId;
-              return (
-                <div key={thread.id} className={`sidebar-thread-item ${isActive ? "active" : ""}`}>
-                  <button type="button" className="sidebar-thread-btn" onClick={() => onSelectThread(thread.id)}>
-                    <MessageSquare size={14} strokeWidth={1.5} />
-                    <span className="sidebar-thread-name">{thread.title}</span>
-                  </button>
-                  <button
-                    type="button"
-                    className="sidebar-thread-delete"
-                    onClick={() => onDeleteThread(thread.id)}
-                    title={t.deleteChat}
-                  >
-                    <Trash2 size={12} strokeWidth={1.5} />
-                  </button>
-                </div>
-              );
-            })}
-          </div>
+
+          <ScrollArea className="flex-1">
+            <div className="sidebar-threads-list pr-4">
+              <AnimatePresence>
+                {chatThreads.map((thread, index) => {
+                  const isActive = thread.id === activeThreadId;
+                  return (
+                    <motion.div
+                      key={thread.id}
+                      className={`sidebar-thread-item ${isActive ? "active" : ""}`}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -10 }}
+                      transition={{ delay: index * 0.05 }}
+                    >
+                      <button
+                        type="button"
+                        className="sidebar-thread-btn"
+                        onClick={() => onSelectThread(thread.id)}
+                      >
+                        <MessageSquare size={16} strokeWidth={1.5} className="flex-shrink-0" />
+                        <span className="sidebar-thread-name">{thread.title}</span>
+                      </button>
+                      <div className="sidebar-thread-actions">
+                        <motion.button
+                          type="button"
+                          className="sidebar-thread-edit"
+                          onClick={() => onRenameThread?.(thread.id)}
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.95 }}
+                          title={t.renameChat}
+                        >
+                          <Pencil size={14} strokeWidth={1.5} />
+                        </motion.button>
+                        <motion.button
+                          type="button"
+                          className="sidebar-thread-delete"
+                          onClick={() => onDeleteThread(thread.id)}
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.95 }}
+                          title={t.deleteChat}
+                        >
+                          <Trash2 size={14} strokeWidth={1.5} />
+                        </motion.button>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </AnimatePresence>
+            </div>
+          </ScrollArea>
         </div>
       )}
-    </aside>
+    </motion.aside>
   );
 }

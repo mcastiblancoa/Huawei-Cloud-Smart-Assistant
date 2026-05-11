@@ -1,3 +1,5 @@
+import re
+
 from langgraph.graph import StateGraph, START, END
 from langgraph.prebuilt import ToolNode, tools_condition
 from langgraph.checkpoint.memory import MemorySaver
@@ -13,6 +15,11 @@ _checkpointer = MemorySaver()
 
 MAX_ITERATIONS = 80
 
+_THINKING_PATTERNS = re.compile(
+    r"(voy a |intentar|necesito|primero|luego|déjame|permíteme|let me|i'll|i need to|first,|then,)",
+    re.IGNORECASE,
+)
+
 
 def _route_after_chatbot(state: AgentState) -> str:
     messages = state.get("messages", [])
@@ -24,23 +31,18 @@ def _route_after_chatbot(state: AgentState) -> str:
     if hasattr(last_message, "tool_calls") and last_message.tool_calls:
         return "tools"
 
-    consecutive_text_only = 0
-    for msg in reversed(messages):
-        if getattr(msg, "type", None) == "ai":
-            if hasattr(msg, "tool_calls") and msg.tool_calls:
-                break
-            consecutive_text_only += 1
-        else:
-            break
+    content = getattr(last_message, "content", "")
+    if isinstance(content, list):
+        content = " ".join(
+            item.get("text", "") for item in content
+            if isinstance(item, dict) and item.get("type") == "text"
+        )
 
-    if consecutive_text_only >= 2:
-        return END
+    if _THINKING_PATTERNS.search(content):
+        logger.info("Thinking message detected, continuing to chatbot")
+        return "chatbot"
 
-    logger.info(
-        "Text-only response, continuing to chatbot (consecutive=%d)",
-        consecutive_text_only,
-    )
-    return "chatbot"
+    return END
 
 
 def build_graph(use_memory: bool = True, max_iterations: int = MAX_ITERATIONS) -> StateGraph:

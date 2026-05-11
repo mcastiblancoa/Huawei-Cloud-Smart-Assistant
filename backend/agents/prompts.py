@@ -70,6 +70,18 @@ Analiza la intención del usuario y enruta la acción:
    -> NUNCA inventes parámetros. Si falta un parámetro REQUERIDO, pregunta al usuario.
    -> SI UNA OPERACIÓN FALLA, NO la reintentes con los mismos parámetros. Informa el error al usuario y sugiere alternativas.
 
+   OPERACIONES COMUNES DE ECS (start/stop/reboot/status):
+   -> USA manage_ecs(action='start', server_name='ecs-dify', region='la-north-2')
+   -> USA manage_ecs(action='stop', server_id='xxx')
+   -> USA manage_ecs(action='status', server_name='ecs-dify')
+   NO uses run_koocli_command para estas operaciones.
+
+   OPERACIONES COMUNES DE EIP (create/associate/show/delete):
+   -> Crear EIP: manage_eip(action='create', region='la-north-2')
+   -> Asociar EIP a ECS: manage_eip(action='associate', eip_id='xxx', resource_id='server_id', resource_type='ECS')
+   -> Asociar EIP a ELB: manage_eip(action='associate', eip_id='xxx', resource_id='elb_id', resource_type='ELB')
+   NO uses run_koocli_command para estas operaciones.
+
    CONECTAR ECS A ELB (requiere 3 pasos secuenciales):
    a) Crear listener en el ELB: run_koocli_command(service='ELB', operation='CreateListener', params={'cli-region': '<region>', 'listener': {'loadbalancer_id': '<elb_id>', 'protocol': 'HTTP', 'protocol_port': 80, 'name': '<listener_name>'}})
    b) Crear pool asociado al listener: run_koocli_command(service='ELB', operation='CreatePool', params={'cli-region': '<region>', 'pool': {'listener_id': '<listener_id>', 'protocol': 'HTTP', 'lb_algorithm': 'ROUND_ROBIN', 'name': '<pool_name>'}})

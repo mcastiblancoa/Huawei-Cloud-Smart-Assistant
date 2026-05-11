@@ -1,4 +1,6 @@
+import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { Sparkles, MessageSquare } from "lucide-react";
 import {
   Bar,
   BarChart,
@@ -9,8 +11,11 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { MessageSquare, Send, Sparkles, ChevronDown } from "lucide-react";
 import { MarkdownRenderer } from "./MarkdownRenderer";
+import { ChatInput } from "./ChatInput";
+import { ChatBubble, TypingIndicator, ChatEmptyState } from "./ChatComponents";
+import { ScrollToBottom } from "./ScrollToBottom";
+import { ScrollArea } from "./ui/ScrollArea";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 
@@ -26,15 +31,7 @@ const buildThreadTitle = (text, language) => {
   return short.length > 42 ? `${short.slice(0, 39)}...` : short;
 };
 
-const createThread = (language, title) => ({
-  id: getRandomId("thread"),
-  sessionId: getRandomId("session"),
-  title: title || (language === "es" ? "Nuevo chat" : "New chat"),
-  createdAt: Date.now(),
-  updatedAt: Date.now(),
-  messages: [],
-});
-
+// Parser functions
 const isTableSeparator = (line) => {
   const cells = line.trim().replace(/^\|/, "").replace(/\|$/, "").split("|").map((cell) => cell.trim());
   return cells.length > 1 && cells.every((cell) => /^:?-{3,}:?$/.test(cell.replace(/\s+/g, "")));
@@ -75,25 +72,34 @@ const parseAssistantContent = (content) => {
       let reportIndex = 0;
       while (reportIndex < reportLines.length) {
         const line = reportLines[reportIndex];
-        if (!line.trim()) { reportIndex += 1; continue; }
+        if (!line.trim()) {
+          reportIndex += 1;
+          continue;
+        }
         if (line.includes("|") && reportIndex + 1 < reportLines.length && reportLines[reportIndex + 1].includes("|")) {
           const tableLines = [line, reportLines[reportIndex + 1]];
           reportIndex += 2;
           while (reportIndex < reportLines.length && reportLines[reportIndex].trim() && reportLines[reportIndex].includes("|")) {
-            tableLines.push(reportLines[reportIndex]); reportIndex += 1;
+            tableLines.push(reportLines[reportIndex]);
+            reportIndex += 1;
           }
           const table = parseMarkdownTable(tableLines);
-          if (table) { blocks.push({ type: "table", table }); }
+          if (table) {
+            blocks.push({ type: "table", table });
+          }
           continue;
         }
         if (/^#{1,4}\s+/.test(line)) {
           const level = line.match(/^#{1,4}/)?.[0].length || 1;
           blocks.push({ type: "heading", level, text: line.replace(/^#{1,4}\s+/, "") });
-          reportIndex += 1; continue;
+          reportIndex += 1;
+          continue;
         }
-        const paragraphLines = [line]; reportIndex += 1;
+        const paragraphLines = [line];
+        reportIndex += 1;
         while (reportIndex < reportLines.length && reportLines[reportIndex].trim() && !reportLines[reportIndex].includes("|") && !/^#{1,4}\s+/.test(reportLines[reportIndex])) {
-          paragraphLines.push(reportLines[reportIndex]); reportIndex += 1;
+          paragraphLines.push(reportLines[reportIndex]);
+          reportIndex += 1;
         }
         blocks.push({ type: "text", text: paragraphLines.join("\n") });
       }
@@ -103,18 +109,27 @@ const parseAssistantContent = (content) => {
 
   while (index < lines.length) {
     if (isTableStart(lines, index)) {
-      const tableLines = [lines[index], lines[index + 1]]; index += 2;
+      const tableLines = [lines[index], lines[index + 1]];
+      index += 2;
       while (index < lines.length && lines[index].trim() && lines[index].includes("|")) {
-        tableLines.push(lines[index]); index += 1;
+        tableLines.push(lines[index]);
+        index += 1;
       }
       const table = parseMarkdownTable(tableLines);
-      if (table) { blocks.push({ type: "table", table }); }
+      if (table) {
+        blocks.push({ type: "table", table });
+      }
       continue;
     }
-    if (!lines[index].trim()) { index += 1; continue; }
-    const paragraphLines = [lines[index]]; index += 1;
+    if (!lines[index].trim()) {
+      index += 1;
+      continue;
+    }
+    const paragraphLines = [lines[index]];
+    index += 1;
     while (index < lines.length && lines[index].trim() && !isTableStart(lines, index)) {
-      paragraphLines.push(lines[index]); index += 1;
+      paragraphLines.push(lines[index]);
+      index += 1;
     }
     blocks.push({ type: "text", text: paragraphLines.join("\n") });
   }
@@ -135,18 +150,29 @@ const buildChartModel = (table) => {
   table.headers.slice(1).forEach((header, offset) => {
     const index = offset + 1;
     const values = table.rows.map((row) => extractNumber(row[index])).filter((value) => value !== null);
-    if (values.length > 0) { numericColumns.push({ index, key: `series-${offset}`, label: header, values }); }
+    if (values.length > 0) {
+      numericColumns.push({ index, key: `series-${offset}`, label: header, values });
+    }
   });
   if (numericColumns.length === 0) return null;
   if (numericColumns.length === 1) {
     const column = numericColumns[0];
-    const data = table.rows.map((row) => ({ name: String(row[0] || labelHeader).slice(0, 28), value: extractNumber(row[column.index]) ?? 0 })).filter((row) => row.name.trim().length > 0).sort((left, right) => right.value - left.value).slice(0, 8);
+    const data = table.rows
+      .map((row) => ({
+        name: String(row[0] || labelHeader).slice(0, 28),
+        value: extractNumber(row[column.index]) ?? 0,
+      }))
+      .filter((row) => row.name.trim().length > 0)
+      .sort((left, right) => right.value - left.value)
+      .slice(0, 8);
     return { kind: "single", data, series: [{ key: "value", label: column.label }] };
   }
   const seriesColumns = numericColumns.slice(0, 3);
   const data = table.rows.map((row) => {
     const item = { name: String(row[0] || labelHeader).slice(0, 28) };
-    seriesColumns.forEach((column) => { item[column.key] = extractNumber(row[column.index]) ?? 0; });
+    seriesColumns.forEach((column) => {
+      item[column.key] = extractNumber(row[column.index]) ?? 0;
+    });
     return item;
   });
   return { kind: "grouped", data, series: seriesColumns.map((column) => ({ key: column.key, label: column.label })) };
@@ -157,71 +183,82 @@ const formatCurrency = (value) => {
   return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 2 }).format(value);
 };
 
-function ReportHeader() {
-  return (
-    <div className="chat-report-header">
-      <div className="chat-report-badge">
-        <Sparkles size={14} strokeWidth={1.5} />
-        RESOURCE REPORT
-      </div>
-    </div>
-  );
-}
-
 function DataTable({ table }) {
   return (
-    <div className="chat-table-wrap">
-      <table className="chat-table">
+    <motion.div
+      className="table-wrapper"
+      initial={{ opacity: 0, scale: 0.98 }}
+      animate={{ opacity: 1, scale: 1 }}
+    >
+      <table className="markdown-table">
         <thead>
-          <tr>{table.headers.map((header, index) => <th key={`${header}-${index}`}>{header}</th>)}</tr>
+          <tr>
+            {table.headers.map((header, index) => (
+              <th key={`${header}-${index}`}>{header}</th>
+            ))}
+          </tr>
         </thead>
         <tbody>
           {table.rows.map((row, rowIndex) => (
-            <tr key={`row-${rowIndex}`}>{row.map((cell, cellIndex) => <td key={`cell-${rowIndex}-${cellIndex}`}>{cell}</td>)}</tr>
+            <tr key={`row-${rowIndex}`}>
+              {row.map((cell, cellIndex) => (
+                <td key={`cell-${rowIndex}-${cellIndex}`}>{cell}</td>
+              ))}
+            </tr>
           ))}
         </tbody>
       </table>
-    </div>
+    </motion.div>
   );
 }
 
 function ChartCard({ model, title }) {
   if (!model) return null;
   const colors = ["#C7000B", "#2563eb", "#16a34a"];
-  const topItem = model.data.reduce((best, item) => {
-    const total = model.kind === "single" ? item.value : model.series.reduce((sum, series) => sum + (Number(item[series.key]) || 0), 0);
-    if (total > best.total) return { label: item.name, total };
-    return best;
-  }, { label: "", total: 0 });
+  const topItem = model.data.reduce(
+    (best, item) => {
+      const total =
+        model.kind === "single"
+          ? item.value
+          : model.series.reduce((sum, series) => sum + (Number(item[series.key]) || 0), 0);
+      if (total > best.total) return { label: item.name, total };
+      return best;
+    },
+    { label: "", total: 0 }
+  );
 
   return (
-    <div className="chat-visual-card">
-      <div className="chat-visual-header">
-        <div>
-          <div className="chat-visual-title"><Sparkles size={14} strokeWidth={1.5} />{title || "Visualization"}</div>
-          <div className="chat-visual-subtitle">{model.kind === "single" ? "Ranking of amounts" : "Comparison across categories"}</div>
-        </div>
-        <div className="chat-visual-metrics">
-          {topItem.label && <span className="chat-metric-pill">Top: {topItem.label} · {formatCurrency(topItem.total)}</span>}
-        </div>
+    <motion.div
+      className="chart-container"
+      initial={{ opacity: 0, scale: 0.98 }}
+      animate={{ opacity: 1, scale: 1 }}
+    >
+      <div className="chart-title">
+        <Sparkles size={16} strokeWidth={1.5} className="inline mr-2" />
+        {title}
       </div>
-      <div className="chat-chart">
+      <div>
         <ResponsiveContainer width="100%" height={260}>
           <BarChart data={model.data} margin={{ top: 8, right: 16, left: 0, bottom: 8 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(148, 163, 184, 0.15)" />
             <XAxis dataKey="name" tick={{ fontSize: 11 }} interval={0} height={60} />
             <YAxis tickFormatter={(value) => (value >= 1000 ? `${(value / 1000).toFixed(1)}k` : value)} />
-            <Tooltip formatter={(value, name) => [formatCurrency(Number(value)), name]} contentStyle={{ borderRadius: 12, borderColor: "var(--border-light)", fontSize: "0.82rem" }} />
+            <Tooltip
+              formatter={(value) => [formatCurrency(Number(value)), ""]}
+              contentStyle={{ borderRadius: 12, borderColor: "#e5e5e5", fontSize: "0.82rem" }}
+            />
             <Legend />
             {model.kind === "single" ? (
               <Bar dataKey="value" name={model.series[0].label} fill="#C7000B" radius={[6, 6, 0, 0]} />
             ) : (
-              model.series.map((series, index) => <Bar key={series.key} dataKey={series.key} name={series.label} fill={colors[index % colors.length]} radius={[6, 6, 0, 0]} />)
+              model.series.map((series, index) => (
+                <Bar key={series.key} dataKey={series.key} name={series.label} fill={colors[index % colors.length]} radius={[6, 6, 0, 0]} />
+              ))
             )}
           </BarChart>
         </ResponsiveContainer>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -232,7 +269,6 @@ function AssistantMessage({ content, durationMs, language }) {
   const textBlocks = blocks.filter((block) => block.type !== "table" && block.type !== "report-header");
   const chartModel = useMemo(() => buildChartModel(tableBlocks[0]?.table), [tableBlocks]);
   const hasCostLanguage = /gasto|cost|billing|factur|costos|usd|month|mayo|abril|statistics|resumen/i.test(content);
-  const tableLabel = language === "es" ? "Tabla estructurada" : "Structured table";
   const chartTitle = language === "es" ? "Análisis de costos" : "Cost analysis";
   const durationLabel = Number.isFinite(durationMs)
     ? language === "es"
@@ -242,17 +278,27 @@ function AssistantMessage({ content, durationMs, language }) {
   const textContent = textBlocks.map((block) => block.text).join("\n\n");
 
   return (
-    <div className="chat-rendered-message">
-      {reportHeaderBlock && <ReportHeader />}
+    <div className="space-y-3">
       {textContent && <MarkdownRenderer content={textContent} />}
       {tableBlocks.map((block, index) => (
-        <div className="chat-table-card" key={`table-${index}`}>
-          <div className="chat-table-card-title"><MessageSquare size={14} strokeWidth={1.5} />{tableLabel}</div>
+        <div key={`table-${index}`}>
+          <div className="flex items-center gap-2 mb-2 text-xs font-semibold text-huawei-gray-600 dark:text-huawei-gray-400">
+            <MessageSquare size={14} />
+            {language === "es" ? "Tabla estructurada" : "Structured table"}
+          </div>
           <DataTable table={block.table} />
         </div>
       ))}
       {chartModel && hasCostLanguage && <ChartCard model={chartModel} title={chartTitle} />}
-      {durationLabel && <div className="chat-response-time">{durationLabel}</div>}
+      {durationLabel && (
+        <motion.div
+          className="text-xs text-huawei-gray-500 dark:text-huawei-gray-400 pt-2 border-t border-huawei-gray-200 dark:border-huawei-gray-700"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
+          ⚡ {durationLabel}
+        </motion.div>
+      )}
     </div>
   );
 }
@@ -261,10 +307,8 @@ export function ChatView({ theme, language, t, threads, setThreads, activeThread
   const [input, setInput] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState("");
-  const bottomRef = useRef(null);
-  const chatHistoryRef = useRef(null);
-  const textareaRef = useRef(null);
   const [showScrollBtn, setShowScrollBtn] = useState(false);
+  const chatHistoryRef = useRef(null);
   const prevMsgCountRef = useRef(0);
   const justSentRef = useRef(false);
 
@@ -281,8 +325,9 @@ export function ChatView({ theme, language, t, threads, setThreads, activeThread
   };
 
   const scrollToBottom = () => {
-    const el = chatHistoryRef.current;
-    if (el) { el.scrollTo({ top: el.scrollHeight, behavior: "smooth" }); }
+    if (chatHistoryRef.current) {
+      chatHistoryRef.current.scrollTo({ top: chatHistoryRef.current.scrollHeight, behavior: "smooth" });
+    }
   };
 
   useEffect(() => {
@@ -293,22 +338,6 @@ export function ChatView({ theme, language, t, threads, setThreads, activeThread
     }
     prevMsgCountRef.current = msgCount;
   }, [activeThread?.messages, isSending]);
-
-  useEffect(() => {
-    if (textareaRef.current) {
-      textareaRef.current.style.height = "auto";
-      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 160)}px`;
-    }
-  }, [input]);
-
-  const colors = useMemo(() => ({
-    shell: theme === "dark" ? "#0a0a0a" : "#ffffff",
-    border: theme === "dark" ? "#262626" : "#e5e5e5",
-    assistant: theme === "dark" ? "#141414" : "#f5f5f5",
-    user: "#C7000B",
-    text: theme === "dark" ? "#f5f5f5" : "#1a1a1a",
-    muted: theme === "dark" ? "#737373" : "#525252",
-  }), [theme]);
 
   const updateThread = (threadId, updater) => {
     setThreads((currentThreads) =>
@@ -331,8 +360,10 @@ export function ChatView({ theme, language, t, threads, setThreads, activeThread
 
     updateThread(threadSnapshot.id, (thread) => ({
       messages: [...thread.messages, userMessage],
-      title: thread.title === (language === "es" ? "Nuevo chat" : "New chat") || userMessageCountBeforeSend === 0
-        ? buildThreadTitle(trimmed, language) : thread.title,
+      title:
+        thread.title === (language === "es" ? "Nuevo chat" : "New chat") || userMessageCountBeforeSend === 0
+          ? buildThreadTitle(trimmed, language)
+          : thread.title,
     }));
 
     setInput("");
@@ -349,7 +380,10 @@ export function ChatView({ theme, language, t, threads, setThreads, activeThread
 
       if (!response.ok) {
         let detail = `Backend error (${response.status}).`;
-        try { const body = await response.json(); detail = body.detail || detail; } catch {}
+        try {
+          const body = await response.json();
+          detail = body.detail || detail;
+        } catch {}
         throw new Error(detail);
       }
 
@@ -367,92 +401,101 @@ export function ChatView({ theme, language, t, threads, setThreads, activeThread
     }
   };
 
-  const handleSubmit = (event) => { event.preventDefault(); sendMessage(); };
-  const handleKeyDown = (event) => { if (event.key === "Enter" && !event.shiftKey) { event.preventDefault(); sendMessage(); } };
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    sendMessage();
+  };
+
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      sendMessage();
+    }
+  };
 
   const hasMessages = activeThread?.messages && activeThread.messages.length > 0;
 
   return (
-    <section className="view-shell chat-shell">
+    <motion.section
+      className="view-shell chat-shell"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+    >
       <div className="chat-workbench">
-        <div className="chat-panel" style={{ backgroundColor: colors.shell, borderColor: colors.border }}>
+        <div className="chat-panel">
           {!hasMessages && !isSending ? (
-            <div className="chat-empty-state">
-              <div className="chat-empty-icon">
-                <Sparkles size={32} strokeWidth={1.2} />
-              </div>
-              <h2 className="chat-empty-title">{t.chatTitle}</h2>
-              <p className="chat-empty-subtitle">
-                {language === "es" ? (
-                  <>Interactúa con tus <span className="hw-red-text">servicios de Huawei Cloud</span> a través de chat.</>
-                ) : (
-                  <>Interact with your <span className="hw-red-text">Huawei Cloud services</span> through chat.</>
-                )}
-              </p>
-            </div>
+            <ChatEmptyState
+              icon={Sparkles}
+              title={t.chatTitle}
+              subtitle={
+                language === "es"
+                  ? "Interactúa con tus servicios de Huawei Cloud a través de chat."
+                  : "Interact with your Huawei Cloud services through chat."
+              }
+            />
           ) : (
-            <div className="chat-history" ref={chatHistoryRef} onScroll={checkScrollPosition}>
-              {activeThread?.messages.map((message) => (
-                <div key={message.id} className={`chat-row ${message.role}`}>
-                  <div
-                    className={`chat-bubble ${message.role}`}
-                    style={{
-                      borderColor: colors.border,
-                      color: message.role === "user" ? "#fff" : colors.text,
-                      backgroundColor: message.role === "user" ? colors.user : colors.assistant,
-                    }}
-                  >
-                    {message.role === "assistant" ? (
-                      <AssistantMessage content={message.content} durationMs={message.durationMs} language={language} />
-                    ) : (
-                      <div className="chat-user-text">{message.content}</div>
+            <>
+              <ScrollArea className="flex-1">
+                <div className="chat-history" ref={chatHistoryRef} onScroll={checkScrollPosition}>
+                  <AnimatePresence>
+                    {activeThread?.messages.map((message, index) => (
+                      <motion.div
+                        key={message.id}
+                        className={`chat-row ${message.role}`}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.05, duration: 0.3 }}
+                      >
+                        <ChatBubble
+                          role={message.role}
+                          content={
+                            message.role === "assistant" ? (
+                              <AssistantMessage content={message.content} durationMs={message.durationMs} language={language} />
+                            ) : (
+                              <div>{message.content}</div>
+                            )
+                          }
+                        />
+                      </motion.div>
+                    ))}
+
+                    {isSending && (
+                      <motion.div key="typing" className="chat-row assistant">
+                        <TypingIndicator />
+                      </motion.div>
                     )}
-                  </div>
+                  </AnimatePresence>
                 </div>
-              ))}
+              </ScrollArea>
 
-              {isSending && (
-                <div className="chat-row assistant">
-                  <div className="chat-bubble assistant typing-bubble" style={{ borderColor: colors.border, backgroundColor: colors.assistant }}>
-                    <span className="typing-dots">
-                      <span className="dot"></span>
-                      <span className="dot"></span>
-                      <span className="dot"></span>
-                    </span>
-                  </div>
-                </div>
+              {showScrollBtn && hasMessages && (
+                <ScrollToBottom onClick={scrollToBottom} />
               )}
-              <div ref={bottomRef} />
-            </div>
+            </>
           )}
 
-          {showScrollBtn && hasMessages && (
-            <button className="scroll-to-bottom-btn" onClick={scrollToBottom} aria-label={language === "es" ? "Ir al final" : "Scroll to bottom"} type="button">
-              <ChevronDown size={18} strokeWidth={1.5} />
-            </button>
+          <ChatInput
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            onSubmit={handleSubmit}
+            isLoading={isSending}
+            language={language}
+            placeholder={language === "es" ? "Escribe tu mensaje..." : "Type your message..."}
+          />
+
+          {error && (
+            <motion.div
+              className="error-box mx-6 mb-4"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <p className="error-text">{error}</p>
+            </motion.div>
           )}
-
-          <form className="chat-composer" onSubmit={handleSubmit}>
-            <div className="chat-input-wrapper">
-              <textarea
-                ref={textareaRef}
-                className="chat-input"
-                value={input}
-                onChange={(event) => setInput(event.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder={language === "es" ? "Escribe tu mensaje..." : "Type your message..."}
-                rows={1}
-                disabled={isSending}
-              />
-              <button className="chat-send-button" type="submit" disabled={isSending || !input.trim()}>
-                <Send size={18} strokeWidth={2} />
-              </button>
-            </div>
-          </form>
-
-          {error && <div className="chat-error">{error}</div>}
         </div>
       </div>
-    </section>
+    </motion.section>
   );
 }

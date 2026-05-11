@@ -480,3 +480,173 @@ def deploy_full_stack(
     result_parts.append(f"\nRegion: {region} | AZ: {resolved_az}")
 
     return "\n".join(result_parts)
+
+
+@tool
+def manage_ecs(
+    action: str,
+    server_id: str = "",
+    server_name: str = "",
+    region: str = "ap-southeast-3",
+) -> str:
+    """Manages ECS instances: start, stop, reboot, or get status.
+    Use this tool INSTEAD of run_koocli_command for common ECS operations.
+    It finds the server by ID or name automatically.
+
+    Args:
+        action: Operation to perform: 'start', 'stop', 'reboot', 'status'.
+        server_id: Server ID. If empty, searches by server_name.
+        server_name: Server name to search for if server_id is empty.
+        region: Huawei Cloud region.
+    """
+    action = action.lower().strip()
+
+    if not server_id and server_name:
+        list_result = execute_koocli("ECS", "NovaListServers", {
+            "cli-region": region,
+            "name": server_name,
+        })
+        server_id = _extract_id(list_result, [r'"id":\s*"([^"]+)"'])
+        if not server_id:
+            all_ids = re.findall(r'"id":\s*"([^"]+)"', list_result)
+            all_names = re.findall(r'"name":\s*"([^"]+)"', list_result)
+            for sid, sname in zip(all_ids, all_names):
+                if server_name.lower() in sname.lower():
+                    server_id = sid
+                    break
+        if not server_id:
+            return f"Server '{server_name}' not found in region {region}."
+
+    if not server_id:
+        return "Either server_id or server_name must be provided."
+
+    if action == "status":
+        result = execute_koocli("ECS", "ShowServer", {
+            "cli-region": region,
+            "server_id": server_id,
+        })
+        status = _extract_id(result, [r'"status":\s*"([^"]+)"'])
+        private_ip = _extract_id(result, [r'"ip_address":\s*"(\d+\.\d+\.\d+\.\d+)"'])
+        name = _extract_id(result, [r'"name":\s*"([^"]+)"'])
+        return (
+            f"ECS Status: {status}\n"
+            f"Name: {name} | ID: {server_id}\n"
+            f"Private IP: {private_ip}\n"
+            f"Region: {region}"
+        )
+
+    op_map = {
+        "start": "BatchStartServers",
+        "stop": "BatchStopServers",
+        "reboot": "BatchRebootServers",
+    }
+    op = op_map.get(action)
+    if not op:
+        return f"Unknown action '{action}'. Use: start, stop, reboot, status."
+
+    key = "os-start" if action == "start" else "os-stop" if action == "stop" else "reboot"
+    params = {
+        "cli-region": region,
+        key: {"servers": [{"id": server_id}]},
+    }
+
+    logger.info("Managing ECS: %s %s", action, server_id)
+    result = execute_koocli("ECS", op, params)
+
+    if "Error" in result:
+        return f"ECS {action} FAILED for {server_id}.\n{result}"
+
+    return f"ECS {action} command sent for server {server_id} in {region}."
+
+
+@tool
+def manage_eip(
+    action: str,
+    resource_id: str = "",
+    resource_type: str = "ECS",
+    region: str = "ap-southeast-3",
+    eip_id: str = "",
+) -> str:
+    """Manages Elastic IPs: create, associate to ECS/ELB, or show status.
+    Use this tool INSTEAD of run_koocli_command for EIP operations.
+    It handles CreatePublicip and AssociatePublicips automatically.
+
+    Args:
+        action: Operation: 'create', 'associate', 'show', 'delete'.
+        resource_id: Server ID or ELB ID to associate the EIP to.
+        resource_type: Type of resource: 'ECS' or 'ELB' (for associate action).
+        region: Huawei Cloud region.
+        eip_id: EIP ID (required for associate/show/delete).
+    """
+    action = action.lower().strip()
+
+    if action == "create":
+        result = execute_koocli("EIP", "CreatePublicip", {
+            "cli-region": region,
+            "publicip": {"type": "5_bgp"},
+            "bandwidth": {"name": f"eip-bw-{int(time.time()) % 100000}", "size": 5, "charge_mode": "traffic"},
+        })
+        if "Error" in result:
+            return f"EIP creation FAILED.\n{result}"
+        new_eip_id = _extract_id(result, [r'"id":\s*"([^"]+)"'])
+        public_ip = _extract_id(result, [r'"public_ip_address":\s*"([^"]+)"'])
+        return (
+            f"EIP created SUCCESSFULLY.\n"
+            f"EIP ID: {new_eip_id}\n"
+            f"Public IP: {public_ip}\n"
+            f"Region: {region}"
+        )
+
+    if action == "associate":
+        if not eip_id or not resource_id:
+            return "Both eip_id and resource_id are required for associate action."
+
+        if resource_type.upper() == "ELB":
+            assoc_result = execute_koocli("EIP", "AssociatePublicips", {
+                "cli-region": region,
+                "publicip_id": eip_id,
+                "publicip": {
+                    "associate_instance_id": resource_id,
+                    "associate_instance_type": "LOADBALANCER",
+                },
+            })
+        else:
+            detail = execute_koocli("ECS", "ShowServer", {
+                "cli-region": region,
+                "server_id": resource_id,
+            })
+            port_id = _extract_id(detail, [r'"port_id":\s*"([^"]+)"'])
+            if not port_id:
+                all_ports = re.findall(r'"port_id":\s*"([^"]+)"', detail)
+                port_id = all_ports[0] if all_ports else ""
+            if not port_id:
+                return f"Could not find port_id for server {resource_id}."
+            assoc_result = execute_koocli("EIP", "UpdatePublicip", {
+                "cli-region": region,
+                "publicip_id": eip_id,
+                "publicip": {"port_id": port_id},
+            })
+
+        if "Error" in assoc_result:
+            return f"EIP association FAILED.\n{assoc_result}"
+        return f"EIP {eip_id} associated to {resource_type} {resource_id} in {region}."
+
+    if action == "show":
+        if not eip_id:
+            return "eip_id is required for show action."
+        result = execute_koocli("EIP", "ShowPublicip", {
+            "cli-region": region,
+            "publicip_id": eip_id,
+        })
+        return result
+
+    if action == "delete":
+        if not eip_id:
+            return "eip_id is required for delete action."
+        result = execute_koocli("EIP", "DeletePublicip", {
+            "cli-region": region,
+            "publicip_id": eip_id,
+        })
+        return result
+
+    return f"Unknown action '{action}'. Use: create, associate, show, delete."

@@ -15,7 +15,12 @@ DEPLOY_REDIRECTS = {
     ("ECS", "NovaCreateServers"): "deploy_ecs_instance",
     ("ECS", "CreateServers"): "deploy_ecs_instance",
     ("ECS", "CreatePostPaidServers"): "deploy_ecs_instance",
+    ("ECS", "BatchStartServers"): "manage_ecs",
+    ("ECS", "BatchStopServers"): "manage_ecs",
+    ("ECS", "BatchRebootServers"): "manage_ecs",
     ("VPC", "CreateVpc"): "deploy_vpc",
+    ("EIP", "CreatePublicip"): "manage_eip",
+    ("EIP", "AssociatePublicips"): "manage_eip",
 }
 
 

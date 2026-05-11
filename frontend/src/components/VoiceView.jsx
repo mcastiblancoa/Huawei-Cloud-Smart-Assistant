@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import { Mic, MicOff } from "lucide-react";
 import { ResourceDashboard } from "../ResourceDashboard";
 import { BillingDashboard } from "../BillingDashboard";
@@ -19,9 +20,23 @@ export function VoiceView({
   theme,
   language,
 }) {
+  const isRecording = status === "recording";
+  const isProcessing = status === "processing";
+
   return (
-    <section className="view-shell">
-      <div className="header">
+    <motion.section
+      className="view-shell"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+    >
+      {/* Header */}
+      <motion.div
+        className="header"
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.4 }}
+      >
         <h1 className="app-title">{t.appTitle}</h1>
         <p className="app-subtitle">
           {language === "es" ? (
@@ -30,66 +45,109 @@ export function VoiceView({
             <>Record and ask for your <span className="hw-red-text">Huawei Cloud services</span></>
           )}
         </p>
-      </div>
+      </motion.div>
 
+      {/* Interactive Zone */}
       <div className="interactive-zone">
-        <button
-          className={`mic-button ${status === "recording" ? "recording" : ""}`}
+        {/* Microphone Button */}
+        <motion.button
+          className={`mic-button ${isRecording ? "recording" : ""}`}
           onClick={toggleRecording}
-          disabled={status === "processing"}
-          title={status === "processing" ? t.transcribing : statusLabel}
+          disabled={isProcessing}
+          title={isProcessing ? t.transcribing : statusLabel}
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ delay: 0.1, type: "spring", stiffness: 200 }}
+          whileHover={{ scale: isProcessing ? 1 : 1.05 }}
+          whileTap={{ scale: isProcessing ? 1 : 0.95 }}
         >
-          {status === "recording" ? (
-            <MicOff size={40} strokeWidth={1.5} className="mic-icon" />
+          {isRecording ? (
+            <MicOff size={48} strokeWidth={1.5} className="mic-icon" />
           ) : (
-            <Mic size={40} strokeWidth={1.5} className="mic-icon" />
+            <Mic size={48} strokeWidth={1.5} className="mic-icon" />
           )}
-        </button>
+        </motion.button>
 
-        <div className="recording-language-selector">
+        {/* Language Selector */}
+        <motion.div
+          className="recording-language-selector"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.3 }}
+        >
           <p className="language-selector-label">{t.recordingLanguage}</p>
           <div className="language-buttons">
-            <button
-              className={`language-btn ${recordingLanguage === "en" ? "active" : ""}`}
-              onClick={() => setRecordingLanguage("en")}
-              title={t.english}
-            >
-              {t.english}
-            </button>
-            <button
-              className={`language-btn ${recordingLanguage === "es" ? "active" : ""}`}
-              onClick={() => setRecordingLanguage("es")}
-              title={t.spanish}
-            >
-              {t.spanish}
-            </button>
+            {[
+              { code: "en", label: t.english },
+              { code: "es", label: t.spanish },
+            ].map(({ code, label }) => (
+              <motion.button
+                key={code}
+                className={`language-btn ${recordingLanguage === code ? "active" : ""}`}
+                onClick={() => setRecordingLanguage(code)}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                {label}
+              </motion.button>
+            ))}
           </div>
-        </div>
+        </motion.div>
 
-        <div className="status-indicator">
-          <span className={`status-dot ${status}`}></span>
+        {/* Status Indicator */}
+        <motion.div
+          className="status-indicator"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.3 }}
+        >
+          <span className={`status-dot ${status}`} />
           <p className={`status-text ${status}`}>{statusLabel}</p>
-        </div>
+        </motion.div>
 
+        {/* Waveform */}
         {waveformData.length > 0 && (
-          <div className="waveform-container">
+          <motion.div
+            className="waveform-container"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3 }}
+          >
             <div className="waveform">
               {waveformData.map((value, idx) => (
-                <div key={idx} className="waveform-bar" style={{ height: `${value * 100}%` }}></div>
+                <motion.div
+                  key={idx}
+                  className="waveform-bar"
+                  style={{ height: `${value * 100}%` }}
+                  animate={{ height: `${value * 100}%` }}
+                  transition={{ duration: 0.1 }}
+                />
               ))}
             </div>
-          </div>
+          </motion.div>
         )}
       </div>
 
+      {/* Error Message */}
       {errorMessage && (
-        <div className="error-box">
+        <motion.div
+          className="error-box max-w-2xl mx-auto"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+        >
           <p className="error-text">{errorMessage}</p>
-        </div>
+        </motion.div>
       )}
 
+      {/* Transcription Result */}
       {transcription && (
-        <div className="transcription-panel">
+        <motion.div
+          className="transcription-panel"
+          initial={{ opacity: 0, scale: 0.98 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.3 }}
+        >
           <h2 className="result-title">{t.transcription}</h2>
           <p className="result-text">{transcription}</p>
           {audioUrl && (
@@ -99,34 +157,53 @@ export function VoiceView({
               </audio>
             </div>
           )}
-        </div>
+        </motion.div>
       )}
 
+      {/* Resource Dashboard */}
       {intentClassification?.should_call_rms && (
-        <div className="dashboard-wrapper">
+        <motion.div
+          className="w-full"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+        >
           <ResourceDashboard
             intentClassification={intentClassification}
             resourcesResponse={resourcesResponse}
             theme={theme}
             language={language}
           />
-        </div>
+        </motion.div>
       )}
 
+      {/* Billing Dashboard */}
       {intentClassification?.should_call_bss && (
-        <div className="dashboard-wrapper">
+        <motion.div
+          className="w-full"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+        >
           <BillingDashboard
             intentClassification={intentClassification}
             billingResponse={billingResponse}
             theme={theme}
             language={language}
           />
-        </div>
+        </motion.div>
       )}
 
+      {/* Helper Text */}
       {!transcription && status !== "idle" && status !== "recording" && !errorMessage && (
-        <p className="helper-text">{t.yourTranscriptionWillAppear}</p>
+        <motion.p
+          className="text-center text-sm text-huawei-gray-500 dark:text-huawei-gray-400"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
+          {t.yourTranscriptionWillAppear}
+        </motion.p>
       )}
-    </section>
+    </motion.section>
   );
 }

@@ -251,6 +251,21 @@ function App() {
     });
   };
 
+  const handleRenameThread = (threadId) => {
+    const thread = chatThreads.find((item) => item.id === threadId);
+    const currentTitle = thread?.title || (language === "es" ? "Nuevo chat" : "New chat");
+    const nextTitle = window.prompt(
+      language === "es" ? "Editar nombre del chat" : "Edit chat name",
+      currentTitle
+    );
+    if (nextTitle === null) return;
+    const trimmed = nextTitle.trim();
+    if (!trimmed) return;
+    setChatThreads((current) => current.map((item) => (
+      item.id === threadId ? { ...item, title: trimmed, updatedAt: Date.now() } : item
+    )));
+  };
+
   const statusLabel = useMemo(() => {
     const labels = {
       idle: t.clickToStart,
@@ -277,13 +292,13 @@ function App() {
     analyzerRef.current.getByteFrequencyData(dataArray);
     const bars = 64;
     const smoothedData = new Array(bars).fill(0);
-    const binSpacing = Math.floor(dataArray.length / bars);
+    const avg = dataArray.reduce((sum, value) => sum + value, 0) / (dataArray.length * 255 || 1);
+    const smoothingFactor = 0.25;
     for (let i = 0; i < bars; i++) {
-      const index = i * binSpacing;
-      const value = dataArray[index] / 255;
-      const smoothingFactor = 0.3;
-      waveformSmoothingRef.current[i] = waveformSmoothingRef.current[i] * (1 - smoothingFactor) + value * smoothingFactor;
-      smoothedData[i] = Math.pow(waveformSmoothingRef.current[i], 0.8);
+      const jitter = 0.92 + (i % 6) * 0.015;
+      const target = Math.min(1, avg * 1.25 * jitter);
+      waveformSmoothingRef.current[i] = waveformSmoothingRef.current[i] * (1 - smoothingFactor) + target * smoothingFactor;
+      smoothedData[i] = Math.pow(waveformSmoothingRef.current[i], 0.9);
     }
     setWaveformData(smoothedData);
     animationIdRef.current = requestAnimationFrame(updateWaveform);
@@ -382,6 +397,7 @@ function App() {
         onSelectThread={handleSelectThread}
         onCreateThread={handleCreateThread}
         onDeleteThread={handleDeleteThread}
+        onRenameThread={handleRenameThread}
       />
 
       {sidebarOpen && isMobile && (
@@ -472,5 +488,4 @@ function App() {
     </main>
   );
 }
-
 export default App;
