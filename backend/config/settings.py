@@ -44,8 +44,8 @@ class Settings(BaseSettings):
     maas_api_url: str = ""
     maas_api_key: str = ""
     open_api_base: str = ""
-    llm_model: str = "deepseek-v4-pro"
-    intent_model: str = "deepseek-v4-pro"
+    llm_model: str = "deepseek-v3.2"
+    intent_model: str = "deepseek-v3.2"
 
     whisper_asr_url: str = ""
 

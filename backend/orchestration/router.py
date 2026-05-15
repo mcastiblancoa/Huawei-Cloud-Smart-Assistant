@@ -44,8 +44,113 @@ def _parse_bill_cycle(message: str) -> str | None:
     return None
 
 
+def _normalize_for_routing(text: str) -> str:
+    """Fix common typos so intent routing still matches (user message to LLM is unchanged)."""
+    t = text
+    # "puedes deplegar" (missing 's') should still skip ECS list fast-path
+    t = t.replace("deplegar", "desplegar")
+    return t
+
+
+_ECS_STANDALONE_RE = re.compile(r"(?<![\w-])ecs(?![\w-])", re.I)
+
+
+def _ecs_topic_hit(text: str) -> bool:
+    """True if the user is talking about ECS as a topic, not hostnames like 'ecs-test'."""
+    if _ECS_STANDALONE_RE.search(text):
+        return True
+    return any(
+        kw in text
+        for kw in (
+            "server",
+            "servers",
+            "instancia",
+            "instancias",
+            "vm",
+            "virtual machine",
+        )
+    )
+
+
+def _looks_like_ecs_deploy_params(text: str) -> bool:
+    """Follow-up messages with flavor / image are part of ECS deploy, not inventory listing."""
+    if re.search(r"\bs\d+\.[\w.-]+\b", text, re.I):
+        return True
+    if "flavor" in text or "flavour" in text:
+        return True
+    if "ubuntu" in text and any(x in text for x in ("22.04", "20.04", "24.04", "imagen", "image")):
+        return True
+    return False
+
+
+def _looks_like_deploy_request(text: str) -> bool:
+    """Deploy/create requests must use the full agent (deploy tools, discovery, etc.),
+    not keyword fast-path list tools."""
+    if any(
+        k in text
+        for k in (
+            "desplegar",
+            "deploy",
+            "provisionar",
+            "provisiona",
+            "infraestructura",
+            "alta disponibilidad",
+            "high availability",
+        )
+    ):
+        return True
+    if "lanzar" in text and any(k in text for k in ("ecs", "instancia", "elb", "vm", "servidor")):
+        return True
+    if "crear" in text and any(
+        k in text
+        for k in (
+            "ecs",
+            "instancia",
+            "elb",
+            "vpc",
+            "servidor",
+            "balanceador",
+            "load balancer",
+            "loadbalancer",
+        )
+    ):
+        return True
+    return False
+
+
+_BILLING_INTENT_RE = re.compile(
+    r"\b(billing|invoices?|factura|facturaci[oó]n|spend|spending|"
+    r"gastos?|cu[aá]nto|costos?|coste|\bcost\b|presupuesto|budget)\b",
+    re.I,
+)
+
+
+def _looks_like_billing_intent(text: str) -> bool:
+    """Word-boundary billing intent (avoid 'gast' inside 'desplegaste', 'cost' inside unrelated words)."""
+    return bool(_BILLING_INTENT_RE.search(text))
+
+
+def _looks_like_delete_request(text: str) -> bool:
+    """Tear-down / cleanup must use full agent, never billing fast-path."""
+    if not re.search(
+        r"\b(borr(ar|a)?|elimina(r)?|delete|remove|destroy|terminate|termina(r)?|"
+        r"limpia(r)?|tear\s*down)\b",
+        text,
+        re.I,
+    ):
+        return False
+    return bool(
+        re.search(
+            r"\b(ecs|elb|eip|vpc|sg|security\s*group|servidor|instancia|recurso|"
+            r"balanceador|load\s*balancer|infraestructura|todo)\b",
+            text,
+            re.I,
+        )
+    )
+
+
 def route_intent(message: str) -> RouteDecision | None:
-    text = message.lower().strip()
+    text = _normalize_for_routing(message.lower().strip())
     target_id = _find_uuid(message)
 
     _COMPOSITE_KEYWORDS = [
@@ -58,7 +163,16 @@ def route_intent(message: str) -> RouteDecision | None:
     if any(kw in text for kw in _COMPOSITE_KEYWORDS):
         return None
 
-    if any(kw in text for kw in ["billing", "cost", "costs", "gasto", "gast", "factura", "facturacion", "bill", "spend", "cuanto"]):
+    if _looks_like_deploy_request(text):
+        return None
+
+    if _looks_like_ecs_deploy_params(text):
+        return None
+
+    if _looks_like_delete_request(text):
+        return None
+
+    if _looks_like_billing_intent(text):
         bill_cycle = _parse_bill_cycle(message)
         if not bill_cycle:
             from datetime import datetime
@@ -71,7 +185,7 @@ def route_intent(message: str) -> RouteDecision | None:
     if any(kw in text for kw in ["recurso", "recursos", "resources", "todos los servicios", "all resources", "inventario", "inventory", "what resource", "what service", "mis servicios", "servicios tengo", "tengo desplegado", "lista detallada", "dame una lista", "qué servicios", "que servicios", "servicios desplegado"]):
         return RouteDecision(tool="list_resources", params={}, response_type="resources")
 
-    if any(kw in text for kw in ["ecs", "server", "servers", "instancia", "instancias", "vm", "virtual machine"]):
+    if _ecs_topic_hit(text):
         if any(kw in text for kw in ["start", "iniciar", "encender", "arrancar"]):
             if target_id:
                 return RouteDecision(tool="start_ecs", params={"server_id": target_id}, response_type="ecs_action")

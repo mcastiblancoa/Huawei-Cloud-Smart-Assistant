@@ -9,7 +9,7 @@ from cloud.result import CloudResult
 from cloud.validation import validate_empty_result
 from config.settings import get_settings
 
-_PRIMARY_REGIONS = ["la-north-2", "ap-southeast-3"]
+_PRIMARY_REGIONS = ["la-north-2", "ap-southeast-3", "ap-southeast-1"]
 
 
 def _default_region(region: str) -> str:

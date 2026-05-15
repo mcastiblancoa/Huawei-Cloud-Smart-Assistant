@@ -5,6 +5,7 @@ from langchain.chat_models import init_chat_model
 
 from models.state import AgentState
 from agents.prompts import SYSTEM_PROMPT
+from orchestration.lang_context import current_chat_language
 from tools.registry import ToolRegistry
 from config.logging import get_logger
 from config.settings import get_settings
@@ -40,7 +41,13 @@ def _get_llm_with_tools():
 
 def chatbot_node(state: AgentState) -> dict:
     llm_with_tools, tools = _get_llm_with_tools()
-    system_msg = SystemMessage(content=SYSTEM_PROMPT)
+    lang = current_chat_language.get()
+    lang_block = ""
+    if lang == "es":
+        lang_block = "\n\n[IDIOMA: el usuario interactúa en español. Todas las respuestas deben ser en español.]"
+    elif lang == "en":
+        lang_block = "\n\n[LANGUAGE: the user expects English replies.]"
+    system_msg = SystemMessage(content=SYSTEM_PROMPT + lang_block)
     messages_with_system = [system_msg] + state["messages"]
 
     logger.info(

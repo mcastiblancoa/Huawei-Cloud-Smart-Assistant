@@ -9,7 +9,7 @@ from cloud.result import CloudResult
 from cloud.validation import validate_empty_result
 from config.settings import get_settings
 
-_PRIMARY_REGIONS = ["la-north-2", "ap-southeast-3", "cn-north-4"]
+_PRIMARY_REGIONS = ["la-north-2", "ap-southeast-3", "ap-southeast-1", "cn-north-4"]
 
 
 def _default_region(region: str) -> str:
@@ -18,6 +18,21 @@ def _default_region(region: str) -> str:
 
 def _dump(result: CloudResult) -> str:
     return json.dumps(result.to_dict(), ensure_ascii=True)
+
+
+def _extract_dict_list(data: Any, preferred_key: str) -> list[dict]:
+    """Normalize ECS list payloads (dict with servers/cloudservers or top-level list)."""
+    if data is None:
+        return []
+    if isinstance(data, list):
+        return [x for x in data if isinstance(x, dict)]
+    if not isinstance(data, dict):
+        return []
+    for k in (preferred_key, "servers", "cloudservers", "instances"):
+        items = data.get(k)
+        if isinstance(items, list) and items:
+            return [x for x in items if isinstance(x, dict)]
+    return []
 
 
 def _merge_list_results(service: str, operation: str, region: str | None, key: str) -> CloudResult:
@@ -35,12 +50,11 @@ def _merge_list_results(service: str, operation: str, region: str | None, key: s
         result = run_cloud_command(service, operation, {"cli-region": r}, use_cache=True)
         total_elapsed += result.elapsed_ms
         if result.ok and result.data:
-            found_data = True
-            items = result.data.get(key, []) if isinstance(result.data, dict) else []
-            if isinstance(items, list):
+            items = _extract_dict_list(result.data, key)
+            if items:
+                found_data = True
                 for item in items:
-                    if isinstance(item, dict):
-                        item["_region"] = r
+                    item["_region"] = r
                     all_items.append(item)
         elif not result.ok:
             last_error = result.error
@@ -57,19 +71,21 @@ def _merge_list_results(service: str, operation: str, region: str | None, key: s
 
 @tool
 def list_ecs(region: str = "") -> str:
-    """List all ECS instances across regions. Returns real data from Huawei Cloud."""
-    result = _merge_list_results("ECS", "ListCloudServers", region or None, "servers")
+    """List all ECS instances across regions. Returns real data from Huawei Cloud.
+    Uses NovaListServers (OpenStack-style list), which matches what deploy flows use
+    and is more reliable than ListCloudServers on many international accounts."""
+    result = _merge_list_results("ECS", "NovaListServers", region or None, "servers")
     result = _validate_and_count(result, "servers")
-    empty = validate_empty_result(result, "ECS", "ListCloudServers")
+    empty = validate_empty_result(result, "ECS", "NovaListServers")
     if empty:
-        return json.dumps({"ok": True, "service": "ECS", "operation": "ListCloudServers", "data": None, "item_count": 0, "message": empty})
+        return json.dumps({"ok": True, "service": "ECS", "operation": "NovaListServers", "data": None, "item_count": 0, "message": empty})
     return _dump(result)
 
 
 def _validate_and_count(result: CloudResult, key: str) -> CloudResult:
-    if result.ok and result.data and isinstance(result.data, dict):
-        items = result.data.get(key, [])
-        result.item_count = len(items) if isinstance(items, list) else 0
+    if result.ok and result.data:
+        items = _extract_dict_list(result.data, key)
+        result.item_count = len(items)
         result.validated = True
     return result
 

@@ -10,14 +10,18 @@ from tools.registry import ToolMeta, ToolCategory
 
 @tool
 def list_available_services() -> str:
-    """Lists all available Huawei Cloud KooCLI services with their operation counts."""
+    """Lists all Huawei Cloud KooCLI services (90+) with operation counts.
+    Call this when the user asks what is possible on Huawei Cloud, or when you need
+    to pick a service name before listing operations (next: list_service_operations)."""
     registry = ServiceRegistry.get()
     return registry.get_available_services_text()
 
 
 @tool
 def list_service_operations(service: str) -> str:
-    """Lists all operations available for a Huawei Cloud service.
+    """Lists every hcloud operation for a service (e.g. ECS, VPC, ELB).
+    REQUIRED before run_koocli_command when you are not 100% sure of the exact
+    operation name or when no dedicated tool covers the user's request.
 
     Args:
         service: Service name, e.g. 'ECS', 'VPC', 'RDS', 'IAM'
@@ -32,8 +36,9 @@ def list_service_operations(service: str) -> str:
 
 @tool
 def get_operation_details(service: str, operation: str) -> str:
-    """Gets the full schema of an operation: HTTP method, description,
-    and required/optional parameters with their types.
+    """Returns full KooCLI schema for one operation: description, required/optional params.
+    Use after list_service_operations (or resolve_service_schema) and BEFORE
+    run_koocli_command so you never guess parameter names.
 
     Args:
         service: Service name, e.g. 'ECS'
@@ -50,8 +55,9 @@ def get_operation_details(service: str, operation: str) -> str:
 
 @tool
 def resolve_service_schema(service: str, operation_hint: str = "") -> str:
-    """Direct schema resolution: immediately loads a service JSON and returns
-    available operations + operation details if operation_hint is provided.
+    """Fast path: load service schema from disk; optional operation_hint narrows operations.
+    Prefer list_service_operations + get_operation_details when you need the full list;
+    use this when you already know the service and roughly which API you need.
 
     Args:
         service: Exact service name, e.g. 'ECS', 'VPC', 'RDS', 'ELB', 'IAM'

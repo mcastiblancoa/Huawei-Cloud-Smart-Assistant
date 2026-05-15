@@ -26,12 +26,14 @@ DEPLOY_REDIRECTS = {
 @tool
 def run_koocli_command(service: str, operation: str, params: dict = None) -> str:
     """Executes a Huawei Cloud KooCLI (hcloud) command.
-    Use this for operations that don't have a dedicated tool.
-    For creating resources (ELB, ECS, VPC), use dedicated deploy tools instead.
+    For operations that don't have a dedicated tool: first call list_service_operations
+    and get_operation_details (or resolve_service_schema) so operation names and params
+    come from schema, not from memory.
+    For creating ECS/ELB via create APIs, use dedicated deploy tools instead.
 
     Args:
         service: Huawei Cloud service, e.g. 'ecs', 'vpc', 'iam'.
-        operation: Operation to perform, e.g. 'ListCloudServers', 'CreateVpc'.
+        operation: Operation to perform, e.g. 'NovaListServers', 'CreateVpc'.
         params: Dictionary with command parameters.
     """
     try:

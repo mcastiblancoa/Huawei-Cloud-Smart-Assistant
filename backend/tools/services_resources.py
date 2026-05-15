@@ -15,9 +15,12 @@ def _dump(result: CloudResult) -> str:
 
 @tool
 def list_resources(region: str = "") -> str:
-    """List all cloud resources using RMS. Returns real data from Huawei Cloud.
-    RMS is a global service that only works in cn-north-4."""
-    result = run_cloud_command("RMS", "ListAllResources", {"cli-region": "cn-north-4"}, cache_ttl=60)
+    """List all cloud resources using RMS (global inventory). Each call hits the API (no local cache).
+    Note: Huawei RMS can lag a few minutes behind the live ECS/API console; for live VMs use list_ecs."""
+    # Inventory must reflect the account now; RMS can lag vs ECS API but local cache must not hide deletes.
+    result = run_cloud_command(
+        "RMS", "ListAllResources", {"cli-region": "cn-north-4"}, use_cache=False,
+    )
     if result.ok and result.data and isinstance(result.data, dict):
         items = result.data.get("resources", [])
         result.item_count = len(items) if isinstance(items, list) else 0
@@ -32,6 +35,6 @@ RESOURCES_TOOLS: list[ToolMeta] = [
     ToolMeta(
         tool=list_resources, service="RMS", category=ToolCategory.QUERY,
         keywords=["resource", "resources", "recursos", "servicios", "activos", "all resources", "inventory", "desplegado"],
-        is_read_only=True, cacheable=True, cache_ttl=60,
+        is_read_only=True, cacheable=False, cache_ttl=0,
     ),
 ]

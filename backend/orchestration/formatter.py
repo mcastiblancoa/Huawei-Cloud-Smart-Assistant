@@ -92,7 +92,7 @@ def _format_billing_natural(data: Any, language: str) -> str:
     currency = data.get("currency", "USD")
     services = data.get("services", [])
 
-    h = lambda v: f"<span style='color: #e60012;'><strong>{v}</strong></span>"
+    h = lambda v: f"<strong>{v}</strong>"
 
     if language == "es":
         month_names = {"01": "enero", "02": "febrero", "03": "marzo", "04": "abril", "05": "mayo", "06": "junio", "07": "julio", "08": "agosto", "09": "septiembre", "10": "octubre", "11": "noviembre", "12": "diciembre"}
@@ -121,7 +121,7 @@ def _format_resources_natural(data: Any, response_type: str, language: str) -> s
     if not data or not isinstance(data, dict):
         return ""
 
-    h = lambda v: f"<span style='color: #e60012;'><strong>{v}</strong></span>"
+    h = lambda v: f"<strong>{v}</strong>"
 
     collection_keys = {
         "ecs": "servers", "vpc": "vpcs", "subnet": "subnets",
@@ -154,9 +154,9 @@ def _format_resources_natural(data: Any, response_type: str, language: str) -> s
             by_type.setdefault(t, []).append(item)
 
         if language == "es":
-            text = f"Tienes {h(str(len(items)))} recursos desplegados en Huawei Cloud.\n\n"
+            text = f"Tienes {h(str(len(items)))} recursos en Huawei Cloud. "
         else:
-            text = f"You have {h(str(len(items)))} resources deployed on Huawei Cloud.\n\n"
+            text = f"You have {h(str(len(items)))} resources on Huawei Cloud. "
 
         type_name_map = {
             "cloudservers": "ECS", "vpcs": "VPC", "subnets": "Subnet",
@@ -167,35 +167,52 @@ def _format_resources_natural(data: Any, response_type: str, language: str) -> s
             "buckets": "OBS Bucket", "databases": "RDS Database",
         }
 
+        parts = []
         for t, group in sorted(by_type.items(), key=lambda x: -len(x[1])):
             nice_name = type_name_map.get(t, t)
             names = [i.get("name", i.get("id", "?")[:20]) for i in group[:6]]
             region = group[0].get("region_id", "")
             names_str = ", ".join(names)
             if len(group) > 6:
-                names_str += f" (+{len(group)-6} más)"
-            text += f"{h(nice_name)} ({len(group)}): {names_str} [{region}]\n"
-
+                names_str += f" (+{len(group)-6} más)" if language == "es" else f" (+{len(group)-6} more)"
+            parts.append(f"{nice_name} ({len(group)}): {names_str} en {region}" if language == "es" else f"{nice_name} ({len(group)}): {names_str} in {region}")
+        text += " ".join(parts) + "."
         return text.strip()
 
     if language == "es":
-        text = f"Tienes {h(str(len(items)))} {label}:\n\n"
+        bits = []
+        for item in items[:10]:
+            name = item.get("name", item.get("id", "?")[:20])
+            status = item.get("status", "")
+            region = item.get("_region", item.get("region_id", ""))
+            bit = h(str(name))
+            if status:
+                bit += f" estado {status}"
+            if region:
+                bit += f" ({region})"
+            bits.append(bit)
+        text = f"Tienes {h(str(len(items)))} {label}: " + "; ".join(bits)
+        if len(items) > 10:
+            text += f"; y {len(items) - 10} más."
+        else:
+            text += "."
     else:
-        text = f"You have {h(str(len(items)))} {label}:\n\n"
-
-    for item in items[:10]:
-        name = item.get("name", item.get("id", "?")[:20])
-        status = item.get("status", "")
-        region = item.get("_region", item.get("region_id", ""))
-        line = f"- {h(name)}"
-        if status:
-            line += f" ({status})"
-        if region:
-            line += f" [{region}]"
-        text += line + "\n"
-
-    if len(items) > 10:
-        text += f"\n...y {len(items) - 10} más."
+        bits = []
+        for item in items[:10]:
+            name = item.get("name", item.get("id", "?")[:20])
+            status = item.get("status", "")
+            region = item.get("_region", item.get("region_id", ""))
+            bit = h(str(name))
+            if status:
+                bit += f" {status}"
+            if region:
+                bit += f" ({region})"
+            bits.append(bit)
+        text = f"You have {h(str(len(items)))} {label}: " + "; ".join(bits)
+        if len(items) > 10:
+            text += f"; and {len(items) - 10} more."
+        else:
+            text += "."
 
     return text.strip()
 
@@ -236,9 +253,9 @@ def format_response(response_type: str, payload: dict[str, Any], language: str) 
 
     if total == 0:
         no_data = "No se encontraron recursos." if language == "es" else "No resources found."
-        return f"{label}: <span style='color: #e60012;'><strong>0</strong></span>. {no_data}"
+        return f"{label}: <strong>0</strong>. {no_data}"
 
-    return f"{label}: <span style='color: #e60012;'><strong>{total}</strong></span>."
+    return f"{label}: <strong>{total}</strong>."
 
 
 def format_cloud_result(result: CloudResult, language: str = "es") -> str:
