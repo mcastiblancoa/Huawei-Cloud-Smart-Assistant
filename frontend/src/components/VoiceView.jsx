@@ -1,7 +1,5 @@
 import { motion } from "framer-motion";
-import { Mic, MicOff } from "lucide-react";
-import { ResourceDashboard } from "../ResourceDashboard";
-import { BillingDashboard } from "../BillingDashboard";
+import { Mic, MicOff, Volume2 } from "lucide-react";
 
 export function VoiceView({
   t,
@@ -13,15 +11,24 @@ export function VoiceView({
   waveformData,
   errorMessage,
   transcription,
+  agentReply,
   audioUrl,
-  intentClassification,
-  resourcesResponse,
-  billingResponse,
   theme,
   language,
 }) {
   const isRecording = status === "recording";
-  const isProcessing = status === "processing";
+  const isProcessing = ["processing", "thinking", "generatingAudio"].includes(status);
+  const isPlaying = status === "playing";
+
+  const micColorClass = isRecording
+    ? "mic-recording"
+    : isProcessing
+      ? "mic-processing"
+      : isPlaying
+        ? "mic-playing"
+        : "";
+
+  const MicIcon = isPlaying ? Volume2 : (isRecording ? MicOff : Mic);
 
   return (
     <motion.section
@@ -51,21 +58,17 @@ export function VoiceView({
       <div className="interactive-zone">
         {/* Microphone Button */}
         <motion.button
-          className={`mic-button ${isRecording ? "recording" : ""}`}
+          className={`mic-button ${micColorClass}`}
           onClick={toggleRecording}
           disabled={isProcessing}
-          title={isProcessing ? t.transcribing : statusLabel}
+          title={statusLabel}
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ delay: 0.1, type: "spring", stiffness: 200 }}
           whileHover={{ scale: isProcessing ? 1 : 1.05 }}
           whileTap={{ scale: isProcessing ? 1 : 0.95 }}
         >
-          {isRecording ? (
-            <MicOff size={48} strokeWidth={1.5} className="mic-icon" />
-          ) : (
-            <Mic size={48} strokeWidth={1.5} className="mic-icon" />
-          )}
+          <MicIcon size={48} strokeWidth={1.5} className="mic-icon" />
         </motion.button>
 
         {/* Language Selector */}
@@ -140,57 +143,38 @@ export function VoiceView({
         </motion.div>
       )}
 
-      {/* Transcription Result */}
-      {transcription && (
+      {/* Voice Result Panel */}
+      {(transcription || agentReply) && (
         <motion.div
-          className="transcription-panel"
+          className="voice-result-panel"
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.3 }}
         >
-          <h2 className="result-title">{t.transcription}</h2>
-          <p className="result-text">{transcription}</p>
-          {audioUrl && (
-            <div className="audio-player-wrapper">
-              <audio controls className="audio-player" src={audioUrl}>
-                <track kind="captions" />
-              </audio>
+          {/* Transcription subtitle */}
+          {transcription && (
+            <div className="voice-transcription-subtitle">
+              <span className="voice-transcription-label">{t.transcription}</span>
+              <p className="voice-transcription-text">{transcription}</p>
             </div>
           )}
-        </motion.div>
-      )}
 
-      {/* Resource Dashboard */}
-      {intentClassification?.should_call_rms && (
-        <motion.div
-          className="w-full"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-        >
-          <ResourceDashboard
-            intentClassification={intentClassification}
-            resourcesResponse={resourcesResponse}
-            theme={theme}
-            language={language}
-          />
-        </motion.div>
-      )}
+          {/* Agent reply - shown as small subtitle, not main chat */}
+          {agentReply && (
+            <div className="voice-reply-subtitle">
+              <span className="voice-reply-label">{t.agentReply}</span>
+              <p className="voice-reply-text">{agentReply}</p>
+            </div>
+          )}
 
-      {/* Billing Dashboard */}
-      {intentClassification?.should_call_bss && (
-        <motion.div
-          className="w-full"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-        >
-          <BillingDashboard
-            intentClassification={intentClassification}
-            billingResponse={billingResponse}
-            theme={theme}
-            language={language}
-          />
+          {/* TTS Audio Player (hidden, auto-plays) */}
+          {audioUrl && (
+            <audio
+              ref={(el) => { if (el && isPlaying) { el.play().catch(() => {}); } }}
+              className="hidden"
+              src={audioUrl}
+            />
+          )}
         </motion.div>
       )}
 

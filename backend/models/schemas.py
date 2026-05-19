@@ -82,15 +82,23 @@ class ResourcesResponse(BaseModel):
     error: Optional[str] = None
 
 
-class TranscriptionResponse(BaseModel):
+class TranscriptionResult(BaseModel):
     text: str = ""
     request_id: str | None = None
-    audio_format: str = Field(description="Format sent to Huawei SIS")
-    audio_size_bytes: int
-    provider_raw_response: dict
-    intent_classification: Optional[IntentClassification] = None
-    resources_response: Optional[ResourcesResponse] = None
-    billing_response: Optional[BillingSummary] = None
+    audio_format: str = ""
+    audio_size_bytes: int = 0
+    provider_raw_response: dict = {}
+
+
+class VoiceResponse(BaseModel):
+    transcription: str = Field(default="", description="STT transcribed text")
+    reply: str = Field(default="", description="Agent response text")
+    session_id: str = Field(description="Session identifier for conversation continuity")
+    has_audio: bool = Field(default=False, description="Whether TTS audio was generated")
+    latency_ms: Optional[int] = None
+    tool_calls: Optional[int] = None
+    path: Optional[str] = None
+    error: Optional[str] = None
 
 
 class ChatRequest(BaseModel):

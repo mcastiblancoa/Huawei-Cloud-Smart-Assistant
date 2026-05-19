@@ -1,10 +1,9 @@
-import { useMemo, useRef, useState, useEffect } from "react";
+import { useMemo, useRef, useState, useEffect, useCallback } from "react";
 import { Sidebar } from "./components/Sidebar";
 import { VoiceView } from "./components/VoiceView";
 import { ChatView } from "./components/ChatView";
 import { Menu, Sun, Moon } from "lucide-react";
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
+import { sendVoiceAudio } from "./services/api";
 
 const CHAT_THREADS_KEY = "koocliChatThreads";
 const ACTIVE_THREAD_KEY = "koocliActiveChatId";
@@ -18,8 +17,6 @@ const safeParse = (value, fallback) => {
   if (!value) return fallback;
   try { return JSON.parse(value); } catch { return fallback; }
 };
-
-const createWelcomeMessage = () => null;
 
 const buildThreadTitle = (text, language) => {
   const cleanText = text.replace(/\s+/g, " ").trim();
@@ -88,23 +85,26 @@ const translations = {
     appSubtitle: "Record and ask for your Huawei Cloud services",
     clickToStart: "Click to start recording",
     recording: "Recording...",
-    transcribing: "Transcribing...",
+    processing: "Processing...",
+    thinking: "Agent is thinking...",
+    generatingAudio: "Generating audio...",
+    playing: "Playing response...",
     done: "Done",
     errorOccurred: "Error occurred",
     microphoneError: "Microphone access denied. Please allow microphone permission.",
     noTextError: "I can't understand, please record your audio again.",
-    transcriptionFailed: "Transcription failed.",
-    transcription: "Transcription",
+    transcriptionFailed: "Voice processing failed.",
+    transcription: "You said",
+    agentReply: "Assistant",
     yourTranscriptionWillAppear: "Your transcription will appear here",
     recordingLanguage: "Recording language",
     english: "English",
     spanish: "Spanish",
-    spanishNotAvailable: "Spanish recording not available yet",
     feature1Title: "1. Active Resources",
-    feature1Desc: "Smart voice assistant that allows users to manage, query, and understand their active resources on Huawei Cloud. By centralizing information in an interactive visual panel, it significantly simplifies cloud monitoring, avoiding the need to navigate through the console.",
+    feature1Desc: "Smart voice assistant that allows users to manage, query, and understand their active resources on Huawei Cloud.",
     feature1Example: 'Try: "Show me a summary of my services right now, please"',
     feature2Title: "2. Monthly Billing",
-    feature2Desc: "Query and understand your monthly billing on Huawei Cloud using english voice commands. A direct way to track and control expenses via the same interactive interface.",
+    feature2Desc: "Query and understand your monthly billing on Huawei Cloud using voice commands.",
     feature2Example: 'Try: "How much money I spent on April 2026"',
     chatTitle: "Chat Assistant",
     chatSubtitle: "Interact with your Huawei Cloud services through chat.",
@@ -119,23 +119,26 @@ const translations = {
     appSubtitle: "Graba e interactúa con tus servicios de Huawei Cloud",
     clickToStart: "Haz clic para comenzar a grabar",
     recording: "Grabando...",
-    transcribing: "Transcribiendo...",
+    processing: "Procesando...",
+    thinking: "El agente está pensando...",
+    generatingAudio: "Generando audio...",
+    playing: "Reproduciendo respuesta...",
     done: "Listo",
     errorOccurred: "Ocurrió un error",
     microphoneError: "Acceso al micrófono denegado. Por favor, permite el acceso al micrófono.",
     noTextError: "No puedo entender, por favor graba tu audio de nuevo.",
-    transcriptionFailed: "Falló la transcripción.",
-    transcription: "Transcripción",
+    transcriptionFailed: "Falló el procesamiento de voz.",
+    transcription: "Dijiste",
+    agentReply: "Asistente",
     yourTranscriptionWillAppear: "Tu transcripción aparecerá aquí",
     recordingLanguage: "Idioma de grabación",
     english: "Inglés",
     spanish: "Español",
-    spanishNotAvailable: "La grabación en español aún no está disponible",
     feature1Title: "1. Recursos activos",
-    feature1Desc: "Asistente inteligente que te permite administrar y consultar tus recursos activos en Huawei Cloud. Centraliza la información en un panel interactivo y simplifica el monitoreo evitando navegar por la consola.",
+    feature1Desc: "Asistente inteligente que te permite administrar y consultar tus recursos activos en Huawei Cloud.",
     feature1Example: 'Ej: "Show me a summary of my services right now, please"',
     feature2Title: "2. Facturación mensual",
-    feature2Desc: "Comprende tu facturación mensual utilizando comandos de voz en inglés. Una forma directa de controlar tus gastos centralizados en una misma interfaz gráfica fácil de leer.",
+    feature2Desc: "Comprende tu facturación mensual utilizando comandos de voz.",
     feature2Example: 'Ej: "How much money I spent on April 2026"',
     chatTitle: "Asistente de Chat",
     chatSubtitle: "Interactúa con tus servicios de Huawei Cloud a través de chat.",
@@ -155,14 +158,13 @@ function App() {
   const [status, setStatus] = useState("idle");
   const [errorMessage, setErrorMessage] = useState("");
   const [transcription, setTranscription] = useState("");
+  const [agentReply, setAgentReply] = useState("");
   const [audioUrl, setAudioUrl] = useState("");
   const [waveformData, setWaveformData] = useState([]);
   const [language, setLanguage] = useState(() => localStorage.getItem("language") || "en");
   const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "light");
   const [recordingLanguage, setRecordingLanguage] = useState(() => localStorage.getItem("recordingLanguage") || "en");
-  const [intentClassification, setIntentClassification] = useState(null);
-  const [resourcesResponse, setResourcesResponse] = useState(null);
-  const [billingResponse, setBillingResponse] = useState(null);
+  const [voiceSessionId, setVoiceSessionId] = useState("");
 
   const [chatThreads, setChatThreads] = useState(() => initThreads(language));
   const [activeThreadId, setActiveThreadId] = useState(() => localStorage.getItem(ACTIVE_THREAD_KEY) || null);
@@ -174,6 +176,8 @@ function App() {
   const animationIdRef = useRef(null);
   const audioContextRef = useRef(null);
   const waveformSmoothingRef = useRef(new Array(64).fill(0));
+  const ttsAudioRef = useRef(null);
+  const currentAudioUrlRef = useRef(null);
 
   const t = translations[language];
 
@@ -270,21 +274,31 @@ function App() {
     const labels = {
       idle: t.clickToStart,
       recording: t.recording,
-      processing: t.transcribing,
+      processing: t.processing,
+      thinking: t.thinking,
+      generatingAudio: t.generatingAudio,
+      playing: t.playing,
       success: t.done,
       error: t.errorOccurred,
     };
-    return labels[status];
+    return labels[status] || status;
   }, [status, t]);
 
-  const resetOutput = () => {
+  const resetOutput = useCallback(() => {
     setTranscription("");
+    setAgentReply("");
     setErrorMessage("");
     setWaveformData([]);
-    setIntentClassification(null);
-    setResourcesResponse(null);
-    setBillingResponse(null);
-  };
+    if (currentAudioUrlRef.current) {
+      URL.revokeObjectURL(currentAudioUrlRef.current);
+      currentAudioUrlRef.current = null;
+    }
+    setAudioUrl("");
+    if (ttsAudioRef.current) {
+      ttsAudioRef.current.pause();
+      ttsAudioRef.current = null;
+    }
+  }, []);
 
   const updateWaveform = () => {
     if (!analyzerRef.current) return;
@@ -304,9 +318,37 @@ function App() {
     animationIdRef.current = requestAnimationFrame(updateWaveform);
   };
 
+  const playTtsAudio = useCallback((audioBlob) => {
+    if (currentAudioUrlRef.current) {
+      URL.revokeObjectURL(currentAudioUrlRef.current);
+    }
+    const url = URL.createObjectURL(audioBlob);
+    currentAudioUrlRef.current = url;
+    setAudioUrl(url);
+    setStatus("playing");
+
+    const audio = new Audio(url);
+    ttsAudioRef.current = audio;
+
+    audio.onended = () => {
+      setStatus("success");
+      ttsAudioRef.current = null;
+    };
+
+    audio.onerror = () => {
+      console.error("TTS audio playback error");
+      setStatus("success");
+      ttsAudioRef.current = null;
+    };
+
+    audio.play().catch((err) => {
+      console.error("TTS audio play failed:", err);
+      setStatus("success");
+    });
+  }, []);
+
   const startRecording = async () => {
     resetOutput();
-    if (audioUrl) { URL.revokeObjectURL(audioUrl); setAudioUrl(""); }
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       mediaStreamRef.current = stream;
@@ -325,10 +367,8 @@ function App() {
       recorder.onstop = async () => {
         if (animationIdRef.current) { cancelAnimationFrame(animationIdRef.current); }
         const blob = new Blob(chunksRef.current, { type: recorder.mimeType || "audio/webm" });
-        const url = URL.createObjectURL(blob);
-        setAudioUrl(url);
         setWaveformData([]);
-        await uploadAndTranscribe(blob);
+        await processVoiceTurn(blob);
       };
       mediaRecorderRef.current = recorder;
       recorder.start();
@@ -349,28 +389,36 @@ function App() {
     setStatus("processing");
   };
 
-  const uploadAndTranscribe = async (blob) => {
+  const processVoiceTurn = async (blob) => {
     setStatus("processing");
     setErrorMessage("");
-    const extension = blob.type.includes("ogg") ? "ogg" : "webm";
-    const file = new File([blob], `recording.${extension}`, { type: blob.type || "audio/webm" });
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("language", recordingLanguage);
     try {
-      const response = await fetch(`${API_BASE_URL}/transcribe`, { method: "POST", body: formData });
-      if (!response.ok) {
-        let detail = `Backend error (${response.status}).`;
-        try { const body = await response.json(); detail = body.detail || detail; } catch {}
-        throw new Error(detail);
+      const { json, audio } = await sendVoiceAudio(blob, recordingLanguage, voiceSessionId);
+
+      if (!json.transcription || json.transcription.trim() === "") {
+        throw new Error(t.noTextError);
       }
-      const data = await response.json();
-      if (!data.text || data.text.trim() === "") { throw new Error(t.noTextError); }
-      setTranscription(data.text);
-      if (data.intent_classification) { setIntentClassification(data.intent_classification); }
-      if (data.resources_response) { setResourcesResponse(data.resources_response); }
-      if (data.billing_response) { setBillingResponse(data.billing_response); }
-      setStatus("success");
+
+      setTranscription(json.transcription);
+      if (json.session_id) {
+        setVoiceSessionId(json.session_id);
+      }
+
+      if (json.reply) {
+        setAgentReply(json.reply);
+      }
+
+      if (json.error && !audio) {
+        console.warn("TTS error from backend:", json.error);
+      }
+
+      if (audio) {
+        setStatus("generatingAudio");
+        playTtsAudio(audio);
+      } else {
+        setStatus("success");
+      }
+
     } catch (error) {
       setStatus("error");
       setErrorMessage(error.message || t.transcriptionFailed);
@@ -379,6 +427,12 @@ function App() {
   };
 
   const toggleRecording = () => {
+    if (status === "playing" && ttsAudioRef.current) {
+      ttsAudioRef.current.pause();
+      ttsAudioRef.current = null;
+      setStatus("success");
+      return;
+    }
     if (status === "idle" || status === "success" || status === "error") { startRecording(); }
     else if (status === "recording") { stopRecording(); }
   };
@@ -464,10 +518,8 @@ function App() {
             waveformData={waveformData}
             errorMessage={errorMessage}
             transcription={transcription}
+            agentReply={agentReply}
             audioUrl={audioUrl}
-            intentClassification={intentClassification}
-            resourcesResponse={resourcesResponse}
-            billingResponse={billingResponse}
             theme={theme}
             language={language}
           />

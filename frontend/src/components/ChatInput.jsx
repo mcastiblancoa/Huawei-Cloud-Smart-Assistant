@@ -24,7 +24,7 @@ export function ChatInput({
   return (
     <form className="chat-composer" onSubmit={onSubmit}>
       <div className="chat-input-wrapper">
-        <button
+        {/* <button
           type="button"
           className="chat-action-btn"
           aria-label={language === "es" ? "Entrada por voz" : "Voice input"}
@@ -32,7 +32,7 @@ export function ChatInput({
           disabled
         >
           <Mic size={16} strokeWidth={1.5} />
-        </button>
+        </button> */}
         <textarea
           ref={textareaRef}
           className="chat-input"

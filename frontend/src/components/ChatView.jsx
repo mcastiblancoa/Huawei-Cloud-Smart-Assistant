@@ -16,8 +16,7 @@ import { ChatInput } from "./ChatInput";
 import { ChatBubble, TypingIndicator, ChatEmptyState } from "./ChatComponents";
 import { ScrollToBottom } from "./ScrollToBottom";
 import { ScrollArea } from "./ui/ScrollArea";
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
+import { sendChatMessage } from "../services/api";
 
 const getRandomId = (prefix) => {
   const id = globalThis.crypto?.randomUUID?.() || `${prefix}-${Date.now()}-${Math.random().toString(16).slice(2)}`;
@@ -372,22 +371,7 @@ export function ChatView({ theme, language, t, threads, setThreads, activeThread
     justSentRef.current = true;
 
     try {
-      const response = await fetch(`${API_BASE_URL}/chat`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: trimmed, session_id: threadSnapshot.sessionId }),
-      });
-
-      if (!response.ok) {
-        let detail = `Backend error (${response.status}).`;
-        try {
-          const body = await response.json();
-          detail = body.detail || detail;
-        } catch {}
-        throw new Error(detail);
-      }
-
-      const data = await response.json();
+      const data = await sendChatMessage(trimmed, threadSnapshot.sessionId);
       const assistantReply = String(data.reply || "No response generated.").trim();
       const durationMs = Math.max(0, Math.round(performance.now() - startedAt));
 

@@ -49,6 +49,14 @@ class Settings(BaseSettings):
 
     whisper_asr_url: str = ""
 
+    kokoro_speech_url: str = ""
+    kokoro_voice: str = "af_heart"
+    kokoro_lang_code: str = "es"
+    kokoro_response_format: str = "mp3"
+    kokoro_speed: float = 1.0
+    kokoro_timeout: int = 30
+    kokoro_max_retries: int = 2
+
     max_upload_mb: int = 5
     temp_dir: str = "tmp_audio"
 
