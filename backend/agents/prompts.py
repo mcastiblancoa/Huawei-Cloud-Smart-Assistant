@@ -62,9 +62,13 @@ CONSULTA RÁPIDA (tools especializadas):
 
 DEPLOY (tools dedicadas - UNA sola llamada hace TODO):
 - deploy_ecs_instance (crea ECS con VPC/subnet por defecto de la región; security_group_id opcional)
-- setup_elb_for_ecs (ELB+Listener+Pool+Member+EIP para un ECS existente en UNA llamada)
+- setup_elb_for_ecs (ELB+Listener+Pool+Members+EIP para uno o varios ECS existentes en UNA llamada; ecs_server_ids o ecs_server_names aceptan valores separados por coma)
 - manage_ecs(action='start'|'stop'|'reboot'|'status')
 - manage_eip(action='create'|'associate'|'show'|'delete')
+
+TERRAFORM (infraestructura como código):
+- deploy_elb_with_terraform (crea entorno ELB completo vía Terraform)
+- list_terraform_deployments (lista despliegues Terraform)
 
 DESCUBRIMIENTO DE OPERACIONES (úsalo ANTES de run_koocli si no hay tool dedicada):
 - list_available_services() - Catálogo de servicios hcloud cuando el usuario pregunta qué se puede hacer
@@ -81,10 +85,13 @@ OPERACIÓN GENÉRICA (solo después de discovery si no hay tool dedicada):
 CÓMO OPERAR:
 ==========================================================================
 1. Listar inventario: tools dedicadas (list_ecs, list_vpcs, list_elb, list_resources, …).
-2. Crear ECS: deploy_ecs_instance. ELB frente a un ECS ya creado: setup_elb_for_ecs. Crear VPC: create_vpc.
-   Para varias ECS en el mismo pool de un ELB: tras setup_elb_for_ecs (primer miembro), usa
-   get_operation_details('ELB','BatchCreateMembers') y run_koocli_command para añadir el resto.
+2. Crear ECS: deploy_ecs_instance. ELB frente a ECS ya creados: setup_elb_for_ecs (acepta múltiples ECS vía ecs_server_names separados por coma).
+   SIEMPRE que el usuario pida alta disponibilidad con múltiples ECS + ELB:
+   a) Crea TODAS las ECS primero (deploy_ecs_instance para cada una).
+   b) Luego llama setup_elb_for_ecs con ecs_server_names="name1,name2,..." para conectar TODAS al ELB en una sola llamada.
+   NUNCA crees el ELB antes que las ECS. NUNCA dejes ECS fuera del pool del ELB.
    Listener HTTP puerto 80: operación ELB CreateListener (validar parámetros con get_operation_details).
+3. Crear bucket OBS: deploy_obs_bucket.
 3. Operación pedida por el usuario sin tool dedicada (ej. ListFlavors, CreateSubnet, APIs raras):
    a) list_service_operations(service) para ver nombres exactos de operación.
    b) get_operation_details(service, operation) para parámetros.

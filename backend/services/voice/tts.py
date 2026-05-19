@@ -1,4 +1,5 @@
 import asyncio
+import re
 import time
 from pathlib import Path
 from typing import Any
@@ -11,6 +12,24 @@ from config.logging import get_logger
 
 logger = get_logger("services.voice.tts")
 
+_HTML_TAG_RE = re.compile(r"<[^>]+>")
+
+
+def strip_html(text: str) -> str:
+    return _HTML_TAG_RE.sub("", text).strip()
+
+
+def resolve_voice(language: str, settings: Settings) -> str:
+    if language == "es":
+        return settings.kokoro_voice_es
+    return settings.kokoro_voice_en
+
+
+def resolve_lang_code(language: str, settings: Settings) -> str:
+    if language == "es":
+        return settings.kokoro_lang_code_es
+    return settings.kokoro_lang_code_en
+
 
 def _build_speech_payload(
     text: str,
@@ -22,13 +41,12 @@ def _build_speech_payload(
     return {
         "model": "kokoro",
         "input": text,
-        "voice": voice or settings.kokoro_voice,
+        "voice": voice or settings.kokoro_voice_es,
         "response_format": settings.kokoro_response_format,
         "download_format": settings.kokoro_response_format,
         "speed": speed or settings.kokoro_speed,
-        "stream": False,
         "return_download_link": False,
-        "lang_code": lang_code or settings.kokoro_lang_code,
+        "lang_code": lang_code or settings.kokoro_lang_code_es,
         "volume_multiplier": 1,
         "normalization_options": {
             "normalize": True,

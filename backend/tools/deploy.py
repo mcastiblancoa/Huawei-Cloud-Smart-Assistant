@@ -1,17 +1,21 @@
 import json
 import re
+import shutil
+import subprocess
 import time
 from typing import Optional
 
 from langchain_core.tools import tool
 
-from koocli.executor import execute_koocli
+from koocli.executor import execute_koocli, _find_hcloud_binary
 from utils.sanitize import sanitize_params
 from tools.registry import ToolMeta, ToolCategory
 from cloud.validation import extract_id
 from config.logging import get_logger
+from config.settings import get_settings
 
 logger = get_logger("tools.deploy")
+_settings = get_settings()
 
 REGION_DEFAULTS = {
     "ap-southeast-3": {
@@ -151,8 +155,8 @@ def deploy_ecs_instance(
 @tool
 def setup_elb_for_ecs(
     elb_name: str,
-    ecs_server_id: str = "",
-    ecs_server_name: str = "",
+    ecs_server_ids: str = "",
+    ecs_server_names: str = "",
     region: str = "la-north-2",
     availability_zone: str = "",
     vpc_id: str = "",
@@ -163,14 +167,15 @@ def setup_elb_for_ecs(
     create_public_ip: bool = True,
     bandwidth_size: int = 5,
 ) -> str:
-    """Sets up a complete ELB configuration for an EXISTING ECS instance in one call.
-    Creates: ELB -> Listener -> Pool -> Member (ECS) -> EIP (optional).
-    Use this tool INSTEAD of calling multiple tools when the user wants to configure a load balancer for an existing server.
+    """Sets up a complete ELB configuration for one or more EXISTING ECS instances in one call.
+    Creates: ELB -> Listener -> Pool -> Members (all ECS) -> EIP (optional).
+    Use this tool INSTEAD of calling multiple tools when the user wants to configure a load balancer for existing servers.
+    Supports multiple ECS: pass comma-separated IDs in ecs_server_ids or comma-separated names in ecs_server_names.
 
     Args:
         elb_name: Name for the ELB load balancer (required).
-        ecs_server_id: ECS server ID. If empty, resolves by ecs_server_name.
-        ecs_server_name: ECS server name to search for if server_id is empty.
+        ecs_server_ids: Comma-separated ECS server IDs. If empty, resolves by ecs_server_names.
+        ecs_server_names: Comma-separated ECS server names to search for if server_ids is empty.
         region: Huawei Cloud region (default la-north-2).
         availability_zone: AZ. Auto-resolved if empty.
         vpc_id: VPC ID. Auto-resolved per region if empty.
@@ -189,54 +194,78 @@ def setup_elb_for_ecs(
     summary = []
     errors = []
 
-    if not ecs_server_id and not ecs_server_name:
-        return "Either ecs_server_id or ecs_server_name must be provided."
+    if not ecs_server_ids and not ecs_server_names:
+        return "Either ecs_server_ids or ecs_server_names must be provided."
 
-    if not ecs_server_id:
-        logger.info("ELB Setup Step 0/6: Resolving ECS by name")
+    server_id_list = [s.strip() for s in ecs_server_ids.split(",") if s.strip()] if ecs_server_ids else []
+    server_name_list = [s.strip() for s in ecs_server_names.split(",") if s.strip()] if ecs_server_names else []
+
+    resolved_servers: list[dict] = []
+
+    for sid in server_id_list:
+        logger.info("ELB Setup: Resolving ECS by ID: %s", sid)
+        detail = execute_koocli("ECS", "ShowServer", {
+            "cli-region": region,
+            "server_id": sid,
+        })
+        if "Error" in detail:
+            errors.append(f"Could not get ECS details for {sid}: {detail[:200]}")
+            continue
+        name = extract_id(detail, [r'"name":\s*"([^"]+)"'])
+        status = extract_id(detail, [r'"status":\s*"([^"]+)"'])
+        private_ips, all_ips = _extract_private_ips(detail)
+        private_ip = private_ips[0] if private_ips else (all_ips[0] if all_ips else "")
+        resolved_servers.append({"id": sid, "name": name or sid, "ip": private_ip, "status": status})
+        if not resolved_vpc:
+            resolved_vpc = extract_id(detail, [r'"vpc_id":\s*"([^"]+)"'])
+        if not resolved_subnet:
+            subnet_matches = re.findall(r'"subnet_id":\s*"([^"]+)"', detail)
+            if subnet_matches:
+                resolved_subnet = subnet_matches[0]
+
+    for sname in server_name_list:
+        logger.info("ELB Setup: Resolving ECS by name: %s", sname)
         list_result = execute_koocli("ECS", "NovaListServers", {
             "cli-region": region,
-            "name": ecs_server_name,
         })
-        ecs_server_id = extract_id(list_result, [r'"id":\s*"([^"]+)"'])
-        if not ecs_server_id:
-            all_ids = re.findall(r'"id":\s*"([^"]+)"', list_result)
-            all_names = re.findall(r'"name":\s*"([^"]+)"', list_result)
-            for sid, sname in zip(all_ids, all_names):
-                if ecs_server_name.lower() in sname.lower():
-                    ecs_server_id = sid
-                    break
-        if not ecs_server_id:
-            return f"ECS server '{ecs_server_name}' not found in region {region}."
+        all_ids = re.findall(r'"id":\s*"([^"]+)"', list_result)
+        all_names = re.findall(r'"name":\s*"([^"]+)"', list_result)
+        found_id = None
+        for sid, sn in zip(all_ids, all_names):
+            if sname.lower() in sn.lower():
+                found_id = sid
+                break
+        if not found_id:
+            errors.append(f"ECS server '{sname}' not found in region {region}. Available: {all_names[:10]}")
+            continue
 
-    logger.info("ELB Setup Step 1/6: Getting ECS details")
-    detail = execute_koocli("ECS", "ShowServer", {
-        "cli-region": region,
-        "server_id": ecs_server_id,
-    })
-    if "Error" in detail:
-        return f"Could not get ECS details for {ecs_server_id}.\n{detail[:300]}"
+        detail = execute_koocli("ECS", "ShowServer", {
+            "cli-region": region,
+            "server_id": found_id,
+        })
+        if "Error" in detail:
+            errors.append(f"Could not get ECS details for {found_id}: {detail[:200]}")
+            continue
+        name = extract_id(detail, [r'"name":\s*"([^"]+)"'])
+        status = extract_id(detail, [r'"status":\s*"([^"]+)"'])
+        private_ips, all_ips = _extract_private_ips(detail)
+        private_ip = private_ips[0] if private_ips else (all_ips[0] if all_ips else "")
+        resolved_servers.append({"id": found_id, "name": name or found_id, "ip": private_ip, "status": status})
+        if not resolved_vpc:
+            resolved_vpc = extract_id(detail, [r'"vpc_id":\s*"([^"]+)"'])
+        if not resolved_subnet:
+            subnet_matches = re.findall(r'"subnet_id":\s*"([^"]+)"', detail)
+            if subnet_matches:
+                resolved_subnet = subnet_matches[0]
 
-    ecs_name = extract_id(detail, [r'"name":\s*"([^"]+)"'])
-    ecs_status = extract_id(detail, [r'"status":\s*"([^"]+)"'])
-    private_ips, all_ips = _extract_private_ips(detail)
-    ecs_private_ip = private_ips[0] if private_ips else (all_ips[0] if all_ips else "")
+    if not resolved_servers:
+        return f"No ECS servers could be resolved. Errors:\n" + "\n".join(errors)
 
-    logger.info("ECS IP extraction", extra={"structured_extra": {
-        "all_ips_count": len(all_ips), "private_ips": private_ips, "selected": ecs_private_ip,
-    }})
-
-    if not ecs_private_ip:
-        errors.append(f"Could not find private IP for ECS {ecs_server_id}. Raw IPs found: {all_ips[:5]}")
-    else:
-        summary.append(f"ECS: {ecs_name or ecs_server_id} | IP: {ecs_private_ip} | Status: {ecs_status}")
-
-    if not resolved_vpc:
-        resolved_vpc = extract_id(detail, [r'"vpc_id":\s*"([^"]+)"'])
-    if not resolved_subnet:
-        subnet_matches = re.findall(r'"subnet_id":\s*"([^"]+)"', detail)
-        if subnet_matches:
-            resolved_subnet = subnet_matches[0]
+    for srv in resolved_servers:
+        if srv["ip"]:
+            summary.append(f"ECS: {srv['name']} | IP: {srv['ip']} | Status: {srv['status']}")
+        else:
+            errors.append(f"No private IP found for ECS {srv['name']} ({srv['id']})")
 
     logger.info("ELB Setup Step 2/6: Creating ELB load balancer")
     elb_name_safe = sanitize_params({"n": elb_name})["n"]
@@ -299,21 +328,28 @@ def setup_elb_for_ecs(
         else:
             errors.append(f"Pool creation failed: {pool_result[:300]}")
 
-    if pool_id and ecs_private_ip:
-        logger.info("ELB Setup Step 5/6: Adding ECS as Member")
-        time.sleep(2)
-        member_result = execute_koocli("ELB", "BatchCreateMembers", {
-            "cli-region": region,
-            "pool_id": pool_id,
-            "members": [{"address": ecs_private_ip, "protocol_port": listener_port}],
-        })
-        if '"id"' in member_result or "Success" in member_result:
-            summary.append(f"Member: {ecs_private_ip}:{listener_port}")
+    if pool_id:
+        members_with_ip = [srv for srv in resolved_servers if srv["ip"]]
+        if members_with_ip:
+            logger.info("ELB Setup Step 5/6: Adding %d ECS members to pool", len(members_with_ip))
+            time.sleep(2)
+            members_payload = [
+                {"address": srv["ip"], "protocol_port": listener_port}
+                for srv in members_with_ip
+            ]
+            member_result = execute_koocli("ELB", "BatchCreateMembers", {
+                "cli-region": region,
+                "pool_id": pool_id,
+                "members": members_payload,
+            })
+            if '"id"' in member_result or "Success" in member_result:
+                member_summary = ", ".join(f"{srv['ip']}:{listener_port}" for srv in members_with_ip)
+                summary.append(f"Members ({len(members_with_ip)}): {member_summary}")
+            else:
+                errors.append(f"Member creation failed: {member_result[:300]}")
         else:
-            errors.append(f"Member creation failed: {member_result[:300]}")
-    elif pool_id and not ecs_private_ip:
-        errors.append("Step 5 SKIPPED: no ECS private IP available to add as member")
-        logger.warning("Step 5 skipped: ecs_private_ip is empty, pool_id=%s", pool_id)
+            errors.append("Step 5 SKIPPED: no ECS private IPs available to add as members")
+            logger.warning("Step 5 skipped: no private IPs, pool_id=%s", pool_id)
 
     elb_public_address = ""
     if create_public_ip and elb_id:
@@ -538,7 +574,77 @@ def manage_eip(
     return f"Unknown action '{action}'. Use: create, associate, show, delete."
 
 
+@tool
+def deploy_obs_bucket(
+    bucket_name: str,
+    region: str = "la-north-2",
+    storage_class: str = "standard",
+    acl: str = "private",
+) -> str:
+    """Creates an OBS (Object Storage Service) bucket on Huawei Cloud using hcloud obs.
+    Use this tool to create OBS buckets for storing static files, assets, or data.
+
+    Args:
+        bucket_name: Globally unique bucket name (required).
+        region: Huawei Cloud region (default la-north-2).
+        storage_class: Storage class: standard, warm, cold, deep-archive (default standard).
+        acl: Access control: private, public-read, public-read-write (default private).
+    """
+    hcloud_path = _find_hcloud_binary()
+    if not hcloud_path:
+        return "Error: 'hcloud' is not installed. Install KooCLI and ensure it is in PATH."
+
+    ak = _settings.huawei_ak
+    sk = _settings.huawei_sk
+    if not ak or not sk:
+        return "Error: Missing HUAWEI_AK or HUAWEI_SK in .env"
+
+    cmd = (
+        f'"{hcloud_path}" obs mb obs://{bucket_name}'
+        f' -location={region}'
+        f' -sc={storage_class}'
+        f' -acl={acl}'
+        f' -i={ak}'
+        f' -k={sk}'
+    )
+
+    logger.info("Creating OBS bucket: %s in %s", bucket_name, region)
+
+    try:
+        result = subprocess.run(
+            cmd, capture_output=True, text=True, check=False,
+            shell=True, timeout=60,
+        )
+        combined = (result.stdout or "") + (result.stderr or "")
+
+        if "successfully" in combined.lower() or "successfully" in combined:
+            logger.info("OBS bucket created: %s", bucket_name)
+            return (
+                f"OBS bucket '{bucket_name}' created SUCCESSFULLY.\n"
+                f"Region: {region} | Storage: {storage_class} | ACL: {acl}"
+            )
+
+        if "already exists" in combined.lower() or "AlreadyExists" in combined:
+            return (
+                f"OBS bucket '{bucket_name}' already exists.\n"
+                f"Region: {region} | Storage: {storage_class} | ACL: {acl}"
+            )
+
+        logger.warning("OBS bucket creation failed: %s", combined[:300])
+        return f"OBS bucket creation FAILED for '{bucket_name}'.\n{combined[:500]}"
+
+    except subprocess.TimeoutExpired:
+        return f"Error: OBS bucket creation timed out after 60s."
+    except Exception as exc:
+        return f"Error creating OBS bucket: {str(exc)}"
+
+
 DEPLOY_TOOLS: list[ToolMeta] = [
+    ToolMeta(
+        tool=deploy_obs_bucket, service="DEPLOY", category=ToolCategory.DEPLOY,
+        keywords=["create obs", "deploy obs", "obs bucket", "crear obs", "bucket obs", "almacenamiento objeto", "object storage"],
+        is_read_only=False, cacheable=False,
+    ),
     ToolMeta(
         tool=deploy_ecs_instance, service="DEPLOY", category=ToolCategory.DEPLOY,
         keywords=["deploy ecs", "create ecs", "crear ecs", "create server", "desplegar ecs"],

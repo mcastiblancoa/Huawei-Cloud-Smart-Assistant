@@ -65,14 +65,10 @@ class TerraformManager:
         """Create a main.tf file that uses the module"""
         main_tf_path = os.path.join(module_dir, "main.tf")
         
-        # Add credentials to variables
         credentials = self._get_credentials()
         all_variables = {**credentials, **variables}
         
-        # Convert path to proper Terraform source format
-        # Use relative path from temp_dir to module_source
         module_source_rel = os.path.relpath(module_source, module_dir)
-        # Convert to forward slashes for Terraform
         module_source_url = module_source_rel.replace('\\', '/')
         
         main_tf_content = f"""terraform {{
@@ -81,10 +77,6 @@ class TerraformManager:
     huaweicloud = {{
       source  = "huaweicloud/huaweicloud"
       version = ">= 1.64.3"
-    }}
-    random = {{
-      source  = "hashicorp/random"
-      version = ">= 3.0.0"
     }}
   }}
 }}
@@ -98,15 +90,12 @@ provider "huaweicloud" {{
 module "resource" {{
   source = "{module_source_url}"
   
-  # Authentication variables
   region_name = "{all_variables.get('region_name', 'ap-southeast-3')}"
   access_key  = "{all_variables.get('access_key', '')}"
   secret_key  = "{all_variables.get('secret_key', '')}"
   
-  # Resource-specific variables
 """
         
-        # Add all other variables
         for key, value in all_variables.items():
             if key not in ['region_name', 'access_key', 'secret_key']:
                 if isinstance(value, str):
@@ -159,9 +148,9 @@ module "resource" {{
                 "bucket_storage_class": storage_class,
                 "bucket_acl": acl,
                 "bucket_encryption": encryption,
-                "bucket_sse_algorithm": sse_algorithm if encryption else None,
+                "bucket_sse_algorithm": sse_algorithm if encryption else "kms",
                 "bucket_encryption_key_id": encryption_key_id or "",
-                "key_alias": key_alias or f"obs-key-{bucket_name}",
+                "key_alias": (key_alias or f"obs-key-{bucket_name}") if encryption else "",
                 "key_usage": key_usage,
                 "bucket_force_destroy": force_destroy,
                 "bucket_tags": tags or {},

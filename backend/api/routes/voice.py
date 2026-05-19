@@ -13,6 +13,7 @@ from services.voice import (
     transcribe_short_audio, transcribe_spanish_audio,
     generate_speech,
 )
+from services.voice.tts import strip_html, resolve_voice, resolve_lang_code
 from api.chat import run_chat_turn
 
 logger = get_logger("api.voice")
@@ -60,13 +61,17 @@ async def voice_turn(
 
         agent_result = run_chat_turn(transcription, session_id)
         reply = agent_result.get("reply", "")
+        reply_clean = strip_html(reply)
 
         audio_b64: str | None = None
         tts_error: str | None = None
-        if reply and settings.kokoro_speech_url:
+        if reply_clean and settings.kokoro_speech_url:
             try:
-                tts_lang = "es" if language == "es" else "en"
-                audio_bytes = generate_speech(reply, settings, lang_code=tts_lang)
+                tts_voice = resolve_voice(language, settings)
+                tts_lang = resolve_lang_code(language, settings)
+                audio_bytes = generate_speech(
+                    reply_clean, settings, voice=tts_voice, lang_code=tts_lang,
+                )
                 audio_b64 = base64.b64encode(audio_bytes).decode("ascii")
             except Exception as exc:
                 tts_error = str(exc)
@@ -74,7 +79,7 @@ async def voice_turn(
 
         voice_resp = VoiceResponse(
             transcription=transcription,
-            reply=reply,
+            reply=reply_clean,
             session_id=session_id,
             has_audio=audio_b64 is not None,
             latency_ms=agent_result.get("latency_ms"),

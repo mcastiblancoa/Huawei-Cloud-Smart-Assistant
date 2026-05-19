@@ -59,6 +59,7 @@ class ToolRegistry:
         from tools.services_discovery import DISCOVERY_TOOLS
         from tools.deploy import DEPLOY_TOOLS
         from tools.koocli import KOOCLI_TOOLS
+        from tools.terraform_tools import TERRAFORM_TOOLS
 
         all_groups = [
             (ECS_TOOLS, "ECS"),
@@ -71,6 +72,7 @@ class ToolRegistry:
             (DISCOVERY_TOOLS, "DISCOVERY"),
             (DEPLOY_TOOLS, "DEPLOY"),
             (KOOCLI_TOOLS, "KOOCLI"),
+            (TERRAFORM_TOOLS, "TERRAFORM"),
         ]
 
         for tools_list, service in all_groups:

@@ -44,14 +44,16 @@ class Settings(BaseSettings):
     maas_api_url: str = ""
     maas_api_key: str = ""
     open_api_base: str = ""
-    llm_model: str = "deepseek-v3.2"
-    intent_model: str = "deepseek-v3.2"
+    llm_model: str = "deepseek-v3.1-terminus"
+    intent_model: str = "deepseek-v3.1-terminus"
 
     whisper_asr_url: str = ""
 
     kokoro_speech_url: str = ""
-    kokoro_voice: str = "af_heart"
-    kokoro_lang_code: str = "es"
+    kokoro_voice_es: str = "af_heart"
+    kokoro_voice_en: str = "af_bella"
+    kokoro_lang_code_es: str = "es"
+    kokoro_lang_code_en: str = "en-us"
     kokoro_response_format: str = "mp3"
     kokoro_speed: float = 1.0
     kokoro_timeout: int = 30

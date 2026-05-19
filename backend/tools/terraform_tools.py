@@ -16,7 +16,7 @@ def deploy_obs_bucket_with_terraform(
     region: Optional[str] = None,
     storage_class: str = "STANDARD",
     acl: str = "private",
-    encryption: bool = True,
+    encryption: bool = False,
     sse_algorithm: str = "kms",
     encryption_key_id: Optional[str] = None,
     key_alias: Optional[str] = None,
@@ -26,18 +26,19 @@ def deploy_obs_bucket_with_terraform(
 ) -> str:
     """Deploy an OBS (Object Storage Service) bucket using Terraform.
     
-    This tool creates a complete OBS bucket with KMS encryption using Terraform,
+    This tool creates an OBS bucket using Terraform,
     which is more reliable than KooCLI for OBS operations.
+    Set encryption=true to enable KMS server-side encryption.
     
     Args:
         bucket_name: The name of the OBS bucket (required, must be globally unique).
         region: Huawei Cloud region (default: from settings).
         storage_class: Storage class: STANDARD, WARM, COLD (default: STANDARD).
         acl: Access control: private, public-read, public-read-write, public-read-delivered, public-read-write-delivered (default: private).
-        encryption: Enable server-side encryption (default: true).
+        encryption: Enable server-side KMS encryption (default: false).
         sse_algorithm: Encryption algorithm: kms (default: kms).
         encryption_key_id: Existing KMS key ID (optional, creates new key if not provided).
-        key_alias: Alias for the KMS key (required if encryption_key_id is not provided).
+        key_alias: Alias for the KMS key (required if encryption_key_id is not provided and encryption=true).
         key_usage: KMS key usage: ENCRYPT_DECRYPT (default).
         force_destroy: Force destroy bucket even if it contains objects (default: true).
         tags: JSON string of tags for the bucket (e.g., '{"Environment": "Production", "Project": "MyProject"}').
@@ -336,18 +337,6 @@ Terraform state files would be tracked to show actual deployments.
 
 
 TERRAFORM_TOOLS: list[ToolMeta] = [
-    ToolMeta(
-        tool=deploy_obs_bucket_with_terraform,
-        service="TERRAFORM",
-        category=ToolCategory.DEPLOY,
-        keywords=[
-            "terraform obs", "terraform bucket", "create obs terraform",
-            "desplegar obs terraform", "obs terraform", "bucket terraform",
-            "kms encryption terraform", "almacenamiento objeto terraform"
-        ],
-        is_read_only=False,
-        cacheable=False,
-    ),
     ToolMeta(
         tool=deploy_elb_with_terraform,
         service="TERRAFORM",

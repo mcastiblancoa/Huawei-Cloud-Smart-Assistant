@@ -30,15 +30,10 @@ output "bucket_acl" {
 
 output "bucket_encryption_enabled" {
   description = "Whether encryption is enabled on the bucket"
-  value       = huaweicloud_obs_bucket.obs_bucket.encryption
+  value       = var.bucket_encryption
 }
 
 output "kms_key_id" {
-  description = "The ID of the KMS key used for encryption"
-  value       = var.bucket_encryption && var.bucket_encryption_key_id == "" ? huaweicloud_kms_key.obs_kms_key[0].id : var.bucket_encryption_key_id
-}
-
-output "kms_key_alias" {
-  description = "The alias of the KMS key used for encryption"
-  value       = var.key_alias
+  description = "The ID of the KMS key used for encryption (empty if encryption disabled)"
+  value       = var.bucket_encryption ? (var.bucket_encryption_key_id != "" ? var.bucket_encryption_key_id : (length(huaweicloud_kms_key.obs_kms_key) > 0 ? huaweicloud_kms_key.obs_kms_key[0].id : "")) : ""
 }

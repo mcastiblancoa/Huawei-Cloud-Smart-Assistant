@@ -1,4 +1,3 @@
-# Variable definitions for authentication
 variable "region_name" {
   description = "The region where the OBS bucket is located"
   type        = string
@@ -16,33 +15,27 @@ variable "secret_key" {
   sensitive   = true
 }
 
-# Variable definitions for resources/data sources
 variable "bucket_encryption" {
-  description = "The encryption of the OBS bucket"
+  description = "Whether to enable server-side encryption on the OBS bucket"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "bucket_encryption_key_id" {
-  description = "The encryption key ID of the OBS bucket"
+  description = "Existing KMS key ID for encryption (empty string to auto-create)"
   type        = string
   default     = ""
   nullable    = false
 }
 
 variable "key_alias" {
-  description = "The alias of the KMS key"
+  description = "Alias for the auto-created KMS key (required only when encryption=true and no existing key provided)"
   type        = string
   default     = ""
-  nullable    = false
-  validation {
-    condition     = var.key_alias != "" && var.bucket_encryption && var.bucket_encryption_key_id == ""
-    error_message = "The key_alias must be set when bucket_encryption is true and bucket_encryption_key_id is not set."
-  }
 }
 
 variable "key_usage" {
-  description = "The usage of the KMS key"
+  description = "KMS key usage"
   type        = string
   default     = "ENCRYPT_DECRYPT"
 }
@@ -53,31 +46,31 @@ variable "bucket_name" {
 }
 
 variable "bucket_storage_class" {
-  description = "The storage class of the OBS bucket"
+  description = "Storage class: STANDARD, WARM, COLD"
   type        = string
   default     = "STANDARD"
 }
 
 variable "bucket_acl" {
-  description = "The ACL of the OBS bucket"
+  description = "ACL: private, public-read, public-read-write"
   type        = string
   default     = "private"
 }
 
 variable "bucket_sse_algorithm" {
-  description = "The SSE algorithm of the OBS bucket"
+  description = "SSE algorithm when encryption is enabled"
   type        = string
   default     = "kms"
 }
 
 variable "bucket_force_destroy" {
-  description = "The force destroy of the OBS bucket"
+  description = "Force destroy bucket even if it contains objects"
   type        = bool
   default     = true
 }
 
 variable "bucket_tags" {
-  description = "The tags of the OBS bucket"
+  description = "Tags for the bucket"
   type        = map(string)
   default     = {}
 }
