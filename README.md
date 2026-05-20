@@ -2,6 +2,11 @@
 
 > **Status: BETA** — This project is in active development. Some features are experimental, known bugs exist, and parts of the codebase are being refactored. See [Known Issues](#known-issues) and [Current Limitations](#current-limitations).
 
+<p align="center">
+  <img src="docs/main_window_chat_panel.png" alt="Chat Panel" width="48%" />
+  <img src="docs/main_window_voice_panel.png" alt="Voice Panel" width="48%" />
+</p>
+
 AI-powered Cloud Operations Assistant for **Huawei Cloud**. Interact via **voice** or **chat** to deploy infrastructure, query resources, manage billing, and execute administrative operations — all through natural language in English or Spanish.
 
 ```
@@ -296,8 +301,6 @@ The **fast path** handles simple queries (list, billing, greetings) with regex m
 │       ├── main.jsx                  # React entry
 │       ├── App.jsx                   # Orchestrator: voice/chat views, threads, i18n, theming
 │       ├── styles.css                # Global styles (2214 lines, light/dark themes)
-│       ├── ResourceDashboard.jsx     # Resource inventory dashboard
-│       ├── BillingDashboard.jsx      # Billing summary dashboard
 │       ├── components/
 │       │   ├── Sidebar.jsx           # Navigation + thread list
 │       │   ├── ChatView.jsx          # Chat messages, markdown, charts
