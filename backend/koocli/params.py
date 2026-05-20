@@ -2,11 +2,24 @@ import json
 from typing import Any
 
 
+class RepeatFlag(list):
+    """List of dicts to pass as repeated --key flags, each serialized as JSON.
+    Use when a KooCLI operation expects repeated flags like:
+      --members='{"address":"10.0.0.1","protocol_port":80}'
+      --members='{"address":"10.0.0.2","protocol_port":80}'
+    instead of dot-notation --members.1.address=...
+    """
+    pass
+
+
 def flatten_params(params: dict, prefix: str = "") -> list[tuple[str, str]]:
     result = []
     for key, value in params.items():
         full_key = f"{prefix}.{key}" if prefix else key
-        if isinstance(value, dict):
+        if isinstance(value, RepeatFlag):
+            for v in value:
+                result.append((full_key, json.dumps(v, separators=(',', ':'))))
+        elif isinstance(value, dict):
             result.extend(flatten_params(value, full_key))
         elif isinstance(value, list):
             if all(not isinstance(v, (dict, list)) for v in value):

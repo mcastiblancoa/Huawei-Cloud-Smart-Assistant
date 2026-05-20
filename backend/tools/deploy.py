@@ -8,6 +8,7 @@ from typing import Optional
 from langchain_core.tools import tool
 
 from koocli.executor import execute_koocli, _find_hcloud_binary
+from koocli.params import RepeatFlag
 from utils.sanitize import sanitize_params
 from tools.registry import ToolMeta, ToolCategory
 from cloud.validation import extract_id
@@ -202,6 +203,10 @@ def setup_elb_for_ecs(
 
     resolved_servers: list[dict] = []
 
+    def _resolve_ecs_subnet(detail_text: str) -> str:
+        subnet_matches = re.findall(r'"subnet_id":\s*"([^"]+)"', detail_text)
+        return subnet_matches[0] if subnet_matches else ""
+
     for sid in server_id_list:
         logger.info("ELB Setup: Resolving ECS by ID: %s", sid)
         detail = execute_koocli("ECS", "ShowServer", {
@@ -215,13 +220,13 @@ def setup_elb_for_ecs(
         status = extract_id(detail, [r'"status":\s*"([^"]+)"'])
         private_ips, all_ips = _extract_private_ips(detail)
         private_ip = private_ips[0] if private_ips else (all_ips[0] if all_ips else "")
-        resolved_servers.append({"id": sid, "name": name or sid, "ip": private_ip, "status": status})
+        ecs_subnet = _resolve_ecs_subnet(detail)
+        resolved_servers.append({"id": sid, "name": name or sid, "ip": private_ip, "status": status, "subnet_id": ecs_subnet})
         if not resolved_vpc:
             resolved_vpc = extract_id(detail, [r'"vpc_id":\s*"([^"]+)"'])
         if not resolved_subnet:
-            subnet_matches = re.findall(r'"subnet_id":\s*"([^"]+)"', detail)
-            if subnet_matches:
-                resolved_subnet = subnet_matches[0]
+            if ecs_subnet:
+                resolved_subnet = ecs_subnet
 
     for sname in server_name_list:
         logger.info("ELB Setup: Resolving ECS by name: %s", sname)
@@ -250,13 +255,13 @@ def setup_elb_for_ecs(
         status = extract_id(detail, [r'"status":\s*"([^"]+)"'])
         private_ips, all_ips = _extract_private_ips(detail)
         private_ip = private_ips[0] if private_ips else (all_ips[0] if all_ips else "")
-        resolved_servers.append({"id": found_id, "name": name or found_id, "ip": private_ip, "status": status})
+        ecs_subnet = _resolve_ecs_subnet(detail)
+        resolved_servers.append({"id": found_id, "name": name or found_id, "ip": private_ip, "status": status, "subnet_id": ecs_subnet})
         if not resolved_vpc:
             resolved_vpc = extract_id(detail, [r'"vpc_id":\s*"([^"]+)"'])
         if not resolved_subnet:
-            subnet_matches = re.findall(r'"subnet_id":\s*"([^"]+)"', detail)
-            if subnet_matches:
-                resolved_subnet = subnet_matches[0]
+            if ecs_subnet:
+                resolved_subnet = ecs_subnet
 
     if not resolved_servers:
         return f"No ECS servers could be resolved. Errors:\n" + "\n".join(errors)
@@ -333,20 +338,54 @@ def setup_elb_for_ecs(
         if members_with_ip:
             logger.info("ELB Setup Step 5/6: Adding %d ECS members to pool", len(members_with_ip))
             time.sleep(2)
-            members_payload = [
-                {"address": srv["ip"], "protocol_port": listener_port}
-                for srv in members_with_ip
-            ]
+
+            member_dicts = []
+            for srv in members_with_ip:
+                m = {"address": srv["ip"], "protocol_port": listener_port}
+                if srv.get("subnet_id"):
+                    m["subnet_id"] = srv["subnet_id"]
+                elif resolved_subnet:
+                    m["subnet_id"] = resolved_subnet
+                member_dicts.append(m)
+
+            logger.info(
+                "ELB Setup: BatchCreateMembers payload: %s",
+                json.dumps(member_dicts, separators=(',', ':')),
+            )
+
             member_result = execute_koocli("ELB", "BatchCreateMembers", {
                 "cli-region": region,
                 "pool_id": pool_id,
-                "members": members_payload,
+                "members": RepeatFlag(member_dicts),
             })
-            if '"id"' in member_result or "Success" in member_result:
+
+            created_ids = re.findall(r'"id":\s*"([^"]+)"', member_result)
+            has_error = '"error"' in member_result.lower() or '"error_code"' in member_result.lower()
+
+            if created_ids and not has_error and len(created_ids) >= len(members_with_ip):
                 member_summary = ", ".join(f"{srv['ip']}:{listener_port}" for srv in members_with_ip)
                 summary.append(f"Members ({len(members_with_ip)}): {member_summary}")
             else:
-                errors.append(f"Member creation failed: {member_result[:300]}")
+                logger.warning(
+                    "BatchCreateMembers partial/failed (ids=%d, expected=%d, has_error=%s). Falling back to individual adds.",
+                    len(created_ids), len(members_with_ip), has_error,
+                )
+                individual_ok = 0
+                for m in member_dicts:
+                    ind_result = execute_koocli("ELB", "BatchCreateMembers", {
+                        "cli-region": region,
+                        "pool_id": pool_id,
+                        "members": RepeatFlag([m]),
+                    })
+                    if '"id"' in ind_result and "Error" not in ind_result:
+                        individual_ok += 1
+                    else:
+                        errors.append(f"Individual member add failed for {m.get('address')}: {ind_result[:200]}")
+                    time.sleep(1)
+                if individual_ok:
+                    summary.append(f"Members added individually: {individual_ok}/{len(member_dicts)}")
+                else:
+                    errors.append(f"Member creation failed entirely: {member_result[:300]}")
         else:
             errors.append("Step 5 SKIPPED: no ECS private IPs available to add as members")
             logger.warning("Step 5 skipped: no private IPs, pool_id=%s", pool_id)
@@ -575,21 +614,27 @@ def manage_eip(
 
 
 @tool
-def deploy_obs_bucket(
+def manage_obs_bucket(
+    action: str,
     bucket_name: str,
     region: str = "la-north-2",
     storage_class: str = "standard",
     acl: str = "private",
+    force: bool = True,
 ) -> str:
-    """Creates an OBS (Object Storage Service) bucket on Huawei Cloud using hcloud obs.
-    Use this tool to create OBS buckets for storing static files, assets, or data.
+    """Manages OBS (Object Storage Service) buckets on Huawei Cloud using hcloud obs.
+    Supports creating and deleting buckets.
 
     Args:
+        action: Operation to perform: 'create' or 'delete'.
         bucket_name: Globally unique bucket name (required).
         region: Huawei Cloud region (default la-north-2).
-        storage_class: Storage class: standard, warm, cold, deep-archive (default standard).
-        acl: Access control: private, public-read, public-read-write (default private).
+        storage_class: Storage class: standard, warm, cold, deep-archive (default standard). Only for create.
+        acl: Access control: private, public-read, public-read-write (default private). Only for create.
+        force: Force deletion without prompting (default True). Only for delete.
     """
+    action = action.lower().strip()
+
     hcloud_path = _find_hcloud_binary()
     if not hcloud_path:
         return "Error: 'hcloud' is not installed. Install KooCLI and ensure it is in PATH."
@@ -599,50 +644,86 @@ def deploy_obs_bucket(
     if not ak or not sk:
         return "Error: Missing HUAWEI_AK or HUAWEI_SK in .env"
 
-    cmd = (
-        f'"{hcloud_path}" obs mb obs://{bucket_name}'
-        f' -location={region}'
-        f' -sc={storage_class}'
-        f' -acl={acl}'
-        f' -i={ak}'
-        f' -k={sk}'
-    )
-
-    logger.info("Creating OBS bucket: %s in %s", bucket_name, region)
-
-    try:
-        result = subprocess.run(
-            cmd, capture_output=True, text=True, check=False,
-            shell=True, timeout=60,
+    if action == "create":
+        cmd = (
+            f'"{hcloud_path}" obs mb obs://{bucket_name}'
+            f' -location={region}'
+            f' -sc={storage_class}'
+            f' -acl={acl}'
+            f' -i={ak}'
+            f' -k={sk}'
         )
-        combined = (result.stdout or "") + (result.stderr or "")
 
-        if "successfully" in combined.lower() or "successfully" in combined:
-            logger.info("OBS bucket created: %s", bucket_name)
-            return (
-                f"OBS bucket '{bucket_name}' created SUCCESSFULLY.\n"
-                f"Region: {region} | Storage: {storage_class} | ACL: {acl}"
+        logger.info("Creating OBS bucket: %s in %s", bucket_name, region)
+
+        try:
+            result = subprocess.run(
+                cmd, capture_output=True, text=True, check=False,
+                shell=True, timeout=60,
             )
+            combined = (result.stdout or "") + (result.stderr or "")
 
-        if "already exists" in combined.lower() or "AlreadyExists" in combined:
-            return (
-                f"OBS bucket '{bucket_name}' already exists.\n"
-                f"Region: {region} | Storage: {storage_class} | ACL: {acl}"
+            if "successfully" in combined.lower():
+                logger.info("OBS bucket created: %s", bucket_name)
+                return (
+                    f"OBS bucket '{bucket_name}' created SUCCESSFULLY.\n"
+                    f"Region: {region} | Storage: {storage_class} | ACL: {acl}"
+                )
+
+            if "already exists" in combined.lower() or "AlreadyExists" in combined:
+                return (
+                    f"OBS bucket '{bucket_name}' already exists.\n"
+                    f"Region: {region} | Storage: {storage_class} | ACL: {acl}"
+                )
+
+            logger.warning("OBS bucket creation failed: %s", combined[:300])
+            return f"OBS bucket creation FAILED for '{bucket_name}'.\n{combined[:500]}"
+
+        except subprocess.TimeoutExpired:
+            return "Error: OBS bucket creation timed out after 60s."
+        except Exception as exc:
+            return f"Error creating OBS bucket: {str(exc)}"
+
+    if action == "delete":
+        force_flag = " -f" if force else ""
+        cmd = (
+            f'"{hcloud_path}" obs rm obs://{bucket_name}'
+            f'{force_flag}'
+            f' -i={ak}'
+            f' -k={sk}'
+        )
+
+        logger.info("Deleting OBS bucket: %s", bucket_name)
+
+        try:
+            result = subprocess.run(
+                cmd, capture_output=True, text=True, check=False,
+                shell=True, timeout=60,
             )
+            combined = (result.stdout or "") + (result.stderr or "")
 
-        logger.warning("OBS bucket creation failed: %s", combined[:300])
-        return f"OBS bucket creation FAILED for '{bucket_name}'.\n{combined[:500]}"
+            if "successfully" in combined.lower() or "delete" in combined.lower() and "error" not in combined.lower():
+                logger.info("OBS bucket deleted: %s", bucket_name)
+                return f"OBS bucket '{bucket_name}' deleted SUCCESSFULLY."
 
-    except subprocess.TimeoutExpired:
-        return f"Error: OBS bucket creation timed out after 60s."
-    except Exception as exc:
-        return f"Error creating OBS bucket: {str(exc)}"
+            if "not exist" in combined.lower() or "NoSuchBucket" in combined:
+                return f"OBS bucket '{bucket_name}' does not exist."
+
+            logger.warning("OBS bucket deletion failed: %s", combined[:300])
+            return f"OBS bucket deletion FAILED for '{bucket_name}'.\n{combined[:500]}"
+
+        except subprocess.TimeoutExpired:
+            return "Error: OBS bucket deletion timed out after 60s."
+        except Exception as exc:
+            return f"Error deleting OBS bucket: {str(exc)}"
+
+    return f"Unknown action '{action}'. Use: create, delete."
 
 
 DEPLOY_TOOLS: list[ToolMeta] = [
     ToolMeta(
-        tool=deploy_obs_bucket, service="DEPLOY", category=ToolCategory.DEPLOY,
-        keywords=["create obs", "deploy obs", "obs bucket", "crear obs", "bucket obs", "almacenamiento objeto", "object storage"],
+        tool=manage_obs_bucket, service="DEPLOY", category=ToolCategory.DEPLOY,
+        keywords=["create obs", "deploy obs", "obs bucket", "crear obs", "bucket obs", "almacenamiento objeto", "object storage", "delete obs", "borrar obs", "eliminar obs"],
         is_read_only=False, cacheable=False,
     ),
     ToolMeta(

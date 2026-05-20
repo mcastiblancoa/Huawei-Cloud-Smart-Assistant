@@ -6,7 +6,7 @@
     "frontend:install": "cd frontend && npm install",
     "frontend:dev": "cd frontend && npm run dev",
     "frontend:build": "cd frontend && npm run build",
-    "backend:dev": "cd backend && python -m uvicorn app:app --host 0.0.0.0 --port 8003 --reload",
-    "backend:prod": "cd backend && python -m uvicorn app:app --host 0.0.0.0 --port 8003"
+    "backend:dev": "cd backend && python -m uvicorn app:app --host 0.0.0.0 --port 8000 --reload",
+    "backend:prod": "cd backend && python -m uvicorn app:app --host 0.0.0.0 --port 8000"
   }
 }

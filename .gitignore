@@ -16,10 +16,6 @@ venv
 # Dependencies
 node_modules/
 
-# Build outputs
-dist/
-build/
-
 # Temporary files
 tmp_audio/
 
@@ -27,7 +23,12 @@ tmp_audio/
 .vscode/
 .idea/
 
-# Terraform (removed - no longer used)
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Terraform
 terraform_workspace/
 terraform_resources/
 .terraform/
@@ -35,3 +36,10 @@ terraform_resources/
 *.tfstate.backup
 *.pem
 .terraform.lock.hcl
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

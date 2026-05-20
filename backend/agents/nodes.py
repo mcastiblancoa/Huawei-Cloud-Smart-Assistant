@@ -1,6 +1,6 @@
 import time
 
-from langchain_core.messages import SystemMessage, AIMessage
+from langchain_core.messages import SystemMessage, AIMessage, ToolMessage
 from langchain.chat_models import init_chat_model
 
 from models.state import AgentState
@@ -16,6 +16,7 @@ _settings = get_settings()
 
 RATE_LIMIT_RETRIES = 6
 RATE_LIMIT_BASE_DELAY = 3.0
+TOOL_RESULT_MAX_CHARS = 3000
 
 _llm_with_tools_cache = None
 
@@ -39,6 +40,30 @@ def _get_llm_with_tools():
     return _llm_with_tools_cache
 
 
+def _prune_messages(messages: list, max_tool_chars: int = TOOL_RESULT_MAX_CHARS) -> list:
+    """Truncate long tool results and prune very old messages to keep context manageable."""
+    pruned = []
+    total_chars = 0
+    for msg in messages:
+        if isinstance(msg, ToolMessage):
+            content = getattr(msg, "content", "")
+            if isinstance(content, str) and len(content) > max_tool_chars:
+                truncated = content[:max_tool_chars] + f"\n...[truncated, {len(content)} chars total]"
+                msg = ToolMessage(
+                    content=truncated,
+                    tool_call_id=msg.tool_call_id,
+                    name=getattr(msg, "name", None),
+                )
+                total_chars += len(truncated)
+            else:
+                total_chars += len(content) if isinstance(content, str) else 0
+        else:
+            content = getattr(msg, "content", "")
+            total_chars += len(content) if isinstance(content, str) else 0
+        pruned.append(msg)
+    return pruned
+
+
 def chatbot_node(state: AgentState) -> dict:
     llm_with_tools, tools = _get_llm_with_tools()
     lang = current_chat_language.get()
@@ -48,7 +73,9 @@ def chatbot_node(state: AgentState) -> dict:
     elif lang == "en":
         lang_block = "\n\n[LANGUAGE: the user expects English replies.]"
     system_msg = SystemMessage(content=SYSTEM_PROMPT + lang_block)
-    messages_with_system = [system_msg] + state["messages"]
+
+    pruned = _prune_messages(state["messages"])
+    messages_with_system = [system_msg] + pruned
 
     logger.info(
         "Chatbot node invoked",
