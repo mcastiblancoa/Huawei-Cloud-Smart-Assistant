@@ -1,6 +1,8 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Bot, Mic, X, Plus, MessageSquare, Trash2, Pencil } from "lucide-react";
+import { Bot, Mic, X, Plus, MessageSquare, Trash2, Pencil, Cloud, ChevronDown, Eye, Smile, AlertTriangle } from "lucide-react";
 import { ScrollArea } from "./ui/ScrollArea";
+import huaweiLogo from "../img/huawei_logo.png";
+import { useState } from "react";
 
 export function Sidebar({
   activeView,
@@ -16,10 +18,25 @@ export function Sidebar({
   onDeleteThread,
   onRenameThread,
 }) {
-  const items = [
-    { id: "voice", label: language === "es" ? "Asistente de Voz" : "Voice Assistant", icon: Mic },
-    { id: "chat", label: language === "es" ? "Asistente de Chat" : "Chat Assistant", icon: Bot },
+  const [infrastructureExpanded, setInfrastructureExpanded] = useState(true);
+  const [cvExpanded, setCvExpanded] = useState(true);
+
+  const HuaweiLogoIcon = () => (
+    <img src={huaweiLogo} alt="Huawei Cloud" className="flex-shrink-0" style={{ width: "24px", height: "24px", objectFit: "contain" }} />
+  );
+
+  const infrastructureItems = [
+    { id: "voice", label: language === "es" ? "Asistente de Voz" : "Voice Assistant", icon: Mic, category: "infrastructure" },
+    { id: "chat", label: language === "es" ? "Asistente de Chat" : "Chat Assistant", icon: Bot, category: "infrastructure" },
   ];
+
+  const cvItems = [
+    { id: "feelings", label: language === "es" ? "Sentimientos" : "Feelings", icon: Smile, category: "cv" },
+    { id: "industrial-safety", label: language === "es" ? "Seguridad Industrial" : "Industrial Safety", icon: AlertTriangle, category: "cv" },
+  ];
+
+  const infrastructureLabel = language === "es" ? "Infraestructura Huawei Cloud" : "Huawei Cloud Infrastructure";
+  const cvLabel = language === "es" ? "Visión Artificial" : "Computer Vision";
 
   const t = {
     conversations: language === "es" ? "Conversaciones" : "Conversations",
@@ -48,7 +65,7 @@ export function Sidebar({
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
-          HC
+          <HuaweiLogoIcon />
         </motion.div>
         <div className="sidebar-brand-copy">
           <div className="sidebar-brand-title">Huawei Cloud</div>
@@ -68,28 +85,101 @@ export function Sidebar({
 
       {/* Navigation */}
       <nav className="sidebar-nav" aria-label="Assistant views">
-        {items.map((item) => {
-          const Icon = item.icon;
-          const isActive = activeView === item.id;
-          return (
-            <motion.button
-              key={item.id}
-              className={`sidebar-nav-item ${isActive ? "active" : ""}`}
-              onClick={() => {
-                onSelectView(item.id);
-                if (isMobile) {
-                  onClose();
-                }
-              }}
-              whileHover={{ x: 4 }}
-              whileTap={{ scale: 0.98 }}
-              aria-pressed={isActive}
-            >
-              <Icon size={20} strokeWidth={1.5} />
-              <span>{item.label}</span>
-            </motion.button>
-          );
-        })}
+        {/* Infrastructure Category */}
+        <motion.button
+          className="sidebar-category-button"
+          onClick={() => setInfrastructureExpanded(!infrastructureExpanded)}
+          whileHover={{ x: 2 }}
+          whileTap={{ scale: 0.98 }}
+        >
+          <Cloud size={18} strokeWidth={1.5} className="flex-shrink-0" />
+          <span className="sidebar-category-label">{infrastructureLabel}</span>
+          <motion.div
+            animate={{ rotate: infrastructureExpanded ? 0 : -90 }}
+            transition={{ duration: 0.2 }}
+            className="ml-auto flex-shrink-0"
+          >
+            <ChevronDown size={18} strokeWidth={1.5} />
+          </motion.div>
+        </motion.button>
+
+        {/* Infrastructure Items */}
+        <AnimatePresence>
+          {infrastructureExpanded && infrastructureItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = activeView === item.id;
+            return (
+              <motion.button
+                key={item.id}
+                className={`sidebar-nav-item sidebar-nav-subitem ${isActive ? "active" : ""}`}
+                onClick={() => {
+                  onSelectView(item.id);
+                  if (isMobile) {
+                    onClose();
+                  }
+                }}
+                whileHover={{ x: 4 }}
+                whileTap={{ scale: 0.98 }}
+                aria-pressed={isActive}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -10 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Icon size={20} strokeWidth={1.5} />
+                <span>{item.label}</span>
+              </motion.button>
+            );
+          })}
+        </AnimatePresence>
+
+        {/* Computer Vision Category */}
+        <motion.button
+          className="sidebar-category-button"
+          onClick={() => setCvExpanded(!cvExpanded)}
+          whileHover={{ x: 2 }}
+          whileTap={{ scale: 0.98 }}
+        >
+          <Eye size={18} strokeWidth={1.5} className="flex-shrink-0" />
+          <span className="sidebar-category-label">{cvLabel}</span>
+          <motion.div
+            animate={{ rotate: cvExpanded ? 0 : -90 }}
+            transition={{ duration: 0.2 }}
+            className="ml-auto flex-shrink-0"
+          >
+            <ChevronDown size={18} strokeWidth={1.5} />
+          </motion.div>
+        </motion.button>
+
+        {/* Computer Vision Items */}
+        <AnimatePresence>
+          {cvExpanded && cvItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = activeView === item.id;
+            return (
+              <motion.button
+                key={item.id}
+                className={`sidebar-nav-item sidebar-nav-subitem ${isActive ? "active" : ""}`}
+                onClick={() => {
+                  onSelectView(item.id);
+                  if (isMobile) {
+                    onClose();
+                  }
+                }}
+                whileHover={{ x: 4 }}
+                whileTap={{ scale: 0.98 }}
+                aria-pressed={isActive}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -10 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Icon size={20} strokeWidth={1.5} />
+                <span>{item.label}</span>
+              </motion.button>
+            );
+          })}
+        </AnimatePresence>
       </nav>
 
       {/* Chat History */}

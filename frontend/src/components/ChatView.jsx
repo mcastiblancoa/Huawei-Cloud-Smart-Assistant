@@ -307,9 +307,39 @@ export function ChatView({ theme, language, t, threads, setThreads, activeThread
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState("");
   const [showScrollBtn, setShowScrollBtn] = useState(false);
+  const [currentExampleIndex, setCurrentExampleIndex] = useState(0);
   const chatHistoryRef = useRef(null);
   const prevMsgCountRef = useRef(0);
   const justSentRef = useRef(false);
+  const exampleCycleRef = useRef(null);
+
+  const examplePrompts = [
+    {
+      en: "Deploy an ECS with the name ecs-web",
+      es: "Despliega una ECS llamada ecs-web",
+    },
+    {
+      en: "Show me what services I have deployed on Huawei Cloud",
+      es: "Muéstrame qué servicios tengo desplegados en este momento",
+    },
+    {
+      en: "Deploy a RDS with MySQL and password Huawei@123",
+      es: "Despliega una RDS con MySQL y contraseña Huawei@123",
+    },
+  ];
+
+  const currentExample = examplePrompts[currentExampleIndex]?.[language] || examplePrompts[0]?.[language];
+
+  // Cycle through examples
+  useEffect(() => {
+    if (input.trim() !== "") return;
+    
+    exampleCycleRef.current = setInterval(() => {
+      setCurrentExampleIndex((prev) => (prev + 1) % examplePrompts.length);
+    }, 6000); // Change every 6 seconds (typing + pause + delete)
+
+    return () => clearInterval(exampleCycleRef.current);
+  }, [input, examplePrompts.length]);
 
   const activeThread = useMemo(
     () => threads.find((thread) => thread.id === activeThreadId) || threads[0] || null,
@@ -407,7 +437,7 @@ export function ChatView({ theme, language, t, threads, setThreads, activeThread
       transition={{ duration: 0.3 }}
     >
       <div className="chat-workbench">
-        <div className="chat-panel">
+        <div className={`chat-panel ${!hasMessages ? "chat-panel-empty" : ""}`}>
           {!hasMessages && !isSending ? (
             <ChatEmptyState
               icon={Sparkles}
@@ -467,6 +497,8 @@ export function ChatView({ theme, language, t, threads, setThreads, activeThread
             isLoading={isSending}
             language={language}
             placeholder={language === "es" ? "Escribe tu mensaje..." : "Type your message..."}
+            showTypingPlaceholder={!hasMessages && !isSending}
+            typingText={currentExample}
           />
 
           {error && (

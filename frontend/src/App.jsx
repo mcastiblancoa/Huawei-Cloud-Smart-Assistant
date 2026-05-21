@@ -2,10 +2,15 @@ import { useMemo, useRef, useState, useEffect, useCallback } from "react";
 import { Sidebar } from "./components/Sidebar";
 import { VoiceView } from "./components/VoiceView";
 import { ChatView } from "./components/ChatView";
-import { Menu, Sun, Moon } from "lucide-react";
+import { ComputerVisionView } from "./components/ComputerVisionView";
+import { RightSidebar } from "./components/RightSidebar";
+import { ServiceModal } from "./components/ServiceModal";
+import { Menu, Sun, Moon, HelpCircle } from "lucide-react";
 import { sendVoiceAudio } from "./services/api";
 
 const CHAT_THREADS_KEY = "koocliChatThreads";
+const VOICE_SERVICE_SHOWN_KEY = "koocliVoiceServiceShown";
+const CHAT_SERVICE_SHOWN_KEY = "koocliChatServiceShown";
 const ACTIVE_THREAD_KEY = "koocliActiveChatId";
 
 const getRandomId = (prefix) => {
@@ -113,6 +118,10 @@ const translations = {
     messages: "messages",
     typing: "Typing...",
     send: "Send",
+    feelingsTitle: "Feelings Recognition",
+    feelingsSubtitle: "Computer Vision model to detect human emotions from webcam",
+    industrialSafetyTitle: "Industrial Safety",
+    industrialSafetySubtitle: "AI-powered safety detection for industrial environments",
   },
   es: {
     appTitle: "Asistente de Voz",
@@ -147,6 +156,10 @@ const translations = {
     messages: "mensajes",
     typing: "Escribiendo...",
     send: "Enviar",
+    feelingsTitle: "Reconocimiento de Sentimientos",
+    feelingsSubtitle: "Modelo de visión computacional para detectar emociones humanas desde la cámara web",
+    industrialSafetyTitle: "Seguridad Industrial",
+    industrialSafetySubtitle: "Detección de seguridad impulsada por IA para entornos industriales",
   },
 };
 
@@ -155,19 +168,23 @@ function App() {
   const [sidebarOpen, setSidebarOpen] = useState(() =>
     typeof window !== "undefined" ? !window.matchMedia("(max-width: 768px)").matches : true
   );
+  const [rightSidebarOpen, setRightSidebarOpen] = useState(false);
   const [status, setStatus] = useState("idle");
   const [errorMessage, setErrorMessage] = useState("");
   const [transcription, setTranscription] = useState("");
   const [agentReply, setAgentReply] = useState("");
   const [audioUrl, setAudioUrl] = useState("");
   const [waveformData, setWaveformData] = useState([]);
-  const [language, setLanguage] = useState(() => localStorage.getItem("language") || "en");
+  const [language, setLanguage] = useState(() => localStorage.getItem("language") || "es");
   const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "light");
   const [recordingLanguage, setRecordingLanguage] = useState(() => localStorage.getItem("recordingLanguage") || "en");
   const [voiceSessionId, setVoiceSessionId] = useState("");
 
   const [chatThreads, setChatThreads] = useState(() => initThreads(language));
   const [activeThreadId, setActiveThreadId] = useState(() => localStorage.getItem(ACTIVE_THREAD_KEY) || null);
+  const [serviceModalOpen, setServiceModalOpen] = useState(false);
+  const [voiceServiceShown, setVoiceServiceShown] = useState(false);
+  const [chatServiceShown, setChatServiceShown] = useState(false);
 
   const mediaRecorderRef = useRef(null);
   const mediaStreamRef = useRef(null);
@@ -222,6 +239,25 @@ function App() {
       localStorage.setItem(ACTIVE_THREAD_KEY, activeThreadId);
     }
   }, [chatThreads, activeThreadId]);
+
+  // Show service modal based on what's currently active and not yet seen
+  useEffect(() => {
+    if (activeView === "voice" && !voiceServiceShown) {
+      setServiceModalOpen(true);
+    } else if (activeView === "chat" && !chatServiceShown) {
+      setServiceModalOpen(true);
+    }
+  }, [activeView, voiceServiceShown, chatServiceShown]);
+
+  // Handle modal close
+  const handleCloseServiceModal = () => {
+    if (activeView === "voice") {
+      setVoiceServiceShown(true);
+    } else if (activeView === "chat") {
+      setChatServiceShown(true);
+    }
+    setServiceModalOpen(false);
+  };
 
   const isMobile = typeof window !== "undefined" && window.matchMedia("(max-width: 768px)").matches;
 
@@ -505,6 +541,16 @@ function App() {
             </div>
             <Moon size={13} strokeWidth={1.5} className="theme-switch-icon" />
           </div>
+
+          <button
+            className="help-button"
+            type="button"
+            onClick={() => setRightSidebarOpen(true)}
+            aria-label={language === "es" ? "Mostrar información de ayuda" : "Show help information"}
+            title={language === "es" ? "Ayuda" : "Help"}
+          >
+            <HelpCircle size={18} strokeWidth={1.5} />
+          </button>
         </div>
 
         <div style={{ display: activeView === "voice" ? "block" : "none", height: "100%", flex: 1 }}>
@@ -536,7 +582,43 @@ function App() {
             setActiveThreadId={setActiveThreadId}
           />
         </div>
+
+        <div style={{ display: activeView === "feelings" ? "block" : "none", height: "100%", flex: 1 }}>
+          <ComputerVisionView
+            t={t}
+            title={t.feelingsTitle}
+            subtitle={t.feelingsSubtitle}
+            language={language}
+            theme={theme}
+          />
+        </div>
+
+        <div style={{ display: activeView === "industrial-safety" ? "block" : "none", height: "100%", flex: 1 }}>
+          <ComputerVisionView
+            t={t}
+            title={t.industrialSafetyTitle}
+            subtitle={t.industrialSafetySubtitle}
+            language={language}
+            theme={theme}
+          />
+        </div>
       </div>
+
+      <RightSidebar
+        isOpen={rightSidebarOpen}
+        onClose={() => setRightSidebarOpen(false)}
+        activeView={activeView}
+        language={language}
+        theme={theme}
+      />
+
+      <ServiceModal
+        isOpen={serviceModalOpen}
+        onClose={handleCloseServiceModal}
+        activeView={activeView}
+        language={language}
+        theme={theme}
+      />
     </main>
   );
 }
