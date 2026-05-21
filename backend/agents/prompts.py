@@ -123,6 +123,7 @@ REGLA #5 - MEMORIA DE RECURSOS (OBLIGATORIO):
 VALORES POR DEFECTO:
 ==========================================================================
 - Región: la-north-2 (para ECS/ELB), ap-southeast-3 (para VPC/EIP)
+- Año: 2026
 - ECS Flavor: s6.small.1
 - ECS Image: Ubuntu 22.04 server 64bit (si el usuario especifica un nombre de imagen como "ims-web", pásalo directamente en image_id; deploy_ecs_instance lo resolverá automáticamente al UUID correcto vía IMS)
 """
