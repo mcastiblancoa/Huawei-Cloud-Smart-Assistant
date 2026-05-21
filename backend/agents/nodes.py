@@ -93,7 +93,18 @@ def chatbot_node(state: AgentState) -> dict:
             break
         except Exception as e:
             error_name = type(e).__name__
-            is_rate_limit = "RateLimit" in error_name or "429" in str(e) or "TooMany" in str(e)
+            error_str = str(e)
+            is_rate_limit = "RateLimit" in error_name or "429" in error_str or "TooMany" in error_str
+            is_content_filter = "403" in error_str or "PermissionDenied" in error_name or "81011" in error_str or "sensitive" in error_str.lower()
+            if is_content_filter:
+                logger.warning("ModelArts content filter triggered (attempt %d), retrying with safe prompt", attempt)
+                safe_suffix = "\n\n[CONTENT SAFETY: Do NOT include any UUIDs, IDs, IP addresses, credentials, or sensitive data in your response. Use only resource names and regions.]"
+                safe_system = SystemMessage(content=SYSTEM_PROMPT + lang_block + safe_suffix)
+                try:
+                    message = llm_with_tools.invoke([safe_system] + pruned)
+                    break
+                except Exception:
+                    return {"messages": [AIMessage(content="No pude completar la respuesta debido a restricciones de contenido. Por favor, reformula tu pregunta.")]}
             if is_rate_limit and attempt < RATE_LIMIT_RETRIES:
                 delay = RATE_LIMIT_BASE_DELAY * (2 ** attempt)
                 logger.warning("Rate limit hit, retrying in %.1fs", delay)

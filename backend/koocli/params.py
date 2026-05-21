@@ -77,7 +77,7 @@ def build_cli_args(
     if params:
         flat = flatten_params(params)
         for key, value in flat:
-            if key in ("cli-region", "region"):
+            if key == "cli-region":
                 region = value
                 continue
             if key in AUTO_INJECTED_PARAMS:

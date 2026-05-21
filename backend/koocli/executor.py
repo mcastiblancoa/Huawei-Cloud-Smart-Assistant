@@ -87,6 +87,7 @@ def execute_koocli(
             check=False,
             shell=True,
             timeout=_settings.koocli_timeout,
+            input="b\n",
         )
 
         output = result.stdout if result.returncode == 0 else result.stderr

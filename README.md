@@ -9,55 +9,47 @@
 
 AI-powered Cloud Operations Assistant for **Huawei Cloud**. Interact via **voice** or **chat** to deploy infrastructure, query resources, manage billing, and execute administrative operations — all through natural language in English or Spanish.
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                        USER INTERFACE                              │
-│            Voice (Mic + Waveform)  │  Chat (Threads + Markdown)    │
-└──────────────┬────────────────────┴──────────────┬─────────────────┘
-               │  POST /voice (audio)               │  POST /chat (text)
-               ▼                                    ▼
-┌──────────────────────────────────────────────────────────────────────┐
-│                         FASTAPI BACKEND                              │
-│  ┌─────────────┐   ┌──────────────┐   ┌──────────────────────────┐ │
-│  │  Voice Route │   │  Chat Route  │   │    Orchestration         │ │
-│  │  /voice      │   │  /chat       │   │    ┌─────────────────┐   │ │
-│  │  /transcribe │   │              │   │    │  Fast Path      │   │ │
-│  └──────┬──────┘   └──────┬───────┘   │    │  (regex router) │   │ │
-│         │                 │           │    └────────┬────────┘   │ │
-│         ▼                 ▼           │             │ fallback    │ │
-│  ┌─────────────┐         │           │    ┌────────▼────────┐   │ │
-│  │  STT        │         │           │    │  LangGraph Agent│   │ │
-│  │  SIS/Whisper│         │           │    │  (DeepSeek v3.1)│   │ │
-│  └──────┬──────┘         │           │    │  chatbot→tools  │   │ │
-│         │                 │           │    │  MemorySaver    │   │ │
-│         ▼                 ▼           │    └────────┬────────┘   │ │
-│  ┌─────────────────────────────┐     └─────────────┼────────────┘ │
-│  │      run_chat_turn()        │◄───────────────────┘              │
-│  └──────────────┬──────────────┘                                   │
-│                  │                                                  │
-│                  ▼                                                  │
-│  ┌──────────────────────────────────────────────────────────────┐  │
-│  │                    TOOL REGISTRY (32 tools)                   │  │
-│  │  ECS │ VPC │ ELB │ EIP │ SG │ BSS │ RMS │ DEPLOY │ KOOCLI  │  │
-│  └──────────────────────────┬───────────────────────────────────┘  │
-│                              │                                      │
-│                              ▼                                      │
-│  ┌──────────────────────────────────────────────────────────────┐  │
-│  │                   KOOCLI EXECUTOR (hcloud)                    │  │
-│  │  flatten_params → build_cli_args → subprocess.run(hcloud)    │  │
-│  └──────────────────────────┬───────────────────────────────────┘  │
-│                              │                                      │
-│                              ▼                                      │
-│  ┌──────────────────────────────────────────────────────────────┐  │
-│  │                  HUAWEI CLOUD APIs (90+ services)             │  │
-│  │  ECS │ VPC │ ELB │ EIP │ SG │ OBS │ RMS │ BSS │ IAM │ ...  │  │
-│  └──────────────────────────────────────────────────────────────┘  │
-└──────────────────────────────────────────────────────────────────────┘
-               │
-               ▼ (voice only)
-┌──────────────────────────────────────────────────────────────────────┐
-│  Kokoro TTS ──► Audio Response (base64 MP3)                         │
-└──────────────────────────────────────────────────────────────────────┘
+```mermaid
+graph TD
+    UI["🖥️ User Interface<br/>Voice (Mic+Waveform) | Chat (Threads+Markdown)"]
+    UI -->|POST /voice audio| STT["🎙️ STT<br/>SIS / Whisper"]
+    UI -->|POST /chat text| ORCH
+    STT -->|transcription| ORCH
+
+    ORCH["⚙️ run_chat_turn()"]
+    ORCH --> FP{"Fast Path<br/>(regex router)"}
+    FP -->|greeting| RESP["📝 LLM Formatter"]
+    FP -->|billing keywords| BSS["💰 BSS SDK"]
+    FP -->|resource keywords| RMS["📊 RMS SDK"]
+    FP -->|ECS/VPC/ELB/EIP/SG/RDS list| KOOCLI_LIST["📋 KooCLI (read)"]
+    FP -->|no match| LG
+
+    BSS --> RESP
+    RMS --> RESP
+    KOOCLI_LIST --> RESP
+    RESP --> UI
+
+    LG["🧠 LangGraph Agent<br/>DeepSeek V3.2 via MaaS"]
+    LG -->|tool_calls| TOOLS
+    LG -->|text only| UI
+
+    TOOLS{"🔧 Tool Registry<br/>(41 tools)"}
+    TOOLS -->|ECS/VPC/ELB/EIP/SG| KOOCLI["⚡ KooCLI Executor<br/>flatten_params → build_cli_args<br/>→ subprocess.run(hcloud)"]
+    TOOLS -->|IMS| IMS["🖼️ IMS: ListImages"]
+    TOOLS -->|RDS| RDS["🗄️ RDS: CreateInstance..."]
+    TOOLS -->|OBS| OBS["📦 OBS: mb/rm"]
+    TOOLS -->|BSS/RMS| SDK["📘 Python SDK"]
+
+    KOOCLI --> CLOUD["☁️ Huawei Cloud APIs<br/>(90+ services)")
+    IMS --> CLOUD
+    RDS --> CLOUD
+    OBS --> CLOUD
+    SDK --> CLOUD
+    CLOUD -->|JSON response| TOOLS
+    TOOLS -->|tool result| LG
+
+    LG -.->|voice only| TTS["🔊 Kokoro TTS"]
+    TTS -->|base64 MP3| UI
 ```
 
 ---
@@ -92,15 +84,14 @@ AI-powered Cloud Operations Assistant for **Huawei Cloud**. Interact via **voice
 
 ## Features
 
-| Category                   | Capabilities                                                                     |
-| -------------------------- | -------------------------------------------------------------------------------- |
-| **Chat Assistant**         | Multi-thread conversations, markdown rendering, inline charts, bilingual (EN/ES) |
-| **Voice Assistant**        | Real-time recording, waveform visualization, STT (SIS/Whisper), TTS (Kokoro)     |
-| **Cloud Orchestration**    | Deploy ECS, VPC, ELB, EIP, SG, OBS — full HA infra in one prompt                 |
-| **Resource Discovery**     | 90+ Huawei Cloud services, dynamic schema registry, operation discovery          |
-| **Billing**                | Monthly spend, cost-by-service breakdown, multi-month queries                    |
-| **Infrastructure as Code** | Terraform modules for OBS and ELB (experimental)                                 |
-| **Safety**                 | Destructive operation detection, input sanitization, rate limiting               |
+| Category                | Capabilities                                                                     |
+| ----------------------- | -------------------------------------------------------------------------------- |
+| **Chat Assistant**      | Multi-thread conversations, markdown rendering, inline charts, bilingual (EN/ES) |
+| **Voice Assistant**     | Real-time recording, waveform visualization, STT (SIS/Whisper), TTS (Kokoro)     |
+| **Cloud Orchestration** | Deploy ECS, VPC, ELB, EIP, SG, OBS, RDS — full HA infra in one prompt            |
+| **Resource Discovery**  | 90+ Huawei Cloud services, dynamic schema registry, operation discovery          |
+| **Billing**             | Monthly spend, cost-by-service breakdown, multi-month queries                    |
+| **Safety**              | Destructive operation detection, input sanitization, rate limiting               |
 
 ---
 
@@ -110,64 +101,46 @@ AI-powered Cloud Operations Assistant for **Huawei Cloud**. Interact via **voice
 
 Every user message goes through a **dual-path router**:
 
-```
-User message
-    │
-    ▼
-run_chat_turn()
-    │
-    ├──► Fast Path (regex router)
-    │       │
-    │       ├── Greeting? ──► immediate response
-    │       ├── Billing keywords? ──► BSS SDK ──► LLM formatter
-    │       ├── Resource keywords? ──► RMS SDK ──► LLM formatter
-    │       ├── ECS/VPC/ELB/EIP/SG list? ──► KooCLI ──► formatter
-    │       └── No match? ──► return None (fall through)
-    │
-    └──► LangGraph Agent (full LLM + tool loop)
-            │
-            ├── chatbot node (DeepSeek v3.1 + system prompt + all tools)
-            │       │
-            │       ├── Tool call? ──► ToolNode ──► chatbot node (loop)
-            │       └── No tool call? ──► END
-            │
-            └── MemorySaver checkpoint (per session_id)
+```mermaid
+graph TD
+    MSG["💬 User message"] --> RCT["⚙️ run_chat_turn()"]
+    RCT --> FP{"Fast Path<br/>(regex router)"}
+
+    FP -->|greeting| GR["👋 Immediate response"]
+    FP -->|billing keywords| BSS["💰 BSS SDK → LLM formatter"]
+    FP -->|resource keywords| RMS["📊 RMS SDK → LLM formatter"]
+    FP -->|ECS/VPC/ELB/EIP/SG/RDS list| LIST["📋 KooCLI → formatter"]
+    FP -->|no match| LG["🧠 LangGraph Agent"]
+
+    GR --> USER["👤 User"]
+    BSS --> USER
+    RMS --> USER
+    LIST --> USER
+
+    LG -->|chatbot node| DEC{"Has tool_calls?"}
+    DEC -->|yes| TOOLS["🔧 ToolNode → execute"]
+    TOOLS -->|tool result| LG
+    DEC -->|no| USER
+
+    LG -.->|checkpoint| MEM[("💾 MemorySaver<br/>per session_id")]
 ```
 
 The **fast path** handles simple queries (list, billing, greetings) with regex matching — no LLM call needed for routing, only for response formatting. The **LangGraph agent** handles complex multi-step operations (deploy, discover, delete) with full tool access.
 
 ### LangGraph Graph
 
-```
-                    ┌─────────────┐
-                    │    START    │
-                    └──────┬──────┘
-                           │
-                           ▼
-                    ┌─────────────┐
-                    │  chatbot    │ ◄── System prompt + all tools bound
-                    │  node       │     DeepSeek v3.1 via MaaS (OpenAI-compatible)
-                    └──────┬──────┘
-                           │
-                    ┌──────▼──────┐
-                    │  _route_    │
-                    │  after_     │
-                    │  chatbot    │
-                    └──┬─────┬───┘
-                       │     │
-              tool_calls│     │no tool_calls
-                       │     │
-                       ▼     ▼
-                ┌──────────┐ ┌─────┐
-                │  tools   │ │ END │
-                │  node    │ └─────┘
-                └────┬─────┘
-                     │
-                     ▼
-              ┌─────────────┐
-              │  chatbot    │ ◄── loop back with tool results
-              │  node       │
-              └─────────────┘
+```mermaid
+graph TD
+    START["▶️ START"] --> CB["🧠 chatbot_node<br/>System prompt + 41 tools bound<br/>DeepSeek V3.2 via MaaS"]
+    CB --> ROUTE{"_route_after_chatbot"}
+
+    ROUTE -->|tool_calls| TN["🔧 tools_node<br/>Execute tool via KooCLI/SDK"]
+    ROUTE -->|no tool_calls| END["⏹️ END"]
+
+    TN -->|tool result| CB
+
+    CB -.->|prune >3000 chars| PRUNE["✂️ _prune_messages"]
+    PRUNE -.-> CB
 ```
 
 **Key properties:**
@@ -176,6 +149,7 @@ The **fast path** handles simple queries (list, billing, greetings) with regex m
 - **Memory**: `MemorySaver` (in-memory, per `session_id`/`thread_id`)
 - **Message pruning**: Tool results >3000 chars are truncated before LLM invocation
 - **Rate limiting**: 6 retries with exponential backoff (3s base) on 429 errors
+- **Content filter**: ModelArts 81011 errors (sensitive content) auto-retried with safe prompt
 
 ---
 
@@ -207,7 +181,7 @@ The **fast path** handles simple queries (list, billing, greetings) with regex m
 │   │       ├── chat.py               # POST /chat
 │   │       └── voice.py              # POST /voice, POST /transcribe
 │   │
-│   ├── tools/                        # LangChain tools (32 registered)
+│   ├── tools/                        # LangChain tools (41 registered)
 │   │   ├── registry.py               # ToolRegistry singleton, ToolMeta, ToolCategory
 │   │   ├── deploy.py                 # Deploy tools: ECS, ELB, EIP, OBS
 │   │   ├── koocli.py                 # Generic run_koocli_command tool
@@ -217,11 +191,11 @@ The **fast path** handles simple queries (list, billing, greetings) with regex m
 │   │   ├── services_elb.py           # ELB: list, describe
 │   │   ├── services_eip.py           # EIP: list, create, associate, release
 │   │   ├── services_sg.py            # SG: list, describe
+│   │   ├── services_ims.py           # IMS: list_images, find_image_id, resolve_image_name
+│   │   ├── services_rds.py           # RDS: list, create, delete, datastores, flavors, backups, logs
 │   │   ├── services_resources.py     # RMS: list_resources (all account resources)
 │   │   ├── services_billing.py       # BSS: get_monthly_costs, get_cost_by_service
 │   │   ├── services_discovery.py     # Service/operation/schema discovery
-│   │   ├── terraform_tools.py        # Terraform-based deploy tools
-│   │   ├── terraform_manager.py      # TerraformManager wrapper
 │   │   ├── common/                   # Shared tool utilities
 │   │   │   ├── koocli_runner.py      # Cached KooCLI execution
 │   │   │   └── result.py             # ToolResult dataclass
@@ -285,10 +259,6 @@ The **fast path** handles simple queries (list, billing, greetings) with regex m
 │   ├── utils/                        # Utilities
 │   │   ├── sanitize.py               # Input sanitization, model reply cleanup
 │   │   └── retry.py                  # Generic retry with exponential backoff
-│   │
-│   ├── terraform/                    # Terraform modules (experimental)
-│   │   └── README.md
-│   │
 │   └── tests/                        # Test suite
 │
 ├── frontend/                         # React 18 + Vite frontend
@@ -318,10 +288,7 @@ The **fast path** handles simple queries (list, billing, greetings) with regex m
 │       └── services/
 │           └── api.js                # API client (sendChatMessage, sendVoiceAudio)
 │
-├── terraform_examples/               # Example Terraform configs (reference)
-├── EJEMPLOS_INTERACCION.md           # Interaction examples (ES)
-├── EJEMPLOS_TERRAFORM.md             # Terraform examples (ES)
-└── TERRAFORM_INTEGRATION.md          # Terraform integration docs (ES)
+└── EJEMPLOS_INTERACCION.md           # Interaction examples (ES)
 ```
 
 ---
@@ -526,14 +493,14 @@ The backend calls this endpoint with an OpenAI-compatible payload:
 | `CLOUD_SDK_DOMAIN_ID`    | Domain ID for RMS SDK                  | `37300593...`                                                       | For RMS     |
 | `HUAWEI_IAM_ENDPOINT`    | IAM endpoint for token auth            | `https://iam.ap-southeast-3.myhuaweicloud.com`                      | For SIS     |
 | `HUAWEI_SIS_ENDPOINT`    | SIS endpoint for STT                   | `https://sis-ext.ap-southeast-3.myhuaweicloud.com`                  | For SIS     |
-| `HUAWEI_USERNAME`        | IAM username                           | `bs_dev_M50056714`                                                  | For SIS     |
-| `HUAWEI_DOMAIN_NAME`     | IAM domain name                        | `bs_dev_M50056714`                                                  | For SIS     |
-| `HUAWEI_PASSWORD`        | IAM password                           | `Huawei@2811`                                                       | For SIS     |
+| `HUAWEI_USERNAME`        | IAM username                           | `bs_dev_J50026714`                                                  | For SIS     |
+| `HUAWEI_DOMAIN_NAME`     | IAM domain name                        | `bs_dev_J50026714`                                                  | For SIS     |
+| `HUAWEI_PASSWORD`        | IAM password                           | `Huawei@123!`                                                       | For SIS     |
 | `SIS_PROPERTY`           | SIS recognition property               | `english_16k_common`                                                | No          |
 | `SIS_ADD_PUNC`           | Add punctuation to SIS output          | `yes`                                                               | No          |
 | `SIS_DIGIT_NORM`         | Digit normalization                    | `yes`                                                               | No          |
 | `SIS_NEED_WORD_INFO`     | Word-level timing info                 | `no`                                                                | No          |
-| `MAAS_API_KEY`           | ModelArts API key                      | `oJM666Us...`                                                       | Yes         |
+| `MAAS_API_KEY`           | ModelArts API key                      | `oJM6F66Us...`                                                      | Yes         |
 | `MAAS_API_URL`           | ModelArts chat completions URL         | `https://api-ap-southeast-1.modelarts-maas.com/v2/chat/completions` | Yes         |
 | `OPEN_API_BASE`          | OpenAI-compatible base URL             | `https://api-ap-southeast-1.modelarts-maas.com/openai/v1`           | Yes         |
 | `APP_NAME`               | Application display name               | `Huawei Smart Assistant`                                            | No          |
@@ -693,28 +660,28 @@ class AgentState(TypedDict):
 1. **User message** arrives at `POST /chat`
 2. `run_chat_turn()` detects language, tries fast path
 3. If fast path returns `None`, streams through LangGraph:
-   - `chatbot_node`: Prepends system prompt, prunes long tool results, invokes LLM with all 32 tools bound
+   - `chatbot_node`: Prepends system prompt, prunes long tool results, invokes LLM with all 41 tools bound
    - If LLM returns `tool_calls` → routes to `ToolNode` → executes tool → returns to `chatbot_node`
    - If LLM returns text only → routes to `END`
 4. Final AI message extracted and returned
 
 ### System Prompt Rules
 
-| Rule                   | Description                                                |
-| ---------------------- | ---------------------------------------------------------- |
-| **Anti-hallucination** | Never invent data; always use tools for real information   |
-| **No explanations**    | Don't say "I'll check..." — just execute                   |
-| **No repeated work**   | Don't re-verify completed operations                       |
-| **Response style**     | Brief, same language as user, `<strong>` for key data only |
-| **List vs Deploy**     | Use list tools for inventory, deploy tools for creation    |
-| **Resource memory**    | Remember created resource IDs for the conversation         |
-| **Default values**     | Region `la-north-2`, flavor `s6.small.1`, Ubuntu 22.04     |
+| Rule                   | Description                                                           |
+| ---------------------- | --------------------------------------------------------------------- |
+| **Anti-hallucination** | Never invent data; always use tools for real information              |
+| **No explanations**    | Don't say "I'll check..." — just execute                              |
+| **No repeated work**   | Don't re-verify completed operations                                  |
+| **Response style**     | Brief, same language as user, `<strong>` for key data only            |
+| **List vs Deploy**     | Use list tools for inventory, deploy tools for creation               |
+| **Resource memory**    | Remember created resource IDs for the conversation                    |
+| **Default values**     | Region `la-north-2`, flavor `s6.small.1`, image auto-resolved via IMS |
 
 ---
 
 ## Tools Reference
 
-32 tools are registered at startup across 11 service groups:
+41 tools are registered at startup across 12 service groups:
 
 ### Query Tools (Read-Only)
 
@@ -730,6 +697,15 @@ class AgentState(TypedDict):
 | `list_eips`               | EIP     | List elastic IPs                        |
 | `list_security_groups`    | SG      | List security groups                    |
 | `describe_security_group` | SG      | Get security group details              |
+| `list_images`             | IMS     | List IMS images (private/public/shared) |
+| `find_image_id`           | IMS     | Find image ID by name (exact/partial)   |
+| `list_rds`                | RDS     | List RDS instances                      |
+| `list_rds_datastores`     | RDS     | List DB engine versions                 |
+| `list_rds_flavors`        | RDS     | List RDS flavor specs (CPU/RAM)         |
+| `list_rds_storage_types`  | RDS     | List available storage types            |
+| `list_rds_backups`        | RDS     | List RDS backups                        |
+| `list_rds_error_logs`     | RDS     | List RDS error logs                     |
+| `list_rds_slow_logs`      | RDS     | List slow query logs                    |
 | `list_resources`          | RMS     | List all cloud resources (account-wide) |
 | `get_monthly_costs`       | BSS     | Get monthly billing summary             |
 | `get_cost_by_service`     | BSS     | Get cost breakdown by service           |
@@ -751,10 +727,12 @@ class AgentState(TypedDict):
 
 ### Deploy Tools (Multi-Step)
 
-| Tool                  | Description                                                                                                |
-| --------------------- | ---------------------------------------------------------------------------------------------------------- |
-| `deploy_ecs_instance` | Creates ECS with auto-resolved VPC/subnet/image/AZ, optional SG                                            |
-| `setup_elb_for_ecs`   | Full ELB stack: ELB → Listener → Pool → Members → EIP. Supports multiple ECS via comma-separated names/IDs |
+| Tool                  | Description                                                                                                                  |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `deploy_ecs_instance` | Creates ECS with auto-resolved VPC/subnet/image/AZ, optional SG. Image names (e.g. `ims-web`) auto-resolved to UUIDs via IMS |
+| `setup_elb_for_ecs`   | Full ELB stack: ELB → Listener → Pool → Members → EIP. Supports multiple ECS via comma-separated names/IDs                   |
+| `create_rds_instance` | Creates RDS with auto-resolved VPC/subnet/SG/AZ, configurable engine/version/flavor/volume. Waits for ACTIVE status          |
+| `delete_rds_instance` | Deletes an RDS instance by ID                                                                                                |
 
 ### Discovery Tools
 
@@ -771,29 +749,17 @@ class AgentState(TypedDict):
 | -------------------- | -------------------------------------------------- |
 | `run_koocli_command` | Execute any `hcloud` command (use after discovery) |
 
-### Terraform Tools (Experimental)
-
-| Tool                               | Description                        |
-| ---------------------------------- | ---------------------------------- |
-| `deploy_obs_bucket_with_terraform` | OBS bucket via Terraform           |
-| `deploy_elb_with_terraform`        | Full ELB environment via Terraform |
-| `list_terraform_deployments`       | List Terraform deployments         |
-
 ---
 
 ## Voice Pipeline
 
-```
-┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌──────────┐
-│  Browser  │───►│  ffmpeg  │───►│   STT    │───►│  Chat    │───►│   TTS    │
-│  MediaRec │    │  WAV 16k │    │ SIS/Whisp│    │  Agent   │    │  Kokoro  │
-└──────────┘    └──────────┘    └──────────┘    └──────────┘    └──────────┘
-                                                                      │
-                                                                      ▼
-                                                               ┌──────────┐
-                                                               │  Audio   │
-                                                               │  MP3     │
-                                                               └──────────┘
+```mermaid
+graph LR
+    BR["🎙️ Browser<br/>MediaRecorder"] -->|WebM/Opus| FF["🔄 ffmpeg<br/>WAV 16kHz"]
+    FF -->|WAV| STT["🗣️ STT<br/>SIS / Whisper"]
+    STT -->|text| AGENT["🧠 Chat Agent<br/>run_chat_turn()"]
+    AGENT -->|response| TTS["🔊 Kokoro TTS"]
+    TTS -->|base64 MP3| AUDIO["🔈 Audio<br/> playback"]
 ```
 
 ### Step-by-Step
@@ -839,30 +805,25 @@ The schema registry includes **90+ Huawei Cloud services**. Key services with de
 | **VPC** | CreateVpc, CreateSubnet, CreateSecurityGroup, CreateSecurityGroupRule                     | `create_vpc`, `list_vpcs`, `list_subnets`, `list_security_groups` |
 | **ELB** | CreateLoadBalancer, CreateListener, CreatePool, BatchCreateMembers                        | `setup_elb_for_ecs`, `list_elb`, `describe_elb`                   |
 | **EIP** | CreatePublicip, AssociatePublicips, ShowPublicip, DeletePublicip                          | `manage_eip`, `list_eips`                                         |
+| **IMS** | ListImages                                                                                | `list_images`, `find_image_id`, `resolve_image_name`              |
+| **RDS** | CreateInstance, DeleteInstance, ListInstances, ListDatastores, ListFlavors, ListBackups   | `create_rds_instance`, `delete_rds_instance`, `list_rds`, ...     |
 | **OBS** | `obs mb`, `obs rm` (via hcloud obs subcommand)                                            | `manage_obs_bucket`                                               |
 | **BSS** | ShowCustomerMonthlySum (via Python SDK)                                                   | `get_monthly_costs`, `get_cost_by_service`                        |
 | **RMS** | ListAllResources (via Python SDK)                                                         | `list_resources`                                                  |
 
 For any other service, use the discovery flow: `list_available_services` → `list_service_operations` → `get_operation_details` → `run_koocli_command`.
 
-### Region Defaults
-
-| Region           | VPC ID         | Subnet ID      | Image ID       | AZ                |
-| ---------------- | -------------- | -------------- | -------------- | ----------------- |
-| `ap-southeast-3` | `28ea9627-...` | `10e9345f-...` | `1c136556-...` | `ap-southeast-3a` |
-| `la-north-2`     | `41d89d5c-...` | `6fd217ab-...` | `b1eecdf6-...` | `la-north-2a`     |
-
 ---
 
 ## Models
 
-| Component             | Model                    | Provider                | Notes                               |
-| --------------------- | ------------------------ | ----------------------- | ----------------------------------- |
-| **Chat/Reasoning**    | `deepseek-v3.1-terminus` | Huawei MaaS (ModelArts) | OpenAI-compatible API, main agent   |
-| **Intent/Formatting** | `deepseek-v3.1-terminus` | Huawei MaaS             | Fast path response formatting       |
-| **STT (primary)**     | Huawei SIS               | Huawei Cloud            | Cloud-based, English/Chinese        |
-| **STT (fallback)**    | Whisper                  | Local/self-hosted       | Better Spanish support              |
-| **TTS**               | Kokoro                   | Local/self-hosted       | OpenAI-compatible API, EN/ES voices |
+| Component             | Model                       | Provider                | Notes                               |
+| --------------------- | --------------------------- | ----------------------- | ----------------------------------- |
+| **Chat/Reasoning**    | `glm-5.1` / `deepseek-v3.2` | Huawei MaaS (ModelArts) | OpenAI-compatible API, main agent   |
+| **Intent/Formatting** | `glm-5.1` / `deepseek-v3.2` | Huawei MaaS             | Fast path response formatting       |
+| **STT (primary)**     | Huawei SIS                  | Huawei Cloud            | Cloud-based, English/Chinese        |
+| **STT (fallback)**    | Whisper                     | Local/self-hosted       | Better Spanish support              |
+| **TTS**               | Kokoro                      | Local/self-hosted       | OpenAI-compatible API, EN/ES voices |
 
 ---
 
@@ -874,7 +835,7 @@ For any other service, use the discovery flow: `list_available_services` → `li
 | **Cloud cache**        | Thread-safe TTL cache (30s default, 200 entries, LRU eviction, MD5 keys)              |
 | **Message pruning**    | Tool results >3000 chars truncated before LLM invocation                              |
 | **Rate limiting**      | 6 retries with exponential backoff (3s base) on 429 errors                            |
-| **KooCLI timeout**     | 120s per command (configurable)                                                       |
+| **KooCLI timeout**     | 180s per command (configurable)                                                       |
 | **Output truncation**  | KooCLI output capped at 100k chars                                                    |
 | **Structured logging** | JSON logs in production, dev-friendly format in local                                 |
 | **LLM+tools caching**  | LLM instance and tool bindings cached globally (singleton)                            |
@@ -907,10 +868,11 @@ For any other service, use the discovery flow: `list_available_services` → `li
 | ----------------------------------------------------------------------------- | ------ | ----------------------------------------------------------------- |
 | `MemorySaver` is in-memory only — conversation history lost on server restart | Known  | Restart sessions after server restart                             |
 | Huawei SIS doesn't have Spanish recognition accuracy                          | Known  | Use Whisper for Spanish input                                     |
-| Terraform integration is experimental and may fail on some configurations     | Beta   | Use KooCLI deploy tools instead                                   |
 | LLM may lose context in very long conversations (>50 tool calls)              | Known  | Start a new session for complex deployments                       |
 | Dot-notation params may not work for some batch KooCLI operations             | Fixed  | `RepeatFlag` class added for JSON-serialized repeated flags       |
 | ELB `BatchCreateMembers` may fail without `subnet_id` per member              | Fixed  | `subnet_id` now extracted from ECS and included in member payload |
+| ModelArts 81011 content filter may reject LLM responses with sensitive data   | Fixed  | Auto-retry with safe prompt (no IDs/credentials in output)        |
+| KooCLI `--password` collision with system param causes interactive prompt     | Fixed  | `subprocess.run(input="b\n")` auto-answers "API parameter"        |
 
 ---
 
@@ -925,7 +887,6 @@ For any other service, use the discovery flow: `list_available_services` → `li
 - **No concurrent session isolation**: All sessions share the same LLM cache
 - **Windows-only testing**: KooCLI subprocess execution tested primarily on Windows
 - **No automated test suite**: Tests exist but are not integrated into CI/CD
-- **Terraform modules are experimental**: Not all Huawei Cloud resources are supported
 
 ---
 

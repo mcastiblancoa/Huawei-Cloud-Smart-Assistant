@@ -57,9 +57,10 @@ class ToolRegistry:
         from tools.services_billing import BILLING_TOOLS
         from tools.services_resources import RESOURCES_TOOLS
         from tools.services_discovery import DISCOVERY_TOOLS
+        from tools.services_ims import IMS_TOOLS
+        from tools.services_rds import RDS_TOOLS
         from tools.deploy import DEPLOY_TOOLS
         from tools.koocli import KOOCLI_TOOLS
-        from tools.terraform_tools import TERRAFORM_TOOLS
 
         all_groups = [
             (ECS_TOOLS, "ECS"),
@@ -70,9 +71,10 @@ class ToolRegistry:
             (BILLING_TOOLS, "BSSINTL"),
             (RESOURCES_TOOLS, "RMS"),
             (DISCOVERY_TOOLS, "DISCOVERY"),
+            (IMS_TOOLS, "IMS"),
+            (RDS_TOOLS, "RDS"),
             (DEPLOY_TOOLS, "DEPLOY"),
             (KOOCLI_TOOLS, "KOOCLI"),
-            (TERRAFORM_TOOLS, "TERRAFORM"),
         ]
 
         for tools_list, service in all_groups:

@@ -8,12 +8,12 @@ from typing import Optional
 from langchain_core.tools import tool
 
 from koocli.executor import execute_koocli, _find_hcloud_binary
-from koocli.params import RepeatFlag
 from utils.sanitize import sanitize_params
 from tools.registry import ToolMeta, ToolCategory
 from cloud.validation import extract_id
 from config.logging import get_logger
 from config.settings import get_settings
+from tools.services_ims import resolve_image_name
 
 logger = get_logger("tools.deploy")
 _settings = get_settings()
@@ -26,8 +26,8 @@ REGION_DEFAULTS = {
         "az": "ap-southeast-3a",
     },
     "la-north-2": {
-        "vpc_id": "41d89d5c-9f93-43c7-9e41-a67e46f74fae",
-        "subnet_id": "6fd217ab-bfae-4587-a786-f0f6991bdec9",
+        "vpc_id": "dfbefb5b-d128-47a1-b0d2-2b5b9b0ecb1b",
+        "subnet_id": "3b5b940f-a55f-4bc1-bcb0-f3e5be7d70df",
         "image_id": "b1eecdf6-a943-43f3-9d47-a538231d1442",
         "az": "la-north-2a",
     },
@@ -90,6 +90,8 @@ def deploy_ecs_instance(
 
     if not resolved_image:
         resolved_image = "Ubuntu 22.04 server 64bit"
+
+    resolved_image = resolve_image_name(resolved_image, region)
 
     if not admin_pass:
         admin_pass = f"Huawei@{int(time.time()) % 100000}!"
@@ -356,13 +358,14 @@ def setup_elb_for_ecs(
             member_result = execute_koocli("ELB", "BatchCreateMembers", {
                 "cli-region": region,
                 "pool_id": pool_id,
-                "members": RepeatFlag(member_dicts),
+                "members": member_dicts,
             })
 
             created_ids = re.findall(r'"id":\s*"([^"]+)"', member_result)
+            has_member = '"address"' in member_result or '"protocol_port"' in member_result
             has_error = '"error"' in member_result.lower() or '"error_code"' in member_result.lower()
 
-            if created_ids and not has_error and len(created_ids) >= len(members_with_ip):
+            if (created_ids and len(created_ids) >= len(members_with_ip)) or (has_member and not has_error):
                 member_summary = ", ".join(f"{srv['ip']}:{listener_port}" for srv in members_with_ip)
                 summary.append(f"Members ({len(members_with_ip)}): {member_summary}")
             else:
@@ -375,7 +378,7 @@ def setup_elb_for_ecs(
                     ind_result = execute_koocli("ELB", "BatchCreateMembers", {
                         "cli-region": region,
                         "pool_id": pool_id,
-                        "members": RepeatFlag([m]),
+                        "members": [m],
                     })
                     if '"id"' in ind_result and "Error" not in ind_result:
                         individual_ok += 1

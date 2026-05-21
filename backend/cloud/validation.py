@@ -11,6 +11,7 @@ _EMPTY_COLLECTION_KEYS = {
     "servers", "vpcs", "subnets", "security_groups", "publicips",
     "loadbalancers", "listeners", "pools", "members", "resources",
     "bill_sums", "delegated_subnets", "routers",
+    "instances", "dataStores", "flavors", "images", "backups",
 }
 
 _COUNT_KEYS = {
@@ -55,6 +56,23 @@ def validate_cloud_response(result: CloudResult) -> CloudResult:
     if result.data is None:
         result.item_count = 0
         return result
+
+    if isinstance(result.data, dict):
+        error_msg = result.data.get("error_msg") or result.data.get("message")
+        error_code = result.data.get("error_code") or result.data.get("code")
+        if error_msg and error_code:
+            result.ok = False
+            result.error = f"{error_code}: {error_msg}"
+            logger.warning(
+                "Cloud API error in response body",
+                extra={"structured_extra": {
+                    "service": result.service,
+                    "operation": result.operation,
+                    "error_code": error_code,
+                    "error_msg": error_msg,
+                }},
+            )
+            return result
 
     result.item_count = _count_items(result.data)
 

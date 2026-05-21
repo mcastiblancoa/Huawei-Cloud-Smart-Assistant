@@ -28,15 +28,6 @@ tmp_audio/
 .coverage
 htmlcov/
 
-# Terraform
-terraform_workspace/
-terraform_resources/
-.terraform/
-*.tfstate
-*.tfstate.backup
-*.pem
-.terraform.lock.hcl
-
 # OS
 .DS_Store
 Thumbs.db

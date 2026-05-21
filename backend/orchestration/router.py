@@ -112,6 +112,11 @@ def _looks_like_deploy_request(text: str) -> bool:
             "balanceador",
             "load balancer",
             "loadbalancer",
+            "rds",
+            "database",
+            "base de datos",
+            "mysql",
+            "postgres",
         )
     ):
         return True
@@ -133,16 +138,16 @@ def _looks_like_billing_intent(text: str) -> bool:
 def _looks_like_delete_request(text: str) -> bool:
     """Tear-down / cleanup must use full agent, never billing fast-path."""
     if not re.search(
-        r"\b(borr(ar|a)?|elimina(r)?|delete|remove|destroy|terminate|termina(r)?|"
-        r"limpia(r)?|tear\s*down)\b",
+        r"\b(borr(ar|a|o)?|elimina(r|d|s)?|delete|remove|destroy|terminate|termina(r)?|"
+        r"limpia(r)?|tear\s*down|liber(ar|a)?)\b",
         text,
         re.I,
     ):
         return False
     return bool(
         re.search(
-            r"\b(ecs|elb|eip|vpc|sg|security\s*group|servidor|instancia|recurso|"
-            r"balanceador|load\s*balancer|infraestructura|todo)\b",
+            r"\b(ecs|elb|eips?|vpcs?|sgs?|security\s*group|servidor|servidores|instancia|instancias|recurso|recursos|"
+            r"balanceador|balanceadores|load\s*balancer|infraestructura|todo|bucket|obs|rds|database|base\s*de\s*datos)\b",
             text,
             re.I,
         )
@@ -159,6 +164,8 @@ def route_intent(message: str) -> RouteDecision | None:
         "crear y", "desplegar y", "start and", "create and", "deploy and",
         "si no", "if not", "si no tiene", "y dame", "and give",
         "reboot", "reiniciar", "restart",
+        "borrar", "borra", "eliminar", "elimina", "delete", "remove",
+        "liberar", "libera",
     ]
     if any(kw in text for kw in _COMPOSITE_KEYWORDS):
         return None
@@ -222,5 +229,12 @@ def route_intent(message: str) -> RouteDecision | None:
 
     if any(kw in text for kw in ["eip", "public ip", "ip publica", "ip pública", "elastic ip"]):
         return RouteDecision(tool="list_eips", params={}, response_type="eip")
+
+    if any(kw in text for kw in ["rds", "base de datos", "base datos", "database", "mysql", "postgres", "sqlserver", "mariadb", "db instance"]):
+        if any(kw in text for kw in ["version", "versions", "motor", "engines", "datastore"]):
+            return RouteDecision(tool="list_rds_datastores", params={}, response_type="rds")
+        if any(kw in text for kw in ["flavor", "flavors", "specs", "especificaciones", "tamaños", "sizes"]):
+            return RouteDecision(tool="list_rds_flavors", params={}, response_type="rds")
+        return RouteDecision(tool="list_rds", params={}, response_type="rds")
 
     return None
