@@ -40,7 +40,7 @@ graph TD
     TOOLS -->|OBS| OBS["📦 OBS: mb/rm"]
     TOOLS -->|BSS/RMS| SDK["📘 Python SDK"]
 
-    KOOCLI --> CLOUD["☁️ Huawei Cloud APIs<br/>(90+ services)")
+    KOOCLI --> CLOUD["☁️ Huawei Cloud APIs<br/>(90+ services)"]
     IMS --> CLOUD
     RDS --> CLOUD
     OBS --> CLOUD
