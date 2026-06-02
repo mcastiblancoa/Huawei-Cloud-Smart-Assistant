@@ -113,3 +113,33 @@ class ChatResponse(BaseModel):
     latency_ms: Optional[int] = None
     tool_calls: Optional[int] = None
     path: Optional[str] = None
+
+
+class FaceEmotion(BaseModel):
+    dominant_emotion: str = Field(description="Dominant emotion for this face")
+    confidence: float = Field(description="Confidence percentage for dominant emotion")
+    all_scores: dict[str, float] = Field(description="All emotion scores")
+    face_index: int = Field(default=0, description="Index of the detected face")
+
+
+class SentimentResponse(BaseModel):
+    status: str = Field(description="Result status: success, no_face, error")
+    dominant_emotion: Optional[str] = Field(default=None, description="Dominant emotion detected")
+    confidence: Optional[float] = Field(default=None, description="Confidence percentage")
+    all_scores: Optional[dict[str, float]] = Field(default=None, description="All emotion scores")
+    faces: list[dict[str, Any]] = Field(default_factory=list, description="Per-face emotion results")
+    face_count: int = Field(default=0, description="Number of faces detected")
+    latency_ms: Optional[int] = Field(default=None, description="Processing latency in ms")
+    error: Optional[str] = Field(default=None, description="Error message if status is error")
+
+
+class SafetyResponse(BaseModel):
+    status: str = Field(description="Result status: success, error")
+    total_persons: int = Field(default=0, description="Number of persons detected")
+    compliant_persons: int = Field(default=0, description="Number of fully compliant persons")
+    compliance_rate: float = Field(default=0.0, description="Compliance percentage 0-100")
+    persons: list[dict[str, Any]] = Field(default_factory=list, description="Per-person PPE detection results")
+    all_detections: list[dict[str, Any]] = Field(default_factory=list, description="All detected objects")
+    ppe_summary: dict[str, int] = Field(default_factory=dict, description="Count of each PPE type detected")
+    latency_ms: Optional[int] = Field(default=None, description="Processing latency in ms")
+    error: Optional[str] = Field(default=None, description="Error message if status is error")

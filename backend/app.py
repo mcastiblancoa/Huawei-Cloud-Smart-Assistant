@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from config.settings import get_settings
 from config.logging import setup_logging, get_logger
-from api.routes import health_router, chat_router, voice_router
+from api.routes import health_router, chat_router, voice_router, vision_router
 
 settings = get_settings()
 setup_logging(level="INFO", env=settings.app_env)
@@ -23,6 +23,7 @@ app.add_middleware(
 app.include_router(health_router, tags=["health"])
 app.include_router(chat_router, tags=["chat"])
 app.include_router(voice_router, tags=["voice"])
+app.include_router(vision_router, tags=["vision"])
 
 logger.info(
     "Huawei Cloud Smart Assistant started",

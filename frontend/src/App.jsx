@@ -499,7 +499,7 @@ function App() {
         />
       )}
 
-      <div className={`app-main ${!sidebarOpen && !isMobile ? "sidebar-collapsed" : ""}`}>
+      <div className="app-main">
         <div className="top-bar">
           <button
             className="sidebar-toggle"
@@ -553,23 +553,25 @@ function App() {
           </button>
         </div>
 
-        <div style={{ display: activeView === "voice" ? "block" : "none", height: "100%", flex: 1 }}>
-          <VoiceView
-            t={t}
-            status={status}
-            statusLabel={statusLabel}
-            toggleRecording={toggleRecording}
-            recordingLanguage={recordingLanguage}
-            setRecordingLanguage={setRecordingLanguage}
-            waveformData={waveformData}
-            errorMessage={errorMessage}
-            transcription={transcription}
-            agentReply={agentReply}
-            audioUrl={audioUrl}
-            theme={theme}
-            language={language}
-          />
-        </div>
+        {activeView === "voice" && (
+          <div style={{ height: "100%", flex: 1 }}>
+            <VoiceView
+              t={t}
+              status={status}
+              statusLabel={statusLabel}
+              toggleRecording={toggleRecording}
+              recordingLanguage={recordingLanguage}
+              setRecordingLanguage={setRecordingLanguage}
+              waveformData={waveformData}
+              errorMessage={errorMessage}
+              transcription={transcription}
+              agentReply={agentReply}
+              audioUrl={audioUrl}
+              theme={theme}
+              language={language}
+            />
+          </div>
+        )}
         
         <div style={{ display: activeView === "chat" ? "block" : "none", height: "100%", flex: 1 }}>
           <ChatView
@@ -583,25 +585,31 @@ function App() {
           />
         </div>
 
-        <div style={{ display: activeView === "feelings" ? "block" : "none", height: "100%", flex: 1 }}>
-          <ComputerVisionView
-            t={t}
-            title={t.feelingsTitle}
-            subtitle={t.feelingsSubtitle}
-            language={language}
-            theme={theme}
-          />
-        </div>
+        {activeView === "feelings" && (
+          <div style={{ height: "100%", flex: 1 }}>
+            <ComputerVisionView
+              t={t}
+              title={t.feelingsTitle}
+              subtitle={t.feelingsSubtitle}
+              language={language}
+              theme={theme}
+              mode="feelings"
+            />
+          </div>
+        )}
 
-        <div style={{ display: activeView === "industrial-safety" ? "block" : "none", height: "100%", flex: 1 }}>
-          <ComputerVisionView
-            t={t}
-            title={t.industrialSafetyTitle}
-            subtitle={t.industrialSafetySubtitle}
-            language={language}
-            theme={theme}
-          />
-        </div>
+        {activeView === "industrial-safety" && (
+          <div style={{ height: "100%", flex: 1 }}>
+            <ComputerVisionView
+              t={t}
+              title={t.industrialSafetyTitle}
+              subtitle={t.industrialSafetySubtitle}
+              language={language}
+              theme={theme}
+              mode="industrial-safety"
+            />
+          </div>
+        )}
       </div>
 
       <RightSidebar

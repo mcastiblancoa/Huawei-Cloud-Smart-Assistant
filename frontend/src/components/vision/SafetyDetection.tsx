@@ -1,0 +1,214 @@
+import { useState, useCallback, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { WebcamFeed } from "./WebcamFeed";
+import { PPEStatusGrid, PersonComplianceList } from "./PPEBadge";
+import { ComplianceChart } from "./ComplianceChart";
+import { ShieldCheck, ShieldAlert, RotateCcw, WifiOff, Users, CheckCircle2, XCircle } from "lucide-react";
+import { analyzeSafety } from "../../services/api";
+
+const DEBOUNCE_MS = 500;
+const MAX_CONSECUTIVE_ERRORS = 3;
+const BACKOFF_MS = 5000;
+
+export function SafetyDetection({ language, theme }) {
+  const [isActive, setIsActive] = useState(true);
+  const [totalPersons, setTotalPersons] = useState(0);
+  const [compliantPersons, setCompliantPersons] = useState(0);
+  const [complianceRate, setComplianceRate] = useState(null);
+  const [persons, setPersons] = useState([]);
+  const [ppeSummary, setPpeSummary] = useState(null);
+  const [allDetections, setAllDetections] = useState([]);
+  const [latencyMs, setLatencyMs] = useState(null);
+  const [backendDown, setBackendDown] = useState(false);
+  const [statusMessage, setStatusMessage] = useState(null);
+
+  const lastSentRef = useRef(0);
+  const abortRef = useRef(null);
+  const consecutiveErrorsRef = useRef(0);
+  const backoffTimerRef = useRef(null);
+  const hasResultRef = useRef(false);
+
+  const handleFrame = useCallback(async (blob) => {
+    if (backendDown) return;
+
+    const now = Date.now();
+    if (now - lastSentRef.current < DEBOUNCE_MS) return;
+    lastSentRef.current = now;
+
+    if (abortRef.current) {
+      abortRef.current.abort();
+    }
+    const controller = new AbortController();
+    abortRef.current = controller;
+
+    if (!hasResultRef.current) {
+      setStatusMessage("analyzing");
+    }
+
+    try {
+      const result = await analyzeSafety(blob, controller.signal);
+
+      if (controller.signal.aborted) return;
+
+      consecutiveErrorsRef.current = 0;
+      setBackendDown(false);
+
+      if (result.status === "success") {
+        hasResultRef.current = true;
+        setStatusMessage(null);
+        setTotalPersons(result.total_persons);
+        setCompliantPersons(result.compliant_persons);
+        setComplianceRate(result.compliance_rate);
+        setPersons(result.persons || []);
+        setPpeSummary(result.ppe_summary || {});
+        setAllDetections(result.all_detections || []);
+        setLatencyMs(result.latency_ms);
+      } else if (result.status === "error") {
+        if (!hasResultRef.current) {
+          setStatusMessage("error");
+        }
+      }
+    } catch (err) {
+      if (err.name === "AbortError") return;
+
+      consecutiveErrorsRef.current += 1;
+
+      if (consecutiveErrorsRef.current >= MAX_CONSECUTIVE_ERRORS) {
+        setBackendDown(true);
+        setStatusMessage("disconnected");
+
+        if (backoffTimerRef.current) clearTimeout(backoffTimerRef.current);
+        backoffTimerRef.current = setTimeout(() => {
+          consecutiveErrorsRef.current = 0;
+          setBackendDown(false);
+          setStatusMessage(null);
+        }, BACKOFF_MS);
+        return;
+      }
+
+      if (!hasResultRef.current) {
+        setStatusMessage("error");
+      }
+    }
+  }, [backendDown]);
+
+  const handleReset = useCallback(() => {
+    if (backoffTimerRef.current) clearTimeout(backoffTimerRef.current);
+    consecutiveErrorsRef.current = 0;
+    hasResultRef.current = false;
+    setBackendDown(false);
+    setStatusMessage(null);
+    setTotalPersons(0);
+    setCompliantPersons(0);
+    setComplianceRate(null);
+    setPersons([]);
+    setPpeSummary(null);
+    setAllDetections([]);
+    setLatencyMs(null);
+  }, []);
+
+  const hasResult = hasResultRef.current && complianceRate != null;
+  const isEs = language === "es";
+
+  return (
+    <div className="safety-layout">
+      <div className="safety-video-section">
+        <WebcamFeed
+          onFrame={handleFrame}
+          isActive={isActive}
+          language={language}
+        />
+      </div>
+
+      <div className="safety-results-section">
+        {backendDown && (
+          <motion.div
+            className="backend-down-notice"
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+          >
+            <WifiOff size={16} strokeWidth={1.5} />
+            <span>
+              {isEs ? "Backend no disponible. Reintentando en 5s..." : "Backend unavailable. Retrying in 5s..."}
+            </span>
+          </motion.div>
+        )}
+
+        <AnimatePresence mode="wait">
+          {statusMessage && !backendDown && !hasResult && (
+            <motion.div
+              className="safety-status-card"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              key={statusMessage}
+            >
+              <ShieldAlert size={18} strokeWidth={1.5} className="safety-status-icon" />
+              <span>
+                {statusMessage === "analyzing" && (isEs ? "Analizando..." : "Analyzing...")}
+                {statusMessage === "error" && (isEs ? "Error de procesamiento" : "Processing error")}
+                {statusMessage === "disconnected" && (isEs ? "Cámara desconectada" : "Camera disconnected")}
+              </span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {hasResult && (
+          <div className="safety-results-grid">
+            <div className="safety-results-header">
+              <ShieldCheck size={16} strokeWidth={1.5} className="safety-results-icon" />
+              <span className="safety-results-title">
+                {isEs ? "Análisis de seguridad" : "Safety analysis"}
+              </span>
+              {latencyMs != null && (
+                <span className="safety-latency">{latencyMs} ms</span>
+              )}
+            </div>
+
+            <div className="safety-kpi-row">
+              <div className="safety-kpi-card">
+                <Users size={18} strokeWidth={1.5} className="safety-kpi-icon" />
+                <div className="safety-kpi-content">
+                  <span className="safety-kpi-value">{totalPersons}</span>
+                  <span className="safety-kpi-label">{isEs ? "Personas" : "Persons"}</span>
+                </div>
+              </div>
+              <div className="safety-kpi-card">
+                <CheckCircle2 size={18} strokeWidth={1.5} className="safety-kpi-icon safety-kpi-icon-ok" />
+                <div className="safety-kpi-content">
+                  <span className="safety-kpi-value">{compliantPersons}</span>
+                  <span className="safety-kpi-label">{isEs ? "Cumplen" : "Compliant"}</span>
+                </div>
+              </div>
+              <div className="safety-kpi-card">
+                <XCircle size={18} strokeWidth={1.5} className="safety-kpi-icon safety-kpi-icon-fail" />
+                <div className="safety-kpi-content">
+                  <span className="safety-kpi-value">{totalPersons - compliantPersons}</span>
+                  <span className="safety-kpi-label">{isEs ? "No cumplen" : "Non-compliant"}</span>
+                </div>
+              </div>
+              <div className={`safety-kpi-card safety-compliance-rate ${complianceRate >= 80 ? "rate-ok" : complianceRate >= 50 ? "rate-warn" : "rate-fail"}`}>
+                <span className="safety-rate-value">{complianceRate.toFixed(0)}%</span>
+                <span className="safety-rate-label">{isEs ? "Cumplimiento" : "Compliance"}</span>
+              </div>
+            </div>
+
+            <PPEStatusGrid ppeSummary={ppeSummary} persons={persons} language={language} />
+
+            {persons.length > 0 && (
+              <PersonComplianceList persons={persons} language={language} />
+            )}
+
+            <ComplianceChart ppeSummary={ppeSummary} language={language} />
+
+            <button className="safety-reset-btn" onClick={handleReset} type="button">
+              <RotateCcw size={12} />
+              {isEs ? "Reiniciar" : "Reset"}
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

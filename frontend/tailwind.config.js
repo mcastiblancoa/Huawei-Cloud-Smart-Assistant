@@ -49,6 +49,53 @@ export default {
       fontFamily: {
         sans: ["Inter", "system-ui", "sans-serif"],
       },
+      animation: {
+        "fade-in": "fadeIn 0.3s ease-out",
+        "fade-out": "fadeOut 0.3s ease-out",
+        "slide-up": "slideUp 0.3s ease-out",
+        "slide-down": "slideDown 0.3s ease-out",
+        "slide-right": "slideRight 0.3s ease-out",
+        "pulse-soft": "pulseSoft 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+        "bounce-light": "bounceLight 2s ease-in-out infinite",
+        "shimmer-wave": "shimmerWave 2s ease-in-out infinite",
+      },
+      keyframes: {
+        fadeIn: {
+          "0%": { opacity: "0" },
+          "100%": { opacity: "1" },
+        },
+        fadeOut: {
+          "0%": { opacity: "1" },
+          "100%": { opacity: "0" },
+        },
+        slideUp: {
+          "0%": { transform: "translateY(10px)", opacity: "0" },
+          "100%": { transform: "translateY(0)", opacity: "1" },
+        },
+        slideDown: {
+          "0%": { transform: "translateY(-10px)", opacity: "0" },
+          "100%": { transform: "translateY(0)", opacity: "1" },
+        },
+        slideRight: {
+          "0%": { transform: "translateX(-10px)", opacity: "0" },
+          "100%": { transform: "translateX(0)", opacity: "1" },
+        },
+        pulseSoft: {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0.7" },
+        },
+        bounceLight: {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-4px)" },
+        },
+        shimmerWave: {
+          "0%": { backgroundPosition: "200% 0" },
+          "100%": { backgroundPosition: "-200% 0" },
+        },
+      },
+      transitionTimingFunction: {
+        smooth: "cubic-bezier(0.4, 0, 0.2, 1)",
+      },
     },
   },
   plugins: [],

@@ -22,7 +22,7 @@ export function Sidebar({
   const [cvExpanded, setCvExpanded] = useState(true);
 
   const HuaweiLogoIcon = () => (
-    <img src={huaweiLogo} alt="Huawei Cloud" className="flex-shrink-0" style={{ width: "24px", height: "24px", objectFit: "contain" }} />
+    <img src={huaweiLogo} alt="Huawei Cloud" className="flex-shrink-0" style={{ width: "22px", height: "22px", objectFit: "contain" }} />
   );
 
   const infrastructureItems = [
@@ -58,7 +58,6 @@ export function Sidebar({
         width: isOpen && !isMobile ? "16rem" : undefined,
       }}
     >
-      {/* Brand */}
       <div className="sidebar-brand">
         <motion.div
           className="sidebar-brand-mark"
@@ -78,32 +77,28 @@ export function Sidebar({
             onClick={onClose}
             aria-label="Close sidebar"
           >
-            <X size={20} strokeWidth={1.5} />
+            <X size={18} strokeWidth={1.5} />
           </motion.button>
         )}
       </div>
 
-      {/* Navigation */}
       <nav className="sidebar-nav" aria-label="Assistant views">
-        {/* Infrastructure Category */}
         <motion.button
           className="sidebar-category-button"
           onClick={() => setInfrastructureExpanded(!infrastructureExpanded)}
-          whileHover={{ x: 2 }}
           whileTap={{ scale: 0.98 }}
         >
-          <Cloud size={18} strokeWidth={1.5} className="flex-shrink-0" />
+          <Cloud size={14} strokeWidth={1.5} className="flex-shrink-0" />
           <span className="sidebar-category-label">{infrastructureLabel}</span>
           <motion.div
             animate={{ rotate: infrastructureExpanded ? 0 : -90 }}
             transition={{ duration: 0.2 }}
             className="ml-auto flex-shrink-0"
           >
-            <ChevronDown size={18} strokeWidth={1.5} />
+            <ChevronDown size={12} strokeWidth={2} />
           </motion.div>
         </motion.button>
 
-        {/* Infrastructure Items */}
         <AnimatePresence>
           {infrastructureExpanded && infrastructureItems.map((item) => {
             const Icon = item.icon;
@@ -114,44 +109,38 @@ export function Sidebar({
                 className={`sidebar-nav-item sidebar-nav-subitem ${isActive ? "active" : ""}`}
                 onClick={() => {
                   onSelectView(item.id);
-                  if (isMobile) {
-                    onClose();
-                  }
+                  if (isMobile) onClose();
                 }}
-                whileHover={{ x: 4 }}
                 whileTap={{ scale: 0.98 }}
                 aria-pressed={isActive}
-                initial={{ opacity: 0, x: -10 }}
+                initial={{ opacity: 0, x: -6 }}
                 animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -10 }}
-                transition={{ duration: 0.2 }}
+                exit={{ opacity: 0, x: -6 }}
+                transition={{ duration: 0.15 }}
               >
-                <Icon size={20} strokeWidth={1.5} />
+                <Icon size={16} strokeWidth={1.5} />
                 <span>{item.label}</span>
               </motion.button>
             );
           })}
         </AnimatePresence>
 
-        {/* Computer Vision Category */}
         <motion.button
           className="sidebar-category-button"
           onClick={() => setCvExpanded(!cvExpanded)}
-          whileHover={{ x: 2 }}
           whileTap={{ scale: 0.98 }}
         >
-          <Eye size={18} strokeWidth={1.5} className="flex-shrink-0" />
+          <Eye size={14} strokeWidth={1.5} className="flex-shrink-0" />
           <span className="sidebar-category-label">{cvLabel}</span>
           <motion.div
             animate={{ rotate: cvExpanded ? 0 : -90 }}
             transition={{ duration: 0.2 }}
             className="ml-auto flex-shrink-0"
           >
-            <ChevronDown size={18} strokeWidth={1.5} />
+            <ChevronDown size={12} strokeWidth={2} />
           </motion.div>
         </motion.button>
 
-        {/* Computer Vision Items */}
         <AnimatePresence>
           {cvExpanded && cvItems.map((item) => {
             const Icon = item.icon;
@@ -162,19 +151,16 @@ export function Sidebar({
                 className={`sidebar-nav-item sidebar-nav-subitem ${isActive ? "active" : ""}`}
                 onClick={() => {
                   onSelectView(item.id);
-                  if (isMobile) {
-                    onClose();
-                  }
+                  if (isMobile) onClose();
                 }}
-                whileHover={{ x: 4 }}
                 whileTap={{ scale: 0.98 }}
                 aria-pressed={isActive}
-                initial={{ opacity: 0, x: -10 }}
+                initial={{ opacity: 0, x: -6 }}
                 animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -10 }}
-                transition={{ duration: 0.2 }}
+                exit={{ opacity: 0, x: -6 }}
+                transition={{ duration: 0.15 }}
               >
-                <Icon size={20} strokeWidth={1.5} />
+                <Icon size={16} strokeWidth={1.5} />
                 <span>{item.label}</span>
               </motion.button>
             );
@@ -182,7 +168,6 @@ export function Sidebar({
         </AnimatePresence>
       </nav>
 
-      {/* Chat History */}
       {showThreads && (
         <div className="sidebar-threads">
           <div className="sidebar-threads-header">
@@ -194,12 +179,12 @@ export function Sidebar({
               whileTap={{ scale: 0.95 }}
               title={t.newChat}
             >
-              <Plus size={16} strokeWidth={2} />
+              <Plus size={14} strokeWidth={2} />
             </motion.button>
           </div>
 
           <ScrollArea className="flex-1">
-            <div className="sidebar-threads-list pr-4">
+            <div className="sidebar-threads-list pr-3">
               <AnimatePresence>
                 {chatThreads.map((thread, index) => {
                   const isActive = thread.id === activeThreadId;
@@ -207,11 +192,19 @@ export function Sidebar({
                     <motion.div
                       key={thread.id}
                       className={`sidebar-thread-item ${isActive ? "active" : ""}`}
-                      initial={{ opacity: 0, x: -10 }}
+                      initial={{ opacity: 0, x: -6 }}
                       animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -10 }}
-                      transition={{ delay: index * 0.05 }}
+                      exit={{ opacity: 0, x: -6 }}
+                      transition={{ delay: index * 0.03, duration: 0.15 }}
                     >
+                      <button
+                        type="button"
+                        className="sidebar-thread-btn"
+                        onClick={() => onSelectThread(thread.id)}
+                      >
+                        <MessageSquare size={14} strokeWidth={1.5} className="flex-shrink-0" />
+                        <span className="sidebar-thread-name">{thread.title}</span>
+                      </button>
                       <div className="sidebar-thread-actions">
                         <motion.button
                           type="button"
@@ -221,7 +214,7 @@ export function Sidebar({
                           whileTap={{ scale: 0.95 }}
                           title={t.renameChat}
                         >
-                          <Pencil size={14} strokeWidth={1.5} />
+                          <Pencil size={12} strokeWidth={1.5} />
                         </motion.button>
                         <motion.button
                           type="button"
@@ -231,17 +224,9 @@ export function Sidebar({
                           whileTap={{ scale: 0.95 }}
                           title={t.deleteChat}
                         >
-                          <Trash2 size={14} strokeWidth={1.5} />
+                          <Trash2 size={12} strokeWidth={1.5} />
                         </motion.button>
                       </div>
-                      <button
-                        type="button"
-                        className="sidebar-thread-btn"
-                        onClick={() => onSelectThread(thread.id)}
-                      >
-                        <MessageSquare size={16} strokeWidth={1.5} className="flex-shrink-0" />
-                        <span className="sidebar-thread-name">{thread.title}</span>
-                      </button>
                     </motion.div>
                   );
                 })}

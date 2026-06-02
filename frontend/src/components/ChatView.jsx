@@ -1,11 +1,27 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Sparkles, MessageSquare } from "lucide-react";
+import {
+  Sparkles,
+  MessageSquare,
+  Activity,
+  DollarSign,
+  Server,
+  Globe,
+  Shield,
+  Database,
+  HardDrive,
+  KeyRound,
+  Layers,
+  Cpu,
+} from "lucide-react";
 import {
   Bar,
   BarChart,
   CartesianGrid,
+  Cell,
   Legend,
+  Pie,
+  PieChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -135,6 +151,24 @@ const parseAssistantContent = (content) => {
   return blocks;
 };
 
+const CHART_COLORS = [
+  "#C7000B", "#2563eb", "#16a34a", "#f59e0b", "#8b5cf6",
+  "#06b6d4", "#ec4899", "#84cc16", "#f97316", "#6366f1",
+];
+
+const KPI_ICON_MAP = [
+  { pattern: /recurso|resource|total|instance|servidor|server/i, Icon: Layers },
+  { pattern: /regi[oó]n|region|zona|zone|location/i, Icon: Globe },
+  { pattern: /cost|gasto|factur|billing|usd|precio|price/i, Icon: DollarSign },
+  { pattern: /ecs|compute|servidor|server/i, Icon: Server },
+  { pattern: /vpc|red|network|subnet/i, Icon: Activity },
+  { pattern: /security|segurid|firewall|sg-/i, Icon: Shield },
+  { pattern: /rds|database|base de datos|db/i, Icon: Database },
+  { pattern: /obs|storage|almacen|bucket|object/i, Icon: HardDrive },
+  { pattern: /key|clave|iam|credential/i, Icon: KeyRound },
+  { pattern: /image|imagen|ims|ami/i, Icon: Cpu },
+];
+
 const extractNumber = (value) => {
   const normalized = String(value ?? "").replace(/[$%\s,]/g, "").replace(/[^\d.-]/g, "");
   if (!normalized || normalized === "-" || normalized === "." || normalized === "-.") return null;
@@ -142,7 +176,111 @@ const extractNumber = (value) => {
   return Number.isFinite(number) ? number : null;
 };
 
-const buildChartModel = (table) => {
+const extractKPIs = (content) => {
+  const kpis = [];
+  const patterns = [
+    /(\d+)\s+recurso[s]?/gi,
+    /(\d+)\s+resource[s]?/gi,
+    /(\d+)\s+regi[oó]n(?:es)?/gi,
+    /(\d+)\s+region[s]?/gi,
+    /(\d+)\s+imagen(?:es)?/gi,
+    /(\d+)\s+image[s]?/gi,
+    /(\d+)\s+(?:grupo[s]?\s+de\s+)?seguridad/gi,
+    /(\d+)\s+security\s+group[s]?/gi,
+    /(\d+)\s+VPC[s]?/gi,
+    /(\d+)\s+vpc[s]?/gi,
+    /(\d+)\s+clave[s]?\s+de\s+acceso/gi,
+    /(\d+)\s+access\s+key[s]?/gi,
+    /(\d+)\s+servicio[s]?/gi,
+    /(\d+)\s+service[s]?/gi,
+    /(\d+)\s+instance[s]?/gi,
+    /(?:costo|cost|gasto|total)\s*(?:total)?[:\s]*\$?([\d,.]+)/gi,
+    /USD\s*([\d,.]+)/gi,
+    /(\d+)\s+ECS/gi,
+    /(\d+)\s+RDS/gi,
+    /(\d+)\s+OBS/gi,
+    /(\d+)\s+ELB/gi,
+    /(\d+)\s+NAT/gi,
+    /(\d+)\s+EIP/gi,
+  ];
+
+  const labelMap = {
+    "recurso": { es: "Recursos", en: "Resources" },
+    "resource": { es: "Recursos", en: "Resources" },
+    "regi": { es: "Regiones", en: "Regions" },
+    "region": { es: "Regiones", en: "Regions" },
+    "imagen": { es: "Imágenes", en: "Images" },
+    "image": { es: "Imágenes", en: "Images" },
+    "seguridad": { es: "Grupos de Seguridad", en: "Security Groups" },
+    "security": { es: "Grupos de Seguridad", en: "Security Groups" },
+    "vpc": { es: "VPCs", en: "VPCs" },
+    "clave": { es: "Claves de Acceso", en: "Access Keys" },
+    "access": { es: "Claves de Acceso", en: "Access Keys" },
+    "servicio": { es: "Servicios", en: "Services" },
+    "service": { es: "Servicios", en: "Services" },
+    "instance": { es: "Instancias", en: "Instances" },
+    "costo": { es: "Costo Total", en: "Total Cost" },
+    "cost": { es: "Costo Total", en: "Total Cost" },
+    "gasto": { es: "Gasto Total", en: "Total Cost" },
+    "usd": { es: "Costo USD", en: "Cost USD" },
+    "ecs": { es: "ECS", en: "ECS" },
+    "rds": { es: "RDS", en: "RDS" },
+    "obs": { es: "OBS", en: "OBS" },
+    "elb": { es: "ELB", en: "ELB" },
+    "nat": { es: "NAT", en: "NAT" },
+    "eip": { es: "EIP", en: "EIP" },
+  };
+
+  const seen = new Set();
+  for (const pattern of patterns) {
+    let match;
+    const regex = new RegExp(pattern.source, pattern.flags);
+    while ((match = regex.exec(content)) !== null) {
+      const value = match[1].replace(/,/g, "");
+      const num = Number(value);
+      if (!Number.isFinite(num) || num === 0) continue;
+      const matchText = match[0].toLowerCase();
+      let label = { es: matchText, en: matchText };
+      for (const [key, lbl] of Object.entries(labelMap)) {
+        if (matchText.includes(key)) {
+          label = lbl;
+          break;
+        }
+      }
+      const key = label.en.toLowerCase().replace(/\s+/g, "-");
+      if (seen.has(key)) continue;
+      seen.add(key);
+      kpis.push({ value: num, label, key, isCurrency: /usd|\$|cost|gasto|factur/i.test(matchText) });
+    }
+  }
+  return kpis.slice(0, 6);
+};
+
+const detectChartType = (table) => {
+  if (!table?.headers?.length || !table?.rows?.length) return null;
+  const numericColumns = [];
+  table.headers.slice(1).forEach((header, offset) => {
+    const index = offset + 1;
+    const values = table.rows.map((row) => extractNumber(row[index])).filter((v) => v !== null);
+    if (values.length > 0) {
+      numericColumns.push({ index, key: `series-${offset}`, label: header, values });
+    }
+  });
+  if (numericColumns.length === 0) return null;
+  const rowCount = table.rows.length;
+  const hasSingleNumeric = numericColumns.length === 1;
+  const isDistribution = hasSingleNumeric && rowCount >= 2 && rowCount <= 10;
+  const firstHeader = (table.headers[0] || "").toLowerCase();
+  const isCategorical = /tipo|type|categor[ií]a|category|servicio|service|recurso|resource|regi[oó]n|region|estado|status|nombre|name/i.test(firstHeader);
+  const isTimeSeries = /mes|month|fecha|date|a[oñ]|year|enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre|jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec/i.test(firstHeader) ||
+    table.rows.every((row) => /(enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre|jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec|\d{4}[-\/]\d{2}|\d{2}[-\/]\d{4})/i.test(String(row[0])));
+  if (isDistribution && isCategorical && !isTimeSeries) return "donut";
+  if (isTimeSeries) return "bar";
+  if (isDistribution) return "donut";
+  return "bar";
+};
+
+const buildChartModel = (table, chartType) => {
   if (!table?.headers?.length || !table?.rows?.length) return null;
   const labelHeader = table.headers[0] || "Item";
   const numericColumns = [];
@@ -154,6 +292,24 @@ const buildChartModel = (table) => {
     }
   });
   if (numericColumns.length === 0) return null;
+
+  if (chartType === "donut") {
+    const column = numericColumns[0];
+    const data = table.rows
+      .map((row) => ({
+        name: String(row[0] || labelHeader).slice(0, 28),
+        value: Math.abs(extractNumber(row[column.index]) ?? 0),
+      }))
+      .filter((row) => row.name.trim().length > 0 && row.value > 0);
+    const total = data.reduce((sum, d) => sum + d.value, 0);
+    return {
+      kind: "donut",
+      data: data.map((d) => ({ ...d, percent: total > 0 ? ((d.value / total) * 100).toFixed(1) : 0 })),
+      total,
+      series: [{ key: "value", label: column.label }],
+    };
+  }
+
   if (numericColumns.length === 1) {
     const column = numericColumns[0];
     const data = table.rows
@@ -163,7 +319,7 @@ const buildChartModel = (table) => {
       }))
       .filter((row) => row.name.trim().length > 0)
       .sort((left, right) => right.value - left.value)
-      .slice(0, 8);
+      .slice(0, 12);
     return { kind: "single", data, series: [{ key: "value", label: column.label }] };
   }
   const seriesColumns = numericColumns.slice(0, 3);
@@ -182,6 +338,44 @@ const formatCurrency = (value) => {
   return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 2 }).format(value);
 };
 
+const formatValue = (value, isCurrency) => {
+  if (!Number.isFinite(value)) return String(value);
+  if (isCurrency) return formatCurrency(value);
+  if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`;
+  if (value >= 1000) return `${(value / 1000).toFixed(1)}K`;
+  return String(value);
+};
+
+function KPICards({ kpis, language }) {
+  if (!kpis.length) return null;
+  return (
+    <div className="kpi-grid">
+      {kpis.map((kpi) => {
+        const matchedIcon = KPI_ICON_MAP.find(({ pattern }) => pattern.test(kpi.key) || pattern.test(kpi.label.en) || pattern.test(kpi.label.es));
+        const Icon = matchedIcon?.Icon || Activity;
+        const label = language === "es" ? kpi.label.es : kpi.label.en;
+        return (
+          <motion.div
+            key={kpi.key}
+            className="kpi-card"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className="kpi-icon-wrap">
+              <Icon size={16} strokeWidth={1.8} />
+            </div>
+            <div className="kpi-content">
+              <span className="kpi-value">{kpi.isCurrency ? formatCurrency(kpi.value) : kpi.value}</span>
+              <span className="kpi-label">{label}</span>
+            </div>
+          </motion.div>
+        );
+      })}
+    </div>
+  );
+}
+
 function DataTable({ table }) {
   return (
     <motion.div
@@ -189,43 +383,32 @@ function DataTable({ table }) {
       initial={{ opacity: 0, scale: 0.98 }}
       animate={{ opacity: 1, scale: 1 }}
     >
-      <table className="markdown-table">
-        <thead>
-          <tr>
-            {table.headers.map((header, index) => (
-              <th key={`${header}-${index}`}><MarkdownRenderer content={header} /></th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {table.rows.map((row, rowIndex) => (
-            <tr key={`row-${rowIndex}`}>
-              {row.map((cell, cellIndex) => (
-                <td key={`cell-${rowIndex}-${cellIndex}`}><MarkdownRenderer content={cell} /></td>
+      <div className="table-scroll">
+        <table className="markdown-table">
+          <thead>
+            <tr>
+              {table.headers.map((header, index) => (
+                <th key={`${header}-${index}`}><MarkdownRenderer content={header} /></th>
               ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {table.rows.map((row, rowIndex) => (
+              <tr key={`row-${rowIndex}`}>
+                {row.map((cell, cellIndex) => (
+                  <td key={`cell-${rowIndex}-${cellIndex}`}><MarkdownRenderer content={cell} /></td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </motion.div>
   );
 }
 
-function ChartCard({ model, title }) {
-  if (!model) return null;
-  const colors = ["#C7000B", "#2563eb", "#16a34a"];
-  const topItem = model.data.reduce(
-    (best, item) => {
-      const total =
-        model.kind === "single"
-          ? item.value
-          : model.series.reduce((sum, series) => sum + (Number(item[series.key]) || 0), 0);
-      if (total > best.total) return { label: item.name, total };
-      return best;
-    },
-    { label: "", total: 0 }
-  );
-
+function DonutChartCard({ model, title }) {
+  if (!model || model.kind !== "donut" || !model.data.length) return null;
   return (
     <motion.div
       className="chart-container"
@@ -236,15 +419,69 @@ function ChartCard({ model, title }) {
         <Sparkles size={16} strokeWidth={1.5} className="inline mr-2" />
         {title}
       </div>
-      <div>
+      <div className="donut-layout">
+        <div className="donut-chart-wrap">
+          <ResponsiveContainer width="100%" height={220}>
+            <PieChart>
+              <Pie
+                data={model.data}
+                cx="50%"
+                cy="50%"
+                innerRadius={55}
+                outerRadius={85}
+                paddingAngle={3}
+                dataKey="value"
+                nameKey="name"
+                stroke="none"
+              >
+                {model.data.map((_, index) => (
+                  <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip
+                formatter={(value, name) => [formatValue(value, false), name]}
+                contentStyle={{ borderRadius: 12, borderColor: "var(--border-light)", fontSize: "0.82rem", background: "var(--surface)" }}
+              />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+        <div className="donut-legend">
+          {model.data.map((item, index) => (
+            <div key={`legend-${index}`} className="donut-legend-item">
+              <span className="donut-legend-dot" style={{ background: CHART_COLORS[index % CHART_COLORS.length] }} />
+              <span className="donut-legend-name">{item.name}</span>
+              <span className="donut-legend-value">{formatValue(item.value, false)}</span>
+              <span className="donut-legend-pct">{item.percent}%</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+function BarChartCard({ model, title, isCostData }) {
+  if (!model || model.kind === "donut") return null;
+  const colors = ["#C7000B", "#2563eb", "#16a34a"];
+  return (
+    <motion.div
+      className="chart-container"
+      initial={{ opacity: 0, scale: 0.98 }}
+      animate={{ opacity: 1, scale: 1 }}
+    >
+      <div className="chart-title">
+        <Sparkles size={16} strokeWidth={1.5} className="inline mr-2" />
+        {title}
+      </div>
+      <div className="bar-chart-wrap">
         <ResponsiveContainer width="100%" height={260}>
           <BarChart data={model.data} margin={{ top: 8, right: 16, left: 0, bottom: 8 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(148, 163, 184, 0.15)" />
             <XAxis dataKey="name" tick={{ fontSize: 11 }} interval={0} height={60} />
             <YAxis tickFormatter={(value) => (value >= 1000 ? `${(value / 1000).toFixed(1)}k` : value)} />
             <Tooltip
-              formatter={(value) => [formatCurrency(Number(value)), ""]}
-              contentStyle={{ borderRadius: 12, borderColor: "#e5e5e5", fontSize: "0.82rem" }}
+              formatter={(value) => [isCostData ? formatCurrency(Number(value)) : formatValue(Number(value), false), ""]}
+              contentStyle={{ borderRadius: 12, borderColor: "var(--border-light)", fontSize: "0.82rem", background: "var(--surface)" }}
             />
             <Legend />
             {model.kind === "single" ? (
@@ -266,9 +503,30 @@ function AssistantMessage({ content, durationMs, language }) {
   const reportHeaderBlock = blocks.find((block) => block.type === "report-header");
   const tableBlocks = blocks.filter((block) => block.type === "table");
   const textBlocks = blocks.filter((block) => block.type !== "table" && block.type !== "report-header");
-  const chartModel = useMemo(() => buildChartModel(tableBlocks[0]?.table), [tableBlocks]);
-  const hasCostLanguage = /gasto|cost|billing|factur|costos|usd|month|mayo|abril|statistics|resumen/i.test(content);
-  const chartTitle = language === "es" ? "Análisis de costos" : "Cost analysis";
+  const kpis = useMemo(() => extractKPIs(content), [content]);
+  const isCostContent = /gasto|cost|billing|factur|costos|usd|month|mayo|abril|statistics|resumen/i.test(content);
+  const isResourceContent = /recurso|resource|desplegado|deployed|servicio|service|instance|imagen|image|vpc|security|segurid|clave|key|rds|obs|ecs|elb/i.test(content);
+  const showVisuals = isCostContent || isResourceContent || tableBlocks.length > 0;
+
+  const chartModels = useMemo(() => {
+    if (!showVisuals) return [];
+    return tableBlocks.map((block) => {
+      const chartType = detectChartType(block.table);
+      if (!chartType) return null;
+      return { chartType, model: buildChartModel(block.table, chartType) };
+    });
+  }, [tableBlocks, showVisuals]);
+
+  const getChartTitle = (chartType, index) => {
+    if (isCostContent) {
+      return language === "es" ? "Análisis de costos" : "Cost analysis";
+    }
+    if (chartType === "donut") {
+      return language === "es" ? "Distribución" : "Distribution";
+    }
+    return language === "es" ? "Visualización de datos" : "Data visualization";
+  };
+
   const durationLabel = Number.isFinite(durationMs)
     ? language === "es"
       ? `Respuesta en ${durationMs < 1000 ? `${durationMs} ms` : `${(durationMs / 1000).toFixed(1)} s`}`
@@ -278,6 +536,7 @@ function AssistantMessage({ content, durationMs, language }) {
 
   return (
     <div className="space-y-3">
+      {kpis.length > 0 && <KPICards kpis={kpis} language={language} />}
       {textContent && <MarkdownRenderer content={textContent} />}
       {tableBlocks.map((block, index) => (
         <div key={`table-${index}`}>
@@ -288,7 +547,14 @@ function AssistantMessage({ content, durationMs, language }) {
           <DataTable table={block.table} />
         </div>
       ))}
-      {chartModel && hasCostLanguage && <ChartCard model={chartModel} title={chartTitle} />}
+      {chartModels.map((cm, index) => {
+        if (!cm?.model) return null;
+        const title = getChartTitle(cm.chartType, index);
+        if (cm.chartType === "donut") {
+          return <DonutChartCard key={`donut-${index}`} model={cm.model} title={title} />;
+        }
+        return <BarChartCard key={`bar-${index}`} model={cm.model} title={title} isCostData={isCostContent} />;
+      })}
       {durationLabel && (
         <motion.div
           className="text-[10px] text-huawei-gray-500 dark:text-huawei-gray-400 pt-2 border-t border-huawei-gray-200 dark:border-huawei-gray-700"
@@ -428,6 +694,8 @@ export function ChatView({ theme, language, t, threads, setThreads, activeThread
   };
 
   const hasMessages = activeThread?.messages && activeThread.messages.length > 0;
+  const messageCount = activeThread?.messages?.length || 0;
+  const fewMessages = messageCount > 0 && messageCount < 3;
 
   return (
     <motion.section
@@ -451,15 +719,23 @@ export function ChatView({ theme, language, t, threads, setThreads, activeThread
           ) : (
             <>
               <ScrollArea className="flex-1">
-                <div className="chat-history" ref={chatHistoryRef} onScroll={checkScrollPosition}>
-                  <AnimatePresence>
+                <div
+                  className={`chat-history ${fewMessages ? "chat-history-few" : ""}`}
+                  ref={chatHistoryRef}
+                  onScroll={checkScrollPosition}
+                >
+                  <AnimatePresence mode="popLayout">
                     {activeThread?.messages.map((message, index) => (
                       <motion.div
                         key={message.id}
                         className={`chat-row ${message.role}`}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.05, duration: 0.3 }}
+                        initial={{ opacity: 0, y: 16, scale: 0.98 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        transition={{
+                          duration: 0.4,
+                          ease: [0.25, 0.46, 0.45, 0.94],
+                          delay: index * 0.03,
+                        }}
                       >
                         <ChatBubble
                           role={message.role}
@@ -475,7 +751,13 @@ export function ChatView({ theme, language, t, threads, setThreads, activeThread
                     ))}
 
                     {isSending && (
-                      <motion.div key="typing" className="chat-row assistant">
+                      <motion.div
+                        key="typing"
+                        className="chat-row assistant"
+                        initial={{ opacity: 0, y: 12 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3 }}
+                      >
                         <TypingIndicator />
                       </motion.div>
                     )}
@@ -496,7 +778,7 @@ export function ChatView({ theme, language, t, threads, setThreads, activeThread
             onSubmit={handleSubmit}
             isLoading={isSending}
             language={language}
-            placeholder={language === "es" ? "Escribe tu mensaje..." : "Type your message..."}
+            placeholder={language === "es" ? "Escribe tu mensaje..." : "Message Huawei Cloud Assistant..."}
             showTypingPlaceholder={!hasMessages && !isSending}
             typingText={currentExample}
           />

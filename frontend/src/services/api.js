@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8003";
 
 export async function sendChatMessage(message, sessionId) {
   const response = await fetch(`${API_BASE_URL}/chat`, {
@@ -51,6 +51,40 @@ export async function sendVoiceAudio(audioBlob, language, sessionId) {
   }
 
   return { json: data, audio: ttsAudioBlob };
+}
+
+export async function analyzeSentiment(imageBlob, signal) {
+  const formData = new FormData();
+  formData.append("file", imageBlob, "frame.jpg");
+
+  const response = await fetch(`${API_BASE_URL}/vision/sentiment`, {
+    method: "POST",
+    body: formData,
+    signal,
+  });
+  if (!response.ok) {
+    let detail = `Vision error (${response.status}).`;
+    try { const body = await response.json(); detail = body.detail || detail; } catch {}
+    throw new Error(detail);
+  }
+  return response.json();
+}
+
+export async function analyzeSafety(imageBlob, signal) {
+  const formData = new FormData();
+  formData.append("file", imageBlob, "frame.jpg");
+
+  const response = await fetch(`${API_BASE_URL}/vision/safety`, {
+    method: "POST",
+    body: formData,
+    signal,
+  });
+  if (!response.ok) {
+    let detail = `Safety error (${response.status}).`;
+    try { const body = await response.json(); detail = body.detail || detail; } catch {}
+    throw new Error(detail);
+  }
+  return response.json();
 }
 
 export { API_BASE_URL };
