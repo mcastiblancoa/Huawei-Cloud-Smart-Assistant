@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Camera, AlertCircle } from "lucide-react";
+import { TbCamera, TbAlertCircle } from "react-icons/tb";
 import { SentimentRecognition } from "./vision/SentimentRecognition";
 import { SafetyDetection } from "./vision/SafetyDetection";
 
@@ -68,7 +68,7 @@ export function ComputerVisionView({
                 transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
                 className="construction-icon"
               >
-                <AlertCircle size={48} strokeWidth={1.5} className="text-hw-red" />
+                <TbAlertCircle size={48} className="text-hw-red" />
               </motion.div>
               <h2 className="construction-title">
                 {language === "es" ? "En Construcción" : "Under Construction"}
@@ -92,7 +92,7 @@ export function ComputerVisionView({
                   transition={{ duration: 2, repeat: Infinity }}
                   className="camera-placeholder-content"
                 >
-                  <Camera size={64} strokeWidth={1.5} className="camera-placeholder-icon" />
+                  <TbCamera size={64} className="camera-placeholder-icon" />
                   <p className="camera-placeholder-text">
                     {language === "es"
                       ? "Aquí irá la vista de la cámara"

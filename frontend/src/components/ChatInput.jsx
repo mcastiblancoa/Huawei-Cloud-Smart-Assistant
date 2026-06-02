@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Send, Paperclip } from "lucide-react";
+import { TbSend, TbPaperclip } from "react-icons/tb";
 import { Button } from "./ui/Button";
 import { motion } from "framer-motion";
 
@@ -125,7 +125,7 @@ export function ChatInput({
             disabled={isLoading || !value.trim()}
             aria-label={language === "es" ? "Enviar mensaje" : "Send message"}
           >
-            <Send size={16} strokeWidth={2.5} />
+            <TbSend size={16} />
           </Button>
         </motion.div>
       </motion.div>

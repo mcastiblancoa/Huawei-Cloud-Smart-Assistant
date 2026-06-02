@@ -5,7 +5,7 @@ import { ChatView } from "./components/ChatView";
 import { ComputerVisionView } from "./components/ComputerVisionView";
 import { RightSidebar } from "./components/RightSidebar";
 import { ServiceModal } from "./components/ServiceModal";
-import { Menu, Sun, Moon, HelpCircle } from "lucide-react";
+import { TbMenu2, TbSun, TbMoon, TbHelpCircle } from "react-icons/tb";
 import { sendVoiceAudio } from "./services/api";
 
 const CHAT_THREADS_KEY = "koocliChatThreads";
@@ -507,7 +507,7 @@ function App() {
             onClick={() => setSidebarOpen((current) => !current)}
             aria-label="Toggle sidebar"
           >
-            <Menu size={18} strokeWidth={1.5} />
+            <TbMenu2 size={18} />
           </button>
 
           <div className="lang-switch">
@@ -527,7 +527,7 @@ function App() {
           </div>
 
           <div className="theme-switch">
-            <Sun size={13} strokeWidth={1.5} className="theme-switch-icon" />
+            <TbSun size={13} className="theme-switch-icon" />
             <div
               className="theme-switch-track"
               role="switch"
@@ -539,7 +539,7 @@ function App() {
             >
               <div className="theme-switch-thumb" />
             </div>
-            <Moon size={13} strokeWidth={1.5} className="theme-switch-icon" />
+            <TbMoon size={13} className="theme-switch-icon" />
           </div>
 
           <button
@@ -549,7 +549,7 @@ function App() {
             aria-label={language === "es" ? "Mostrar información de ayuda" : "Show help information"}
             title={language === "es" ? "Ayuda" : "Help"}
           >
-            <HelpCircle size={18} strokeWidth={1.5} />
+            <TbHelpCircle size={18} />
           </button>
         </div>
 

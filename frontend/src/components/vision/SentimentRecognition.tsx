@@ -4,7 +4,7 @@ import { WebcamFeed } from "./WebcamFeed";
 import { EmotionStatusCard } from "./EmotionCard";
 import { EmotionCard } from "./EmotionCard";
 import { EmotionChart } from "./EmotionChart";
-import { Sparkles, RotateCcw, WifiOff } from "lucide-react";
+import { TbSparkles, TbRefresh, TbWifiOff } from "react-icons/tb";
 import { analyzeSentiment } from "../../services/api";
 
 const DEBOUNCE_MS = 500;
@@ -129,7 +129,7 @@ export function SentimentRecognition({ language, theme }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
           >
-            <WifiOff size={16} strokeWidth={1.5} />
+            <TbWifiOff size={16} />
             <span>
               {language === "es"
                 ? "Backend no disponible. Reintentando en 5s..."
@@ -151,7 +151,7 @@ export function SentimentRecognition({ language, theme }) {
         {hasResult && (
           <div className="sentiment-results-grid">
             <div className="sentiment-results-header">
-              <Sparkles size={16} strokeWidth={1.5} className="sentiment-results-icon" />
+              <TbSparkles size={16} className="sentiment-results-icon" />
               <span className="sentiment-results-title">
                 {language === "es" ? "Resultado del análisis" : "Analysis result"}
               </span>
@@ -194,7 +194,7 @@ export function SentimentRecognition({ language, theme }) {
               onClick={handleReset}
               type="button"
             >
-              <RotateCcw size={12} />
+              <TbRefresh size={12} />
               {language === "es" ? "Reiniciar" : "Reset"}
             </button>
           </div>

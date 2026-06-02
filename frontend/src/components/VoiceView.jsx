@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Mic, MicOff, Volume2 } from "lucide-react";
+import { TbMicrophone, TbMicrophoneOff, TbVolume2 } from "react-icons/tb";
 
 export function VoiceView({
   t,
@@ -28,7 +28,7 @@ export function VoiceView({
         ? "mic-playing"
         : "";
 
-  const MicIcon = isPlaying ? Volume2 : (isRecording ? MicOff : Mic);
+  const MicIcon = isPlaying ? TbVolume2 : (isRecording ? TbMicrophoneOff : TbMicrophone);
 
   return (
     <motion.section
@@ -68,7 +68,7 @@ export function VoiceView({
           whileHover={{ scale: isProcessing ? 1 : 1.05 }}
           whileTap={{ scale: isProcessing ? 1 : 0.95 }}
         >
-          <MicIcon size={48} strokeWidth={1.5} className="mic-icon" />
+          <MicIcon size={48} className="mic-icon" />
         </motion.button>
 
         {/* Language Selector */}

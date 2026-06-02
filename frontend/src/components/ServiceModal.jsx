@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { X } from "lucide-react";
+import { TbX } from "react-icons/tb";
 import { useEffect } from "react";
 
 export function ServiceModal({ isOpen, onClose, activeView, language, theme }) {
@@ -107,7 +107,7 @@ export function ServiceModal({ isOpen, onClose, activeView, language, theme }) {
                 onClick={onClose}
                 aria-label={language === "es" ? "Cerrar" : "Close"}
               >
-                <X size={24} strokeWidth={1.5} />
+                <TbX size={24} />
               </button>
             </div>
 

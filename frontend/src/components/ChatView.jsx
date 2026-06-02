@@ -1,19 +1,19 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  Sparkles,
-  MessageSquare,
-  Activity,
-  DollarSign,
-  Server,
-  Globe,
-  Shield,
-  Database,
-  HardDrive,
-  KeyRound,
-  Layers,
-  Cpu,
-} from "lucide-react";
+  TbSparkles,
+  TbMessage2,
+  TbActivity,
+  TbCurrencyDollar,
+  TbServer,
+  TbGlobe,
+  TbShield,
+  TbDatabase,
+  TbArchive,
+  TbKey,
+  TbLayersSubtract,
+  TbCpu,
+} from "react-icons/tb";
 import {
   Bar,
   BarChart,
@@ -157,16 +157,16 @@ const CHART_COLORS = [
 ];
 
 const KPI_ICON_MAP = [
-  { pattern: /recurso|resource|total|instance|servidor|server/i, Icon: Layers },
-  { pattern: /regi[oó]n|region|zona|zone|location/i, Icon: Globe },
-  { pattern: /cost|gasto|factur|billing|usd|precio|price/i, Icon: DollarSign },
-  { pattern: /ecs|compute|servidor|server/i, Icon: Server },
-  { pattern: /vpc|red|network|subnet/i, Icon: Activity },
-  { pattern: /security|segurid|firewall|sg-/i, Icon: Shield },
-  { pattern: /rds|database|base de datos|db/i, Icon: Database },
-  { pattern: /obs|storage|almacen|bucket|object/i, Icon: HardDrive },
-  { pattern: /key|clave|iam|credential/i, Icon: KeyRound },
-  { pattern: /image|imagen|ims|ami/i, Icon: Cpu },
+  { pattern: /recurso|resource|total|instance|servidor|server/i, Icon: TbLayersSubtract },
+  { pattern: /regi[oó]n|region|zona|zone|location/i, Icon: TbGlobe },
+  { pattern: /cost|gasto|factur|billing|usd|precio|price/i, Icon: TbCurrencyDollar },
+  { pattern: /ecs|compute|servidor|server/i, Icon: TbServer },
+  { pattern: /vpc|red|network|subnet/i, Icon: TbActivity },
+  { pattern: /security|segurid|firewall|sg-/i, Icon: TbShield },
+  { pattern: /rds|database|base de datos|db/i, Icon: TbDatabase },
+  { pattern: /obs|storage|almacen|bucket|object/i, Icon: TbArchive },
+  { pattern: /key|clave|iam|credential/i, Icon: TbKey },
+  { pattern: /image|imagen|ims|ami/i, Icon: TbCpu },
 ];
 
 const extractNumber = (value) => {
@@ -352,7 +352,7 @@ function KPICards({ kpis, language }) {
     <div className="kpi-grid">
       {kpis.map((kpi) => {
         const matchedIcon = KPI_ICON_MAP.find(({ pattern }) => pattern.test(kpi.key) || pattern.test(kpi.label.en) || pattern.test(kpi.label.es));
-        const Icon = matchedIcon?.Icon || Activity;
+        const Icon = matchedIcon?.Icon || TbActivity;
         const label = language === "es" ? kpi.label.es : kpi.label.en;
         return (
           <motion.div
@@ -416,7 +416,7 @@ function DonutChartCard({ model, title }) {
       animate={{ opacity: 1, scale: 1 }}
     >
       <div className="chart-title">
-        <Sparkles size={16} strokeWidth={1.5} className="inline mr-2" />
+        <TbSparkles size={16} className="inline mr-2" />
         {title}
       </div>
       <div className="donut-layout">
@@ -470,7 +470,7 @@ function BarChartCard({ model, title, isCostData }) {
       animate={{ opacity: 1, scale: 1 }}
     >
       <div className="chart-title">
-        <Sparkles size={16} strokeWidth={1.5} className="inline mr-2" />
+        <TbSparkles size={16} className="inline mr-2" />
         {title}
       </div>
       <div className="bar-chart-wrap">
@@ -541,7 +541,7 @@ function AssistantMessage({ content, durationMs, language }) {
       {tableBlocks.map((block, index) => (
         <div key={`table-${index}`}>
           <div className="flex items-center gap-2 mb-2 text-xs font-semibold text-huawei-gray-600 dark:text-huawei-gray-400">
-            <MessageSquare size={14} />
+            <TbMessage2 size={14} />
             {language === "es" ? "Tabla estructurada" : "Structured table"}
           </div>
           <DataTable table={block.table} />
@@ -708,7 +708,7 @@ export function ChatView({ theme, language, t, threads, setThreads, activeThread
         <div className={`chat-panel ${!hasMessages ? "chat-panel-empty" : ""}`}>
           {!hasMessages && !isSending ? (
             <ChatEmptyState
-              icon={Sparkles}
+              icon={TbSparkles}
               title={t.chatTitle}
               subtitle={
                 language === "es"

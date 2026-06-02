@@ -1,6 +1,6 @@
 import { useRef, useEffect, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Camera, CameraOff, AlertTriangle } from "lucide-react";
+import { TbCamera, TbCameraOff, TbAlertTriangle } from "react-icons/tb";
 
 const CAPTURE_WIDTH = 480;
 const CAPTURE_HEIGHT = 360;
@@ -110,7 +110,7 @@ export function WebcamFeed({ onFrame, isActive, language }) {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             >
-              <CameraOff size={40} strokeWidth={1.5} className="webcam-overlay-icon" />
+              <TbCameraOff size={40} className="webcam-overlay-icon" />
               <p className="webcam-overlay-text">
                 {language === "es" ? "Cámara desconectada" : "Camera disconnected"}
               </p>
@@ -124,7 +124,7 @@ export function WebcamFeed({ onFrame, isActive, language }) {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             >
-              <AlertTriangle size={40} strokeWidth={1.5} className="webcam-overlay-icon" />
+              <TbAlertTriangle size={40} className="webcam-overlay-icon" />
               <p className="webcam-overlay-text">{errorMessage}</p>
             </motion.div>
           )}
@@ -146,12 +146,12 @@ export function WebcamFeed({ onFrame, isActive, language }) {
       <div className="webcam-controls">
         {cameraStatus === "connected" ? (
           <button className="webcam-btn webcam-btn-stop" onClick={stopCamera} type="button">
-            <CameraOff size={14} />
+            <TbCameraOff size={14} />
             {language === "es" ? "Detener" : "Stop"}
           </button>
         ) : (
           <button className="webcam-btn webcam-btn-start" onClick={startCamera} type="button">
-            <Camera size={14} />
+            <TbCamera size={14} />
             {language === "es" ? "Iniciar cámara" : "Start camera"}
           </button>
         )}

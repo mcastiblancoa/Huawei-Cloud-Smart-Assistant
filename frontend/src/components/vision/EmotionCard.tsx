@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Smile } from "lucide-react";
+import { TbMoodSmile } from "react-icons/tb";
 
 const EMOTION_CONFIG = {
   happy:    { emoji: "\u{1F600}", color: "#22c55e", labelEs: "Feliz",      labelEn: "Happy" },
@@ -77,7 +77,7 @@ export function EmotionStatusCard({ status, language }) {
       exit={{ opacity: 0 }}
       key={status}
     >
-      <Smile size={18} strokeWidth={1.5} className="emotion-status-icon" />
+      <TbMoodSmile size={18} className="emotion-status-icon" />
       <span className="emotion-status-text">
         {language === "es" ? msg.es : msg.en}
       </span>

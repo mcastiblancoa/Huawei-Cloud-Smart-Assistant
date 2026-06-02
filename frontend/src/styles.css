@@ -353,9 +353,9 @@ body {
 .sidebar-thread-item {
   display: flex;
   align-items: center;
-  border-radius: 6px;
-  transition: background 0.15s ease;
-  padding: 1px;
+  border-radius: 8px;
+  transition: background 0.15s ease, box-shadow 0.15s ease;
+  position: relative;
 }
 
 .sidebar-thread-item:hover {
@@ -364,31 +364,39 @@ body {
 
 .sidebar-thread-item.active {
   background: var(--hw-red-light);
+  box-shadow: inset 3px 0 0 var(--hw-red);
 }
 
 .sidebar-thread-btn {
   flex: 1;
+  min-width: 0;
   border: none;
   background: transparent;
-  padding: 0.35rem 0.45rem;
+  padding: 0.35rem 0.35rem;
   display: flex;
   align-items: center;
   gap: 0.4rem;
   cursor: pointer;
   text-align: left;
   color: var(--text-secondary);
-  border-radius: 6px;
-  min-width: 0;
-  font-size: 0.78rem;
+  border-radius: 8px;
+  font-size: 0.8125rem;
 }
 
 .sidebar-thread-actions {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0.1rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  flex-shrink: 0;
+  padding-left: 0.25rem;
+}
+
+.sidebar-thread-item:hover .sidebar-thread-actions {
   opacity: 1;
-  visibility: visible;
-  margin-left: 0.35rem;
+  pointer-events: auto;
 }
 
 .sidebar-thread-item.active .sidebar-thread-btn {
@@ -396,7 +404,7 @@ body {
 }
 
 .sidebar-thread-name {
-  font-size: 0.78rem;
+  font-size: 0.8125rem;
   font-weight: 400;
   flex: 1;
   min-width: 0;
@@ -408,8 +416,8 @@ body {
 
 .sidebar-thread-edit,
 .sidebar-thread-delete {
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   border: none;
   background: transparent;
   color: var(--text-tertiary);
@@ -417,17 +425,10 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 4px;
+  border-radius: 6px;
   transition: all 0.15s ease;
   flex-shrink: 0;
-  opacity: 0;
 }
-
-.sidebar-thread-item:hover .sidebar-thread-edit,
-.sidebar-thread-item:hover .sidebar-thread-delete {
-  opacity: 1;
-}
-
 
 .sidebar-thread-edit:hover {
   color: var(--text-primary);
@@ -809,7 +810,7 @@ body {
 
 .language-btn:hover:not(.disabled-lang-btn) {
   border-color: var(--hw-red);
-  color: white;
+  color: black;
 }
 
 .language-btn.active {
@@ -1205,7 +1206,7 @@ body {
   }
 
   .chat-history {
-    padding: 1rem 0.75rem;
+  padding: 1rem 0.6rem;
   }
 
   .chat-bubble-wrap {
@@ -3682,6 +3683,7 @@ button, a, input, textarea, select {
 
   .sidebar-thread-actions {
     opacity: 1;
+    pointer-events: auto;
   }
 
   .sidebar-thread-edit,

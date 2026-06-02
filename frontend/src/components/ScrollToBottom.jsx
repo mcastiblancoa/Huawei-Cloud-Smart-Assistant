@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ArrowDown } from "lucide-react";
+import { TbArrowDown } from "react-icons/tb";
 
 export function ScrollToBottom({ onClick }) {
   return (
@@ -11,7 +11,7 @@ export function ScrollToBottom({ onClick }) {
       whileTap={{ scale: 0.95 }}
       aria-label="Scroll to bottom"
     >
-      <ArrowDown size={16} strokeWidth={1.5} />
+      <TbArrowDown size={16} />
     </motion.button>
   );
 }

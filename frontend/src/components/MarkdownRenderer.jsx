@@ -4,7 +4,7 @@ import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
-import { Copy, Check } from "lucide-react";
+import { TbCopy, TbCheck } from "react-icons/tb";
 
 function CodeBlock({ className, children, ...rest }) {
   const match = /language-(\w+)/.exec(className || "");
@@ -36,7 +36,7 @@ function CodeBlock({ className, children, ...rest }) {
           onClick={handleCopy}
           type="button"
         >
-          {copied ? <Check size={12} /> : <Copy size={12} />}
+          {copied ? <TbCheck size={12} /> : <TbCopy size={12} />}
           {copied ? "Copied" : "Copy"}
         </button>
       </div>

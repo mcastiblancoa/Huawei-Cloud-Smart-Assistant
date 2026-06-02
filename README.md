@@ -11,10 +11,14 @@ AI-powered Cloud Operations Assistant for **Huawei Cloud**. Interact via **voice
 
 ```mermaid
 graph TD
-    UI["🖥️ User Interface<br/>Voice (Mic+Waveform) | Chat (Threads+Markdown)"]
+    UI["🖥️ User Interface<br/>Voice | Chat | Sentiment | Safety"]
     UI -->|POST /voice audio| STT["🎙️ STT<br/>SIS / Whisper"]
     UI -->|POST /chat text| ORCH
+    UI -->|POST /vision/sentiment frame| SENT["😊 Sentiment<br/>DeepFace / OpenCV"]
+    UI -->|POST /vision/safety frame| SAFE["🦺 Safety<br/>YOLOv8n"]
     STT -->|transcription| ORCH
+    SENT -->|emotion results| UI
+    SAFE -->|PPE compliance| UI
 
     ORCH["⚙️ run_chat_turn()"]
     ORCH --> FP{"Fast Path<br/>(regex router)"}
@@ -64,12 +68,18 @@ graph TD
   - [KooCLI Setup](#koocli-setup)
   - [Whisper Setup](#whisper-setup-optional)
   - [Kokoro TTS Setup](#kokoro-tts-setup-optional)
+  - [Vision Dependencies Setup](#vision-dependencies-setup-optional)
 - [Environment Variables](#environment-variables)
 - [Running the Project](#running-the-project)
 - [API Endpoints](#api-endpoints)
 - [LangGraph Agent](#langgraph-agent)
 - [Tools Reference](#tools-reference)
 - [Voice Pipeline](#voice-pipeline)
+- [Computer Vision Pipeline](#computer-vision-pipeline)
+  - [Sentiment Recognition](#sentiment-recognition)
+  - [Industrial Safety Detection](#industrial-safety-detection)
+  - [Vision Architecture](#vision-architecture)
+  - [Vision Performance & Resilience](#vision-performance--resilience)
 - [Huawei Cloud Integration](#huawei-cloud-integration)
 - [Models](#models)
 - [Performance & Optimization](#performance--optimization)
@@ -88,6 +98,8 @@ graph TD
 | ----------------------- | -------------------------------------------------------------------------------- |
 | **Chat Assistant**      | Multi-thread conversations, markdown rendering, inline charts, bilingual (EN/ES) |
 | **Voice Assistant**     | Real-time recording, waveform visualization, STT (SIS/Whisper), TTS (Kokoro)     |
+| **Sentiment Recognition** | Real-time facial emotion detection via webcam (DeepFace + OpenCV Haar fallback), multi-face support, emotion distribution charts |
+| **Industrial Safety**   | Real-time PPE compliance detection via webcam (YOLOv8n), person-to-PPE association, compliance KPIs and charts |
 | **Cloud Orchestration** | Deploy ECS, VPC, ELB, EIP, SG, OBS, RDS — full HA infra in one prompt            |
 | **Resource Discovery**  | 90+ Huawei Cloud services, dynamic schema registry, operation discovery          |
 | **Billing**             | Monthly spend, cost-by-service breakdown, multi-month queries                    |
@@ -179,7 +191,8 @@ graph TD
 │   │   └── routes/                   # Endpoint definitions
 │   │       ├── health.py             # GET /health, GET /metrics
 │   │       ├── chat.py               # POST /chat
-│   │       └── voice.py              # POST /voice, POST /transcribe
+│   │       ├── voice.py              # POST /voice, POST /transcribe
+│   │       └── vision.py             # POST /vision/sentiment, /vision/safety, GET /vision/status
 │   │
 │   ├── tools/                        # LangChain tools (41 registered)
 │   │   ├── registry.py               # ToolRegistry singleton, ToolMeta, ToolCategory
@@ -217,11 +230,17 @@ graph TD
 │   │   ├── billing.py                # Huawei BSS SDK billing queries
 │   │   ├── resources.py              # Huawei RMS SDK resource inventory
 │   │   ├── intent.py                 # (deprecated)
-│   │   └── voice/                    # Voice pipeline services
-│   │       ├── audio.py              # Audio upload validation & ffmpeg conversion
-│   │       ├── sis.py                # Huawei SIS STT (Speech Intelligence Service)
-│   │       ├── whisper.py            # Whisper ASR for Spanish transcription
-│   │       └── tts.py                # Kokoro TTS (OpenAI-compatible API)
+│   │   ├── voice/                    # Voice pipeline services
+│   │   │   ├── audio.py              # Audio upload validation & ffmpeg conversion
+│   │   │   ├── sis.py                # Huawei SIS STT (Speech Intelligence Service)
+│   │   │   ├── whisper.py            # Whisper ASR for Spanish transcription
+│   │   │   └── tts.py                # Kokoro TTS (OpenAI-compatible API)
+│   │   └── vision/                   # Computer vision services
+│   │       ├── __init__.py           # Package exports
+│   │       ├── emotion_detector.py   # DeepFace + OpenCV Haar emotion detection
+│   │       ├── sentiment_service.py  # Sentiment service layer (latency, formatting)
+│   │       ├── safety_detector.py    # YOLOv8n PPE compliance detection
+│   │       └── safety_service.py     # Safety service layer (latency, formatting)
 │   │
 │   ├── schemas/                      # API schema registry
 │   │   ├── loader.py                 # JSON schema loader
@@ -238,7 +257,7 @@ graph TD
 │   │   └── validation.py             # Response validation, JSON/ID extraction
 │   │
 │   ├── models/                       # Data models
-│   │   ├── schemas.py                # Pydantic models (ChatRequest, ChatResponse, etc.)
+│   │   ├── schemas.py                # Pydantic models (ChatRequest, ChatResponse, SentimentResponse, SafetyResponse, etc.)
 │   │   └── state.py                  # LangGraph AgentState TypedDict
 │   │
 │   ├── config/                       # Configuration
@@ -277,16 +296,25 @@ graph TD
 │       │   ├── ChatInput.jsx         # Text input bar
 │       │   ├── ChatComponents.jsx    # Bubble, typing indicator, empty state
 │       │   ├── VoiceView.jsx         # Mic button, waveform, results
+│       │   ├── ComputerVisionView.jsx # Vision mode router (sentiment/safety)
 │       │   ├── MarkdownRenderer.jsx  # react-markdown + syntax highlighting
 │       │   ├── ShimmerLoader.jsx
 │       │   ├── ScrollToBottom.jsx
+│       │   ├── vision/               # Computer vision components
+│       │   │   ├── SentimentRecognition.tsx  # Sentiment orchestrator (debounce, abort, backoff)
+│       │   │   ├── SafetyDetection.tsx       # Safety orchestrator (same pattern)
+│       │   │   ├── WebcamFeed.tsx            # Reusable webcam capture + frame emission
+│       │   │   ├── EmotionCard.tsx           # Emotion display + status card
+│       │   │   ├── EmotionChart.tsx          # Emotion distribution bar chart (Recharts)
+│       │   │   ├── PPEBadge.tsx             # PPE status grid + person compliance list
+│       │   │   └── ComplianceChart.tsx      # PPE counts bar chart (Recharts)
 │       │   ├── ui/                   # shadcn-style components
 │       │   │   ├── Button.jsx, Input.jsx, Card.jsx
 │       │   │   ├── Badge.jsx, Spinner.jsx, ScrollArea.jsx
 │       │   │   └── lib/utils.js     # cn() = clsx + twMerge
 │       │   └── lib/
 │       └── services/
-│           └── api.js                # API client (sendChatMessage, sendVoiceAudio)
+│           └── api.js                # API client (sendChatMessage, sendVoiceAudio, analyzeSentiment, analyzeSafety)
 │
 └── EJEMPLOS_INTERACCION.md           # Interaction examples (ES)
 ```
@@ -297,7 +325,7 @@ graph TD
 
 | Requirement         | Version | Required For                      |
 | ------------------- | ------- | --------------------------------- |
-| **Python**          | 3.10+   | Backend                           |
+| **Python**          | 3.12    | Backend (3.14 incompatible with TensorFlow) |
 | **Node.js**         | 18+     | Frontend                          |
 | **KooCLI (hcloud)** | Latest  | All cloud operations              |
 | **ffmpeg**          | Any     | Voice transcription (SIS/Whisper) |
@@ -311,6 +339,10 @@ Optional:
 | **Kokoro TTS server**  | Text-to-speech for voice responses            |
 | **GPU + CUDA**         | Accelerated Whisper transcription             |
 | **Docker**             | Containerized deployment (not yet configured) |
+| **DeepFace**           | Facial emotion analysis (pip install deepface) |
+| **OpenCV**             | Face detection fallback (pip install opencv-python-headless) |
+| **YOLOv8 (ultralytics)** | PPE/object detection (pip install ultralytics) |
+| **TensorFlow**         | Required by DeepFace backend                  |
 
 ---
 
@@ -479,6 +511,38 @@ The backend calls this endpoint with an OpenAI-compatible payload:
 }
 ```
 
+### Vision Dependencies Setup (Optional)
+
+The computer vision features (Sentiment Recognition and Industrial Safety) require additional ML libraries. The backend uses **lazy imports** — it starts successfully even without these libraries, and gracefully returns `"unavailable"` status when vision endpoints are called.
+
+#### Sentiment Recognition (Emotion Detection)
+
+```bash
+# Primary backend: DeepFace (full 7-emotion classification)
+pip install deepface
+
+# DeepFace requires TensorFlow; install tf-keras for TF 2.21+ compatibility
+pip install tf-keras
+
+# Fallback backend: OpenCV Haar cascades (face detection only, no emotion classification)
+pip install opencv-python-headless numpy
+```
+
+> **Important**: Use **Python 3.12**, not 3.14. TensorFlow (required by DeepFace) is incompatible with Python 3.14.
+
+If DeepFace is unavailable, the system falls back to **OpenCV Haar cascades** which can detect faces but cannot classify emotions (returns `"neutral"` with 100% confidence for each detected face).
+
+#### Industrial Safety (PPE Detection)
+
+```bash
+# YOLOv8n for object/PPE detection
+pip install ultralytics
+```
+
+This downloads the `yolov8n.pt` COCO-pretrained model (~6 MB) on first use. The model detects 80 COCO classes including `"person"`, `"hardhat"`, and other objects.
+
+> **Note**: The COCO-pretrained YOLOv8n model has limited PPE detection accuracy. For production use, consider fine-tuning on a PPE-specific dataset (e.g., from [Roboflow Universe](https://universe.roboflow.com)).
+
 ---
 
 ## Environment Variables
@@ -640,6 +704,97 @@ GET /metrics
 
 Returns observability metrics: request counts, latency, cache hit rates, tool call counts, error rates.
 
+### Vision Status
+
+```
+GET /vision/status
+```
+
+```json
+{
+  "sentiment_backend": "deepface",
+  "safety_available": true,
+  "deepface_available": true,
+  "opencv_available": true
+}
+```
+
+| Field                 | Description                                                    |
+| --------------------- | -------------------------------------------------------------- |
+| `sentiment_backend`   | Active sentiment backend: `"deepface"`, `"opencv-haar"`, or `"unavailable"` |
+| `safety_available`    | Whether YOLOv8 model loaded successfully                       |
+| `deepface_available`  | Whether DeepFace library is importable                         |
+| `opencv_available`    | Whether OpenCV is available (true if either backend works)     |
+
+### Sentiment Analysis (File Upload)
+
+```
+POST /vision/sentiment
+```
+
+| Field  | Type       | Description                    |
+| ------ | ---------- | ------------------------------ |
+| `file` | UploadFile | JPEG/PNG image frame (required)|
+
+**Response:**
+
+```json
+{
+  "status": "success",
+  "dominant_emotion": "happy",
+  "confidence": 92.5,
+  "all_scores": { "happy": 92.5, "sad": 1.2, "angry": 0.3, "fear": 0.8, "surprise": 2.1, "disgust": 0.5, "neutral": 2.6 },
+  "faces": [{ "dominant_emotion": "happy", "confidence": 92.5, "face_index": 0 }],
+  "face_count": 1,
+  "latency_ms": 340
+}
+```
+
+### Sentiment Analysis (Base64)
+
+```
+POST /vision/sentiment/base64
+```
+
+| Field   | Type   | Description                        |
+| ------- | ------ | ---------------------------------- |
+| `image` | string | Base64-encoded image (form field)  |
+
+Returns the same `SentimentResponse` as the file upload endpoint.
+
+### Safety Analysis (PPE Detection)
+
+```
+POST /vision/safety
+```
+
+| Field  | Type       | Description                    |
+| ------ | ---------- | ------------------------------ |
+| `file` | UploadFile | JPEG/PNG image frame (required)|
+
+**Response:**
+
+```json
+{
+  "status": "success",
+  "total_persons": 3,
+  "compliant_persons": 2,
+  "compliance_rate": 66.7,
+  "persons": [
+    {
+      "person_index": 0,
+      "compliant": true,
+      "missing_ppe": [],
+      "ppe": [{ "class_name": "hardhat", "confidence": 0.87 }, { "class_name": "safety_vest", "confidence": 0.82 }],
+      "ppe_classes": ["hardhat", "safety_vest"]
+    }
+  ],
+  "all_detections": [{ "class_name": "person", "confidence": 0.95, "bbox": [120, 50, 300, 400] }],
+  "ppe_summary": { "hardhat": 2, "safety_vest": 2 },
+  "latency_ms": 180
+}
+```
+
 ---
 
 ## LangGraph Agent
@@ -784,6 +939,124 @@ graph LR
 
 ---
 
+## Computer Vision Pipeline
+
+The application includes two real-time computer vision features that process webcam frames and display results live in the UI. Both follow the same architectural pattern for resilience and performance.
+
+```mermaid
+graph TD
+    CAM["📷 Browser Webcam<br/>getUserMedia → canvas → JPEG"]
+    CAM -->|Blob every 500ms| DEB["⏱️ Debounce<br/>500ms between frames"]
+    DEB -->|if no in-flight request| ABORT["🛑 AbortController<br/>cancel previous request"]
+    ABORT -->|POST /vision/*| API["☁️ FastAPI Backend"]
+
+    API -->|sentiment| SENT["😊 EmotionDetector<br/>DeepFace (primary)<br/>OpenCV Haar (fallback)"]
+    API -->|safety| SAFE["🦺 SafetyDetector<br/>YOLOv8n (COCO)"]
+
+    SENT -->|SentimentResponse| UI["🖥️ Frontend<br/>EmotionCard + EmotionChart"]
+    SAFE -->|SafetyResponse| UI2["🖥️ Frontend<br/>PPEBadge + ComplianceChart"]
+
+    API -->|3 consecutive errors| BACKOFF["⏳ Circuit Breaker<br/>5s backoff → auto-retry"]
+```
+
+### Sentiment Recognition
+
+Real-time facial emotion detection from webcam feed. Supports multiple faces simultaneously.
+
+**How it works:**
+
+1. **WebcamFeed** component captures a JPEG frame every 500ms via hidden canvas (`480×360`, quality 0.8)
+2. **SentimentRecognition** orchestrator debounces the frame, aborts any in-flight request, and sends it to `POST /vision/sentiment`
+3. **EmotionDetector** (backend) analyzes the frame using one of two backends:
+   - **DeepFace** (primary): Full 7-emotion classification (`happy`, `sad`, `angry`, `fear`, `surprise`, `disgust`, `neutral`) with confidence scores. Uses `enforce_detection=False` to avoid exceptions when no face is found.
+   - **OpenCV Haar cascade** (fallback): Face detection only via `haarcascade_frontalface_default.xml` with relaxed parameters (`scaleFactor=1.1`, `minNeighbors=3`, histogram equalization, `minSize=8%`). Returns `"neutral"` emotion with 100% confidence for each detected face.
+4. **Frontend** displays results as animated `EmotionCard` components (emoji + label + confidence bar) and an `EmotionChart` (horizontal bar chart of all emotion scores via Recharts)
+
+**Multi-face support:** If multiple faces are detected, each face gets its own `EmotionCard` with a face index label. The primary face (index 0) is highlighted.
+
+**Backend selection priority:** DeepFace → OpenCV Haar → `"unavailable"`. The backend is determined lazily on first request and cached.
+
+### Industrial Safety Detection
+
+Real-time PPE (Personal Protective Equipment) compliance detection from webcam feed. Identifies persons and checks if they are wearing required safety equipment.
+
+**How it works:**
+
+1. **WebcamFeed** captures a JPEG frame (same as sentiment)
+2. **SafetyDetection** orchestrator sends it to `POST /vision/safety`
+3. **SafetyDetector** (backend) runs YOLOv8n inference:
+   - Detects all objects in the frame (confidence threshold: 0.35)
+   - Separates `"person"` detections from other objects
+   - For each person, checks if any non-person detection's **bounding box center** falls inside the person's bounding box — if so, it's considered PPE worn by that person
+   - Compares detected PPE against `REQUIRED_PPE = ["hardhat", "safety_vest"]`
+   - Computes compliance rate (% of persons with all required PPE)
+4. **Frontend** displays:
+   - **KPI row**: Total persons, compliant, non-compliant, compliance rate (color-coded: green ≥80%, yellow ≥50%, red <50%)
+   - **PPEStatusGrid**: Badge for each PPE type (detected/missing/optional)
+   - **PersonComplianceList**: Per-person compliance cards with missing PPE items
+   - **ComplianceChart**: Horizontal bar chart of PPE detection counts via Recharts
+
+**PPE-to-person association heuristic:** The center of each detected object's bounding box is checked against each person's bounding box. If the center falls within the person's box, the object is associated as that person's PPE. This is a simple spatial heuristic — not a tracker — and works best when persons are well-separated in the frame.
+
+**Supported PPE classes:** `hardhat`, `helmet`, `safety_vest`, `vest`, `goggles`, `glasses`, `face_shield`, `mask`, `gloves`, `safety_boots`, `boots`. Aliases (e.g., `helmet` → `hardhat`) are mapped automatically.
+
+### Vision Architecture
+
+Both features follow a **3-layer architecture** with lazy initialization:
+
+```
+API Route (vision.py)
+    │
+    ▼
+Service Layer (sentiment_service.py / safety_service.py)
+    │   • Latency measurement (time.perf_counter)
+    │   • Error handling / response formatting
+    │   • Base64 decoding
+    ▼
+Detector Layer (emotion_detector.py / safety_detector.py)
+    │   • Lazy backend initialization (_ensure_initialized)
+    │   • ML inference (DeepFace / OpenCV / YOLOv8)
+    │   • Tempfile for image I/O (required by DeepFace/YOLO APIs)
+    ▼
+Pydantic Schemas (schemas.py)
+    • SentimentResponse, SafetyResponse, FaceEmotion
+```
+
+**Frontend component hierarchy:**
+
+```
+ComputerVisionView (mode router: "feelings" | "industrial-safety")
+  │
+  ├── SentimentRecognition (orchestrator)
+  │     ├── WebcamFeed (camera + frame capture)
+  │     ├── EmotionCard / EmotionStatusCard (presentational)
+  │     └── EmotionChart (Recharts bar chart)
+  │
+  └── SafetyDetection (orchestrator)
+        ├── WebcamFeed (reused)
+        ├── PPEStatusGrid / PersonComplianceList (presentational)
+        └── ComplianceChart (Recharts bar chart)
+```
+
+**Conditional rendering:** Vision components are conditionally rendered in `App.jsx` — they **unmount** when the user navigates away, which stops the webcam stream, clears intervals, and prevents unnecessary backend requests. The chat view stays mounted (via `display: none/block`) to preserve input state and scroll position.
+
+### Vision Performance & Resilience
+
+Both orchestrators share identical resilience patterns:
+
+| Pattern               | Implementation                                                                    |
+| --------------------- | --------------------------------------------------------------------------------- |
+| **Frame debounce**    | 500ms minimum between sent frames (`DEBOUNCE_MS`)                                |
+| **Request abort**     | `AbortController` cancels in-flight request when a new frame is ready             |
+| **Circuit breaker**   | After 3 consecutive errors (`MAX_CONSECUTIVE_ERRORS`), marks backend as down     |
+| **Auto-backoff**      | 5s wait (`BACKOFF_MS`) after circuit breaker trips, then auto-retries            |
+| **Result gating**     | `hasResultRef` — once first successful result arrives, never show "analyzing" again |
+| **Lazy ML init**      | Backend imports ML libraries on first request, not at startup                    |
+| **Graceful fallback** | Missing libraries → `"unavailable"` status, not crash                            |
+| **Temp file cleanup** | `finally` blocks ensure temp image files are deleted after inference              |
+
+---
+
 ## Huawei Cloud Integration
 
 ### How It Works
@@ -824,6 +1097,9 @@ For any other service, use the discovery flow: `list_available_services` → `li
 | **STT (primary)**     | Huawei SIS                  | Huawei Cloud            | Cloud-based, English/Chinese        |
 | **STT (fallback)**    | Whisper                     | Local/self-hosted       | Better Spanish support              |
 | **TTS**               | Kokoro                      | Local/self-hosted       | OpenAI-compatible API, EN/ES voices |
+| **Emotion Detection** | DeepFace (VGG-Face)         | Local (Python)          | 7-emotion classification, primary   |
+| **Face Detection**    | OpenCV Haar Cascades        | Local (Python)          | Face detection only, fallback       |
+| **PPE Detection**     | YOLOv8n (COCO)              | Local (Python)          | 80-class object detection, ~6 MB    |
 
 ---
 
@@ -873,6 +1149,10 @@ For any other service, use the discovery flow: `list_available_services` → `li
 | ELB `BatchCreateMembers` may fail without `subnet_id` per member              | Fixed  | `subnet_id` now extracted from ECS and included in member payload |
 | ModelArts 81011 content filter may reject LLM responses with sensitive data   | Fixed  | Auto-retry with safe prompt (no IDs/credentials in output)        |
 | KooCLI `--password` collision with system param causes interactive prompt     | Fixed  | `subprocess.run(input="b\n")` auto-answers "API parameter"        |
+| YOLOv8n COCO model has limited PPE detection accuracy                         | Known  | Fine-tune on PPE-specific dataset (e.g., Roboflow Universe)      |
+| PPE-to-person association uses simple center-point heuristic                  | Known  | Works best with well-separated persons in frame                   |
+| OpenCV Haar fallback returns `"neutral"` for all detected faces               | Known  | Install DeepFace for real emotion classification                   |
+| DeepFace incompatible with Python 3.14 (TensorFlow limitation)               | Known  | Use Python 3.12                                                  |
 
 ---
 
@@ -887,6 +1167,19 @@ For any other service, use the discovery flow: `list_available_services` → `li
 - **No concurrent session isolation**: All sessions share the same LLM cache
 - **Windows-only testing**: KooCLI subprocess execution tested primarily on Windows
 - **No automated test suite**: Tests exist but are not integrated into CI/CD
+
+---
+
+## Roadmap
+
+- [ ] **PPE-specific YOLOv8 model**: Fine-tune on Roboflow Universe PPE dataset for better hardhat/safety_vest detection
+- [ ] **Docker support**: `Dockerfile` + `docker-compose.yml` for containerized deployment
+- [ ] **Streaming responses**: SSE/WebSocket streaming for chat responses
+- [ ] **Persistent memory**: Database-backed conversation history (replace `MemorySaver`)
+- [ ] **RAG integration**: Retrieval-augmented generation for Huawei Cloud documentation
+- [ ] **API authentication**: JWT/API key auth on chat/voice/vision endpoints
+- [ ] **Multi-person PPE tracking**: Track persons across frames for stable compliance reporting
+- [ ] **Vision base64 endpoint for safety**: Add `POST /vision/safety/base64` (currently only file upload)
 
 ---
 
@@ -934,3 +1227,16 @@ For any other service, use the discovery flow: `list_available_services` → `li
 | Blank page             | Check browser console for errors; ensure backend is running       |
 | API connection refused | Verify `VITE_API_BASE_URL` matches backend URL and port           |
 | Voice not working      | Ensure HTTPS or localhost (MediaRecorder requires secure context) |
+
+### Vision Issues
+
+| Problem                                    | Solution                                                                               |
+| ------------------------------------------ | -------------------------------------------------------------------------------------- |
+| `sentiment_backend: "unavailable"`         | Install DeepFace (`pip install deepface tf-keras`) or OpenCV (`pip install opencv-python-headless`) |
+| `safety_available: false`                  | Install ultralytics (`pip install ultralytics`)                                        |
+| Webcam permission denied                   | Allow camera access in browser settings; ensure HTTPS or localhost                     |
+| No faces detected                          | Ensure good lighting, face clearly visible; Haar cascade is less sensitive than DeepFace |
+| PPE not detected (false negatives)         | COCO YOLOv8n has limited PPE classes; consider fine-tuned PPE model from Roboflow     |
+| DeepFace import error with Python 3.14     | Use Python 3.12 (TensorFlow incompatibility)                                          |
+| `tf-keras` not found                       | Install `pip install tf-keras` (required for DeepFace with TensorFlow 2.21+)           |
+| High latency on vision endpoints           | Use GPU + CUDA for YOLOv8; reduce frame capture resolution in WebcamFeed               |

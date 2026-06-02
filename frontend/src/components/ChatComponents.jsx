@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { User, Sparkles } from "lucide-react";
+import { TbUser, TbSparkles } from "react-icons/tb";
 
 export function ChatBubble({ role, content }) {
   return (
@@ -11,13 +11,13 @@ export function ChatBubble({ role, content }) {
     >
       {role === "assistant" && (
         <div className="chat-avatar assistant">
-          <Sparkles size={16} strokeWidth={2} />
+          <TbSparkles size={16} />
         </div>
       )}
       <div className={`chat-bubble ${role}`}>{content}</div>
       {role === "user" && (
         <div className="chat-avatar user">
-          <User size={16} strokeWidth={2} />
+          <TbUser size={16} />
         </div>
       )}
     </motion.div>

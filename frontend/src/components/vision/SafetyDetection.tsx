@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { WebcamFeed } from "./WebcamFeed";
 import { PPEStatusGrid, PersonComplianceList } from "./PPEBadge";
 import { ComplianceChart } from "./ComplianceChart";
-import { ShieldCheck, ShieldAlert, RotateCcw, WifiOff, Users, CheckCircle2, XCircle } from "lucide-react";
+import { TbShieldCheck, TbShieldExclamation, TbRefresh, TbWifiOff, TbUsers, TbCircleCheck, TbCircleX } from "react-icons/tb";
 import { analyzeSafety } from "../../services/api";
 
 const DEBOUNCE_MS = 500;
@@ -128,7 +128,7 @@ export function SafetyDetection({ language, theme }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
           >
-            <WifiOff size={16} strokeWidth={1.5} />
+            <TbWifiOff size={16} />
             <span>
               {isEs ? "Backend no disponible. Reintentando en 5s..." : "Backend unavailable. Retrying in 5s..."}
             </span>
@@ -144,7 +144,7 @@ export function SafetyDetection({ language, theme }) {
               exit={{ opacity: 0 }}
               key={statusMessage}
             >
-              <ShieldAlert size={18} strokeWidth={1.5} className="safety-status-icon" />
+              <TbShieldExclamation size={18} className="safety-status-icon" />
               <span>
                 {statusMessage === "analyzing" && (isEs ? "Analizando..." : "Analyzing...")}
                 {statusMessage === "error" && (isEs ? "Error de procesamiento" : "Processing error")}
@@ -157,7 +157,7 @@ export function SafetyDetection({ language, theme }) {
         {hasResult && (
           <div className="safety-results-grid">
             <div className="safety-results-header">
-              <ShieldCheck size={16} strokeWidth={1.5} className="safety-results-icon" />
+              <TbShieldCheck size={16} className="safety-results-icon" />
               <span className="safety-results-title">
                 {isEs ? "Análisis de seguridad" : "Safety analysis"}
               </span>
@@ -168,21 +168,21 @@ export function SafetyDetection({ language, theme }) {
 
             <div className="safety-kpi-row">
               <div className="safety-kpi-card">
-                <Users size={18} strokeWidth={1.5} className="safety-kpi-icon" />
+                <TbUsers size={18} className="safety-kpi-icon" />
                 <div className="safety-kpi-content">
                   <span className="safety-kpi-value">{totalPersons}</span>
                   <span className="safety-kpi-label">{isEs ? "Personas" : "Persons"}</span>
                 </div>
               </div>
               <div className="safety-kpi-card">
-                <CheckCircle2 size={18} strokeWidth={1.5} className="safety-kpi-icon safety-kpi-icon-ok" />
+                <TbCircleCheck size={18} className="safety-kpi-icon safety-kpi-icon-ok" />
                 <div className="safety-kpi-content">
                   <span className="safety-kpi-value">{compliantPersons}</span>
                   <span className="safety-kpi-label">{isEs ? "Cumplen" : "Compliant"}</span>
                 </div>
               </div>
               <div className="safety-kpi-card">
-                <XCircle size={18} strokeWidth={1.5} className="safety-kpi-icon safety-kpi-icon-fail" />
+                <TbCircleX size={18} className="safety-kpi-icon safety-kpi-icon-fail" />
                 <div className="safety-kpi-content">
                   <span className="safety-kpi-value">{totalPersons - compliantPersons}</span>
                   <span className="safety-kpi-label">{isEs ? "No cumplen" : "Non-compliant"}</span>
@@ -203,7 +203,7 @@ export function SafetyDetection({ language, theme }) {
             <ComplianceChart ppeSummary={ppeSummary} language={language} />
 
             <button className="safety-reset-btn" onClick={handleReset} type="button">
-              <RotateCcw size={12} />
+              <TbRefresh size={12} />
               {isEs ? "Reiniciar" : "Reset"}
             </button>
           </div>

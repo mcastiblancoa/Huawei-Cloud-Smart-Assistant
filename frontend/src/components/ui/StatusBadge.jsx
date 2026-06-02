@@ -1,12 +1,12 @@
 import { motion } from "framer-motion";
-import { CheckCircle, AlertCircle, Clock, XCircle } from "lucide-react";
+import { TbCircleCheck, TbAlertCircle, TbClock, TbCircleX } from "react-icons/tb";
 
 export function StatusBadge({ status = "pending", label = "", animated = true }) {
   const statusConfig = {
-    success: { color: "text-green-600", bgColor: "bg-green-100", icon: CheckCircle, label: "Success" },
-    error: { color: "text-red-600", bgColor: "bg-red-100", icon: XCircle, label: "Error" },
-    warning: { color: "text-yellow-600", bgColor: "bg-yellow-100", icon: AlertCircle, label: "Warning" },
-    pending: { color: "text-blue-600", bgColor: "bg-blue-100", icon: Clock, label: "Pending" },
+    success: { color: "text-green-600", bgColor: "bg-green-100", icon: TbCircleCheck, label: "Success" },
+    error: { color: "text-red-600", bgColor: "bg-red-100", icon: TbCircleX, label: "Error" },
+    warning: { color: "text-yellow-600", bgColor: "bg-yellow-100", icon: TbAlertCircle, label: "Warning" },
+    pending: { color: "text-blue-600", bgColor: "bg-blue-100", icon: TbClock, label: "Pending" },
   };
 
   const config = statusConfig[status] || statusConfig.pending;
@@ -21,7 +21,7 @@ export function StatusBadge({ status = "pending", label = "", animated = true })
       transition={{ duration: 0.2 }}
     >
       <motion.div animate={animated ? { rotate: status === "pending" ? 360 : 0 } : {}} transition={{ duration: 2, repeat: status === "pending" ? Infinity : 0 }}>
-        <Icon size={14} strokeWidth={2} />
+        <Icon size={14} />
       </motion.div>
       <span>{displayLabel}</span>
     </motion.div>

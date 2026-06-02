@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { X } from "lucide-react";
+import { TbX } from "react-icons/tb";
 
 export function RightSidebar({ isOpen, onClose, activeView, language, theme }) {
   const content = {
@@ -128,7 +128,7 @@ export function RightSidebar({ isOpen, onClose, activeView, language, theme }) {
                 onClick={onClose}
                 aria-label={language === "es" ? "Cerrar" : "Close"}
               >
-                <X size={20} strokeWidth={1.5} />
+                <TbX size={20} />
               </button>
             </div>
 

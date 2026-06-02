@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Bot, Mic, X, Plus, MessageSquare, Trash2, Pencil, Cloud, ChevronDown, Eye, Smile, AlertTriangle } from "lucide-react";
+import { TbRobot, TbMicrophone, TbX, TbPlus, TbMessage2, TbTrash, TbPencil, TbCloud, TbChevronDown, TbEye, TbMoodSmile, TbAlertTriangle } from "react-icons/tb";
 import { ScrollArea } from "./ui/ScrollArea";
 import huaweiLogo from "../img/huawei_logo.png";
 import { useState } from "react";
@@ -26,13 +26,13 @@ export function Sidebar({
   );
 
   const infrastructureItems = [
-    { id: "voice", label: language === "es" ? "Asistente de Voz" : "Voice Assistant", icon: Mic, category: "infrastructure" },
-    { id: "chat", label: language === "es" ? "Asistente de Chat" : "Chat Assistant", icon: Bot, category: "infrastructure" },
+    { id: "voice", label: language === "es" ? "Asistente de Voz" : "Voice Assistant", icon: TbMicrophone, category: "infrastructure" },
+    { id: "chat", label: language === "es" ? "Asistente de Chat" : "Chat Assistant", icon: TbRobot, category: "infrastructure" },
   ];
 
   const cvItems = [
-    { id: "feelings", label: language === "es" ? "Sentimientos" : "Feelings", icon: Smile, category: "cv" },
-    { id: "industrial-safety", label: language === "es" ? "Seguridad Industrial" : "Industrial Safety", icon: AlertTriangle, category: "cv" },
+    { id: "feelings", label: language === "es" ? "Sentimientos" : "Feelings", icon: TbMoodSmile, category: "cv" },
+    { id: "industrial-safety", label: language === "es" ? "Seguridad Industrial" : "Industrial Safety", icon: TbAlertTriangle, category: "cv" },
   ];
 
   const infrastructureLabel = language === "es" ? "Infraestructura Huawei Cloud" : "Huawei Cloud Infrastructure";
@@ -77,7 +77,7 @@ export function Sidebar({
             onClick={onClose}
             aria-label="Close sidebar"
           >
-            <X size={18} strokeWidth={1.5} />
+            <TbX size={18} />
           </motion.button>
         )}
       </div>
@@ -88,14 +88,14 @@ export function Sidebar({
           onClick={() => setInfrastructureExpanded(!infrastructureExpanded)}
           whileTap={{ scale: 0.98 }}
         >
-          <Cloud size={14} strokeWidth={1.5} className="flex-shrink-0" />
+          <TbCloud size={14} className="flex-shrink-0" />
           <span className="sidebar-category-label">{infrastructureLabel}</span>
           <motion.div
             animate={{ rotate: infrastructureExpanded ? 0 : -90 }}
             transition={{ duration: 0.2 }}
             className="ml-auto flex-shrink-0"
           >
-            <ChevronDown size={12} strokeWidth={2} />
+            <TbChevronDown size={12} />
           </motion.div>
         </motion.button>
 
@@ -118,7 +118,7 @@ export function Sidebar({
                 exit={{ opacity: 0, x: -6 }}
                 transition={{ duration: 0.15 }}
               >
-                <Icon size={16} strokeWidth={1.5} />
+                <Icon size={16} />
                 <span>{item.label}</span>
               </motion.button>
             );
@@ -130,14 +130,14 @@ export function Sidebar({
           onClick={() => setCvExpanded(!cvExpanded)}
           whileTap={{ scale: 0.98 }}
         >
-          <Eye size={14} strokeWidth={1.5} className="flex-shrink-0" />
+          <TbEye size={14} className="flex-shrink-0" />
           <span className="sidebar-category-label">{cvLabel}</span>
           <motion.div
             animate={{ rotate: cvExpanded ? 0 : -90 }}
             transition={{ duration: 0.2 }}
             className="ml-auto flex-shrink-0"
           >
-            <ChevronDown size={12} strokeWidth={2} />
+            <TbChevronDown size={12} />
           </motion.div>
         </motion.button>
 
@@ -160,7 +160,7 @@ export function Sidebar({
                 exit={{ opacity: 0, x: -6 }}
                 transition={{ duration: 0.15 }}
               >
-                <Icon size={16} strokeWidth={1.5} />
+                <Icon size={16} />
                 <span>{item.label}</span>
               </motion.button>
             );
@@ -179,12 +179,12 @@ export function Sidebar({
               whileTap={{ scale: 0.95 }}
               title={t.newChat}
             >
-              <Plus size={14} strokeWidth={2} />
+              <TbPlus size={14} />
             </motion.button>
           </div>
 
           <ScrollArea className="flex-1">
-            <div className="sidebar-threads-list pr-3">
+            <div className="sidebar-threads-list">
               <AnimatePresence>
                 {chatThreads.map((thread, index) => {
                   const isActive = thread.id === activeThreadId;
@@ -197,14 +197,6 @@ export function Sidebar({
                       exit={{ opacity: 0, x: -6 }}
                       transition={{ delay: index * 0.03, duration: 0.15 }}
                     >
-                      <button
-                        type="button"
-                        className="sidebar-thread-btn"
-                        onClick={() => onSelectThread(thread.id)}
-                      >
-                        <MessageSquare size={14} strokeWidth={1.5} className="flex-shrink-0" />
-                        <span className="sidebar-thread-name">{thread.title}</span>
-                      </button>
                       <div className="sidebar-thread-actions">
                         <motion.button
                           type="button"
@@ -214,7 +206,7 @@ export function Sidebar({
                           whileTap={{ scale: 0.95 }}
                           title={t.renameChat}
                         >
-                          <Pencil size={12} strokeWidth={1.5} />
+                          <TbPencil size={13} />
                         </motion.button>
                         <motion.button
                           type="button"
@@ -224,9 +216,18 @@ export function Sidebar({
                           whileTap={{ scale: 0.95 }}
                           title={t.deleteChat}
                         >
-                          <Trash2 size={12} strokeWidth={1.5} />
+                          <TbTrash size={13} />
                         </motion.button>
                       </div>
+                      <button
+                        type="button"
+                        className="sidebar-thread-btn"
+                        onClick={() => onSelectThread(thread.id)}
+                        title={thread.title}
+                      >
+                        <TbMessage2 size={14} className="flex-shrink-0" />
+                        <span className="sidebar-thread-name">{thread.title}</span>
+                      </button>
                     </motion.div>
                   );
                 })}
