@@ -427,6 +427,8 @@ python -m venv .venv
 
 # Install dependencies
 pip install -r requirements.txt
+
+python app.py
 ```
 
 ### 4. Frontend Setup
