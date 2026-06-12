@@ -1,5 +1,11 @@
+import { useMemo } from "react";
 import { motion } from "framer-motion";
 import { TbMicrophone, TbMicrophoneOff, TbVolume2 } from "react-icons/tb";
+
+const VOICES_ES = ["af_bella", "af_heart", "af_sarah", "af_sky"];
+const VOICES_EN = ["af_sky", "af_nova", "af_v0bella"];
+
+const SPEED_OPTIONS = [1.0, 1.2, 1.4, 1.6, 1.8, 2.0];
 
 export function VoiceView({
   t,
@@ -15,6 +21,10 @@ export function VoiceView({
   audioUrl,
   theme,
   language,
+  kokoroVoice,
+  setKokoroVoice,
+  kokoroSpeed,
+  setKokoroSpeed,
 }) {
   const isRecording = status === "recording";
   const isProcessing = ["processing", "thinking", "generatingAudio"].includes(status);
@@ -29,6 +39,33 @@ export function VoiceView({
         : "";
 
   const MicIcon = isPlaying ? TbVolume2 : (isRecording ? TbMicrophoneOff : TbMicrophone);
+
+  const availableVoices = recordingLanguage === "es" ? VOICES_ES : VOICES_EN;
+
+  const effectiveVoice = useMemo(() => {
+    if (kokoroVoice && availableVoices.includes(kokoroVoice)) return kokoroVoice;
+    return availableVoices[0];
+  }, [kokoroVoice, availableVoices]);
+
+  const handleVoiceChange = (e) => {
+    setKokoroVoice(e.target.value);
+  };
+
+  const handleLanguageChange = (code) => {
+    setRecordingLanguage(code);
+    const newVoices = code === "es" ? VOICES_ES : VOICES_EN;
+    if (!newVoices.includes(kokoroVoice)) {
+      setKokoroVoice(newVoices[0]);
+    }
+  };
+
+  const speedIndex = SPEED_OPTIONS.indexOf(kokoroSpeed);
+  const effectiveSpeedIndex = speedIndex >= 0 ? speedIndex : 1;
+
+  const handleSpeedSlider = (e) => {
+    const idx = Number(e.target.value);
+    setKokoroSpeed(SPEED_OPTIONS[idx]);
+  };
 
   return (
     <motion.section
@@ -87,7 +124,7 @@ export function VoiceView({
               <motion.button
                 key={code}
                 className={`language-btn ${recordingLanguage === code ? "active" : ""}`}
-                onClick={() => setRecordingLanguage(code)}
+                onClick={() => handleLanguageChange(code)}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -97,12 +134,66 @@ export function VoiceView({
           </div>
         </motion.div>
 
+        {/* Voice Selector Dropdown */}
+        <motion.div
+          className="voice-selector"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25, duration: 0.3 }}
+        >
+          <p className="voice-selector-label">
+            {language === "es" ? "Voz" : "Voice"}
+          </p>
+          <div className="voice-select-wrapper">
+            <select
+              className="voice-select"
+              value={effectiveVoice}
+              onChange={handleVoiceChange}
+            >
+              {availableVoices.map((v) => (
+                <option key={v} value={v}>{v}</option>
+              ))}
+            </select>
+          </div>
+        </motion.div>
+
+        {/* Speed Slider */}
+        <motion.div
+          className="speed-selector"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.3 }}
+        >
+          <div className="speed-selector-header">
+            <p className="speed-selector-label">
+              {language === "es" ? "Velocidad" : "Speed"}
+            </p>
+            <span className="speed-selector-value">{SPEED_OPTIONS[effectiveSpeedIndex]}x</span>
+          </div>
+          <div className="speed-slider-wrapper">
+            <input
+              type="range"
+              className="speed-slider"
+              min={0}
+              max={SPEED_OPTIONS.length - 1}
+              step={1}
+              value={effectiveSpeedIndex}
+              onChange={handleSpeedSlider}
+            />
+            <div className="speed-slider-marks">
+              {SPEED_OPTIONS.map((s) => (
+                <span key={s} className="speed-mark">{s}x</span>
+              ))}
+            </div>
+          </div>
+        </motion.div>
+
         {/* Status Indicator */}
         <motion.div
           className="status-indicator"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.3 }}
+          transition={{ delay: 0.35, duration: 0.3 }}
         >
           <span className={`status-dot ${status}`} />
           <p className={`status-text ${status}`}>{statusLabel}</p>

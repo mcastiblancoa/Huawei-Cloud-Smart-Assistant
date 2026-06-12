@@ -6,6 +6,7 @@ from typing import Any
 from langchain_core.tools import tool
 
 from tools.common.koocli_runner import run_cloud_command
+from tools.common.table_formatter import format_table, RDS_COLUMNS
 from tools.registry import ToolMeta, ToolCategory
 from cloud.result import CloudResult
 from cloud.validation import validate_empty_result, extract_id
@@ -91,7 +92,11 @@ def list_rds(region: str = "") -> str:
     empty = validate_empty_result(result, "RDS", "ListInstances")
     if empty:
         return json.dumps({"ok": True, "service": "RDS", "operation": "ListInstances", "data": None, "item_count": 0, "message": empty})
-    return _dump(result)
+    table_md = format_table(instances, RDS_COLUMNS)
+    d = result.to_dict()
+    if table_md:
+        d["_table"] = table_md
+    return json.dumps(d, ensure_ascii=True)
 
 
 @tool

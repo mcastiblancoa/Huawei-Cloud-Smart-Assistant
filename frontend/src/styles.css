@@ -820,6 +820,158 @@ body {
   box-shadow: 0 4px 12px var(--hw-red-glow);
 }
 
+/* ── Voice Selector Dropdown ── */
+.voice-selector {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  animation: fadeIn 0.6s ease-out 0.15s both;
+}
+
+.voice-selector-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.voice-select-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.voice-select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding: 0.4rem 2rem 0.4rem 0.85rem;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-full);
+  background: var(--surface);
+  color: var(--text-primary);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 130px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' fill='none' stroke='%23737373' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.65rem center;
+}
+
+.voice-select:hover {
+  border-color: var(--hw-red);
+}
+
+.voice-select:focus {
+  outline: none;
+  border-color: var(--hw-red);
+  box-shadow: 0 0 0 3px var(--hw-red-light);
+}
+
+/* ── Speed Slider ── */
+.speed-selector {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  width: 100%;
+  max-width: 260px;
+  animation: fadeIn 0.6s ease-out 0.2s both;
+}
+
+.speed-selector-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.speed-selector-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.speed-selector-value {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--hw-red);
+  min-width: 2.5rem;
+  text-align: center;
+}
+
+.speed-slider-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.speed-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--border-light);
+  outline: none;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.speed-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--hw-red);
+  cursor: pointer;
+  box-shadow: 0 2px 6px var(--hw-red-glow);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.speed-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 3px 10px var(--hw-red-glow);
+}
+
+.speed-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--hw-red);
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 6px var(--hw-red-glow);
+}
+
+.speed-slider::-moz-range-track {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--border-light);
+}
+
+.speed-slider-marks {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 0.1rem;
+}
+
+.speed-mark {
+  font-size: 0.62rem;
+  color: var(--text-tertiary);
+  font-weight: 500;
+}
+
 .disabled-lang-btn {
   opacity: 0.5;
   cursor: not-allowed;
@@ -2264,6 +2416,7 @@ button, a, input, textarea, select {
   background: var(--surface);
   overflow: hidden;
   box-shadow: var(--shadow-sm);
+  margin-bottom: 1rem;
 }
 
 .table-scroll {
@@ -2274,23 +2427,34 @@ button, a, input, textarea, select {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.82rem;
+  border: 1.5px solid #C7000B;
+  border-radius: 6px;
+  overflow: hidden;
 }
 
 .markdown-table th,
 .markdown-table td {
-  padding: 0.5rem 0.75rem;
-  border-bottom: 1px solid var(--border-light);
+  padding: 0.15rem 0.5rem;
+  border-bottom: 1px solid rgba(199, 0, 11, 0.2);
+  border-right: 1px solid rgba(199, 0, 11, 0.1);
   text-align: left;
-  vertical-align: top;
+  vertical-align: middle;
+  line-height: 1.3;
+}
+
+.markdown-table th:last-child,
+.markdown-table td:last-child {
+  border-right: none;
 }
 
 .markdown-table th {
-  background: var(--bg-secondary);
-  color: var(--text-secondary);
-  font-weight: 600;
+  background: rgba(199, 0, 11, 0.08);
+  color: #C7000B;
+  font-weight: 700;
   font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;
+  border-bottom: 1.5px solid #C7000B;
 }
 
 .markdown-table tr:last-child td {
@@ -2298,7 +2462,22 @@ button, a, input, textarea, select {
 }
 
 .markdown-table tbody tr:hover {
-  background: var(--surface-hover);
+  background: rgba(199, 0, 11, 0.04);
+}
+
+.resource-table-title {
+  display: inline-block;
+  background: #C7000B;
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.25rem 0.75rem;
+  border-radius: 6px 6px 0 0;
+  margin-bottom: -1.5px;
+  position: relative;
+  z-index: 1;
 }
 
 @media (max-width: 480px) {

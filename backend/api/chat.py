@@ -1,13 +1,14 @@
 import re
+import json
 import time
 import unicodedata
 from typing import Any
 
-from langchain_core.messages import BaseMessage
+from langchain_core.messages import BaseMessage, ToolMessage
 
 from agents.graph import build_graph
 from orchestration import run_fast_path
-from orchestration.lang_context import current_chat_language
+from orchestration.lang_context import current_chat_language, is_voice_mode
 from observability import Tracer, MetricsCollector
 from utils.sanitize import sanitize_model_reply
 from config.logging import get_logger
@@ -27,6 +28,102 @@ def _get_graph():
     if _graph_instance is None:
         _graph_instance = build_graph()
     return _graph_instance
+
+
+def _count_table_rows(table_md: str) -> int:
+    lines = table_md.strip().split("\n")
+    count = 0
+    for line in lines:
+        if line.strip().startswith("|") and not re.match(r'^\|[-\s|:]+\|$', line.strip()):
+            count += 1
+    return max(0, count - 1)
+
+
+def _strip_markdown_tables(text: str) -> str:
+    table_pattern = re.compile(r'\|[^\n]+\|\n\|[-\s|:]+\|\n(?:\|[^\n]+\|\n)*', re.MULTILINE)
+    cleaned = table_pattern.sub('', text).strip()
+    cleaned = re.sub(r'\n{3,}', '\n\n', cleaned)
+    return cleaned
+
+
+def _fix_counts_in_text(text: str, actual_count: int) -> str:
+    if actual_count <= 0:
+        return text
+    text = re.sub(
+        r'\b\d+(\s+(?:instancia|instance|servidor|server|recurso|resource)s?\b|\s+(?:ECS|EIP|VPC|ELB|RDS|SG)\b)',
+        lambda m: f'{actual_count}{m.group(1)}',
+        text,
+        flags=re.IGNORECASE,
+    )
+    return text
+
+
+def _replace_llm_table(reply: str, table_block: str) -> str:
+    """Replace the LLM's markdown table with the tool's _table (more accurate).
+    Fixes item counts in LLM text to match actual table rows."""
+    actual_count = _count_table_rows(table_block)
+    table_pattern = re.compile(r'\|[^\n]+\|\n\|[-\s|:]+\|\n(?:\|[^\n]+\|\n)+', re.MULTILINE)
+    match = table_pattern.search(reply)
+    if match:
+        before = reply[:match.start()].rstrip()
+        before = _fix_counts_in_text(before, actual_count)
+        after = reply[match.end():].strip()
+        parts = [before, table_block, after] if after else [before, table_block]
+        return "\n\n".join(p for p in parts if p)
+    reply = _fix_counts_in_text(reply, actual_count)
+    return reply + "\n\n" + table_block
+
+
+def _extract_tables_from_tools(messages: list[BaseMessage]) -> list[str]:
+    tables = []
+    seen = set()
+    for message in messages:
+        if isinstance(message, ToolMessage):
+            content = getattr(message, "content", "")
+            if not isinstance(content, str) or not content:
+                continue
+            try:
+                data = json.loads(content)
+                table = data.get("_table", "")
+                if table and isinstance(table, str) and "|" in table:
+                    key = table.strip()
+                    if key not in seen:
+                        seen.add(key)
+                        tables.append(key)
+            except (json.JSONDecodeError, TypeError):
+                pass
+    if len(tables) <= 1:
+        return tables
+    billing_months = []
+    non_billing = []
+    for t in tables:
+        if "(USD)" in t:
+            billing_months.append(t)
+        else:
+            non_billing.append(t)
+    if len(billing_months) > 1:
+        from tools.common.table_formatter import merge_billing_tables
+        merged = merge_billing_tables(billing_months)
+        return non_billing + [merged] if merged else non_billing + billing_months
+    return tables
+
+
+def _extract_billing_data_from_tools(messages: list[BaseMessage]) -> list[dict]:
+    results = []
+    for message in messages:
+        if isinstance(message, ToolMessage):
+            content = getattr(message, "content", "")
+            if not isinstance(content, str) or not content:
+                continue
+            try:
+                data = json.loads(content)
+                if data.get("ok") and data.get("data") and isinstance(data["data"], dict):
+                    d = data["data"]
+                    if "month" in d and "services" in d:
+                        results.append(d)
+            except (json.JSONDecodeError, TypeError):
+                pass
+    return results
 
 
 def _extract_reply(messages: list[BaseMessage | dict[str, Any]]) -> str:
@@ -99,7 +196,7 @@ def _resolve_language(session_id: str, text: str) -> str:
     return _detect_language(text)
 
 
-def run_chat_turn(user_input: str, session_id: str) -> dict[str, Any]:
+def run_chat_turn(user_input: str, session_id: str, is_voice: bool = False) -> dict[str, Any]:
     metrics = MetricsCollector.get()
     tracer = Tracer.get()
 
@@ -108,6 +205,7 @@ def run_chat_turn(user_input: str, session_id: str) -> dict[str, Any]:
 
     language = _resolve_language(session_id, user_input)
     lang_token = current_chat_language.set(language)
+    voice_token = is_voice_mode.set(is_voice)
     try:
         fast_reply = run_fast_path(user_input, language, session_id=session_id)
         if fast_reply:
@@ -162,6 +260,47 @@ def run_chat_turn(user_input: str, session_id: str) -> dict[str, Any]:
 
         reply = sanitize_model_reply(reply) if reply else reply
 
+        tool_tables = _extract_tables_from_tools(messages)
+        if tool_tables:
+            if is_voice:
+                billing_data = _extract_billing_data_from_tools(messages)
+                context_parts = []
+                for t in tool_tables:
+                    rows = _count_table_rows(t)
+                    context_parts.append(f"Tabla con {rows} filas de datos:\n{t}")
+                if billing_data:
+                    from orchestration.llm_formatter import format_billing_insights
+                    insights = format_billing_insights(billing_data, user_input, language)
+                    if insights:
+                        context_parts.append(insights)
+                context = "\n\n".join(context_parts)
+                from orchestration.llm_formatter import format_with_llm
+                voice_reply = format_with_llm(context, user_input, language, is_voice=True)
+                if voice_reply and voice_reply != context:
+                    reply = voice_reply
+                else:
+                    reply = _strip_markdown_tables(reply)
+            else:
+                table_block = "\n\n".join(tool_tables)
+                has_billing = any("(USD)" in t for t in tool_tables)
+                if has_billing:
+                    billing_data = _extract_billing_data_from_tools(messages)
+                    from orchestration.llm_formatter import format_billing_insights
+                    insights = format_billing_insights(billing_data, user_input, language)
+                    table_with_insights = table_block + "\n\n" + insights if insights else table_block
+                    if reply and len(reply) > 30:
+                        reply = _replace_llm_table(reply, table_with_insights)
+                    else:
+                        reply = table_with_insights
+                else:
+                    if reply and len(reply) > 30:
+                        reply = _replace_llm_table(reply, table_block)
+                    else:
+                        reply = table_block
+
+        if is_voice and reply:
+            reply = _strip_markdown_tables(reply)
+
         elapsed_ms = int((time.perf_counter() - started) * 1000)
         tracer.end_span("chat_turn", "ok")
         metrics.record_request(elapsed_ms, is_fast_path=False, tool_calls=tool_call_count)
@@ -184,3 +323,4 @@ def run_chat_turn(user_input: str, session_id: str) -> dict[str, Any]:
         }
     finally:
         current_chat_language.reset(lang_token)
+        is_voice_mode.reset(voice_token)

@@ -322,7 +322,7 @@ const buildChartModel = (table, chartType) => {
       .slice(0, 12);
     return { kind: "single", data, series: [{ key: "value", label: column.label }] };
   }
-  const seriesColumns = numericColumns.slice(0, 3);
+  const seriesColumns = numericColumns.slice(0, 12);
   const data = table.rows.map((row) => {
     const item = { name: String(row[0] || labelHeader).slice(0, 28) };
     seriesColumns.forEach((column) => {
@@ -462,7 +462,7 @@ function DonutChartCard({ model, title }) {
 
 function BarChartCard({ model, title, isCostData }) {
   if (!model || model.kind === "donut") return null;
-  const colors = ["#C7000B", "#2563eb", "#16a34a"];
+  const colors = ["#C7000B", "#2563eb", "#16a34a", "#f59e0b", "#8b5cf6", "#06b6d4", "#ec4899", "#84cc16", "#f97316", "#6366f1", "#14b8a6", "#e11d48"];
   return (
     <motion.div
       className="chart-container"
@@ -477,7 +477,7 @@ function BarChartCard({ model, title, isCostData }) {
         <ResponsiveContainer width="100%" height={260}>
           <BarChart data={model.data} margin={{ top: 8, right: 16, left: 0, bottom: 8 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(148, 163, 184, 0.15)" />
-            <XAxis dataKey="name" tick={{ fontSize: 11 }} interval={0} height={60} />
+            <XAxis dataKey="name" tick={false} axisLine={false} tickLine={false} />
             <YAxis tickFormatter={(value) => (value >= 1000 ? `${(value / 1000).toFixed(1)}k` : value)} />
             <Tooltip
               formatter={(value) => [isCostData ? formatCurrency(Number(value)) : formatValue(Number(value), false), ""]}
@@ -504,18 +504,33 @@ function AssistantMessage({ content, durationMs, language }) {
   const tableBlocks = blocks.filter((block) => block.type === "table");
   const textBlocks = blocks.filter((block) => block.type !== "table" && block.type !== "report-header");
   const kpis = useMemo(() => extractKPIs(content), [content]);
-  const isCostContent = /gasto|cost|billing|factur|costos|usd|month|mayo|abril|statistics|resumen/i.test(content);
+  const isCostContent = /gasto|cost|billing|factur|costos|\(USD\)|month|mayo|abril|statistics|resumen/i.test(content);
   const isResourceContent = /recurso|resource|desplegado|deployed|servicio|service|instance|imagen|image|vpc|security|segurid|clave|key|rds|obs|ecs|elb/i.test(content);
   const showVisuals = isCostContent || isResourceContent || tableBlocks.length > 0;
 
+  const isBillingTable = useMemo(() => {
+    return tableBlocks.map((block) => {
+      const headers = block.table?.headers || [];
+      return headers.some((h) => /\(USD\)/i.test(h));
+    });
+  }, [tableBlocks]);
+
   const chartModels = useMemo(() => {
     if (!showVisuals) return [];
-    return tableBlocks.map((block) => {
+    return tableBlocks.map((block, idx) => {
+      if (isBillingTable[idx]) {
+        const filteredTable = {
+          headers: block.table.headers,
+          rows: block.table.rows.filter((row) => !/^TOTAL$/i.test(String(row[0]).trim())),
+        };
+        const model = buildChartModel(filteredTable, "bar");
+        return { chartType: "bar", model };
+      }
       const chartType = detectChartType(block.table);
       if (!chartType) return null;
       return { chartType, model: buildChartModel(block.table, chartType) };
     });
-  }, [tableBlocks, showVisuals]);
+  }, [tableBlocks, showVisuals, isBillingTable]);
 
   const getChartTitle = (chartType, index) => {
     if (isCostContent) {
@@ -532,24 +547,77 @@ function AssistantMessage({ content, durationMs, language }) {
       ? `Respuesta en ${durationMs < 1000 ? `${durationMs} ms` : `${(durationMs / 1000).toFixed(1)} s`}`
       : `Response in ${durationMs < 1000 ? `${durationMs} ms` : `${(durationMs / 1000).toFixed(1)} s`}`
     : null;
-  const textContent = textBlocks.map((block) => block.text).join("\n\n");
+  const textContent = textBlocks
+    .map((block) => block.text)
+    .filter((text) => !/^\*\*.+?\*\*\s*\(\d+\)\s*$/.test(text.trim()))
+    .join("\n\n");
+
+  const tableTitles = useMemo(() => {
+    const titles = [];
+    const lines = content.split(/\r?\n/);
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
+      const boldMatch = line.match(/^\*\*(.+?)\*\*\s*\((\d+)\)/);
+      if (boldMatch) {
+        let tableStart = i + 1;
+        while (tableStart < lines.length && !lines[tableStart].trim()) tableStart++;
+        if (tableStart < lines.length && lines[tableStart].includes("|")) {
+          titles.push(boldMatch[1]);
+        }
+      }
+    }
+    return titles;
+  }, [content]);
+
+  const _MONTH_NAMES_ES = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+  const _MONTH_NAMES_EN = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+  const _formatMonthLabel = (monthStr) => {
+    const parts = monthStr.split("-");
+    if (parts.length !== 2) return monthStr;
+    const year = parts[0];
+    const monthNum = parseInt(parts[1], 10);
+    if (monthNum < 1 || monthNum > 12) return monthStr;
+    const names = language === "es" ? _MONTH_NAMES_ES : _MONTH_NAMES_EN;
+    return `${names[monthNum - 1]}-${year}`;
+  };
+
+  const billingTableTitle = useMemo(() => {
+    if (!isCostContent) return null;
+    const usdHeaders = tableBlocks.find((block) =>
+      (block.table?.headers || []).some((h) => /\(USD\)/i.test(h))
+    );
+    if (!usdHeaders) return null;
+    const months = (usdHeaders.table.headers || [])
+      .filter((h) => /\(USD\)/i.test(h))
+      .map((h) => h.replace(/\s*\(USD\)/, "").trim());
+    if (months.length === 0) return null;
+    const labeled = months.map(_formatMonthLabel);
+    if (months.length === 1) {
+      return language === "es" ? `Costos ${labeled[0]}` : `Costs ${labeled[0]}`;
+    }
+    return language === "es" ? `Comparativa ${labeled.join(" vs ")}` : `Comparison ${labeled.join(" vs ")}`;
+  }, [content, isCostContent, tableBlocks, language]);
 
   return (
     <div className="space-y-3">
       {kpis.length > 0 && <KPICards kpis={kpis} language={language} />}
       {textContent && <MarkdownRenderer content={textContent} />}
       {tableBlocks.map((block, index) => (
-        <div key={`table-${index}`}>
-          <div className="flex items-center gap-2 mb-2 text-xs font-semibold text-huawei-gray-600 dark:text-huawei-gray-400">
-            <TbMessage2 size={14} />
-            {language === "es" ? "Tabla estructurada" : "Structured table"}
+        !isBillingTable[index] && (
+          <div key={`table-${index}`}>
+            {tableTitles[index] ? (
+              <div className="resource-table-title">{tableTitles[index]}</div>
+            ) : null}
+            <DataTable table={block.table} />
           </div>
-          <DataTable table={block.table} />
-        </div>
+        )
       ))}
       {chartModels.map((cm, index) => {
         if (!cm?.model) return null;
-        const title = getChartTitle(cm.chartType, index);
+        const title = isBillingTable[index] && billingTableTitle
+          ? billingTableTitle
+          : getChartTitle(cm.chartType, index);
         if (cm.chartType === "donut") {
           return <DonutChartCard key={`donut-${index}`} model={cm.model} title={title} />;
         }

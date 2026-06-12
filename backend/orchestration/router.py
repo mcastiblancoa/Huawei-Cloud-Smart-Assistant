@@ -52,6 +52,19 @@ def _normalize_for_routing(text: str) -> str:
     return t
 
 
+_INFORMATIONAL_RE = re.compile(
+    r"\b(qué es|que es|what is|what are|qué son|que son|explain|explica|explicame|define|defin|"
+    r"how does|cómo funciona|como funciona|tell me about|hablame de|háblame de|"
+    r"para qué sirve|para que sirve|what does|para qué se usa|para que se usa|"
+    r"diferencia entre|difference between|vs\b|versus)\b",
+    re.I,
+)
+
+
+def _looks_like_informational(text: str) -> bool:
+    return bool(_INFORMATIONAL_RE.search(text))
+
+
 _ECS_STANDALONE_RE = re.compile(r"(?<![\w-])ecs(?![\w-])", re.I)
 
 
@@ -177,6 +190,9 @@ def route_intent(message: str) -> RouteDecision | None:
         return None
 
     if _looks_like_delete_request(text):
+        return None
+
+    if _looks_like_informational(text):
         return None
 
     if _looks_like_billing_intent(text):

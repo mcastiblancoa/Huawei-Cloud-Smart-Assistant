@@ -4,6 +4,7 @@ from typing import Any
 from langchain_core.tools import tool
 
 from tools.common.koocli_runner import run_cloud_command
+from tools.common.table_formatter import format_table, ECS_COLUMNS
 from tools.registry import ToolMeta, ToolCategory
 from cloud.result import CloudResult
 from cloud.validation import validate_empty_result
@@ -69,17 +70,53 @@ def _merge_list_results(service: str, operation: str, region: str | None, key: s
     return CloudResult.empty(service, operation, total_elapsed)
 
 
+_STATUS_MAP = {
+    "ACTIVE": "Activo",
+    "SHUTOFF": "Apagado",
+    "BUILD": "Creando",
+    "REBUILD": "Reconstruyendo",
+    "ERROR": "Error",
+    "HARD_REBOOT": "Reiniciando (hard)",
+    "REBOOT": "Reiniciando",
+    "MIGRATING": "Migrando",
+    "RESIZE": "Redimensionando",
+    "VERIFY_RESIZE": "Verificando",
+    "PAUSED": "Pausado",
+    "SUSPENDED": "Suspendido",
+    "SHELVED": "Archivado",
+    "SHELVED_OFFLOADED": "Archivado (offloaded)",
+}
+
+
+def _map_status(status: str) -> str:
+    if not status:
+        return ""
+    return _STATUS_MAP.get(status, status)
+
+
 @tool
 def list_ecs(region: str = "") -> str:
     """List all ECS instances across regions. Returns real data from Huawei Cloud.
-    Uses NovaListServers (OpenStack-style list), which matches what deploy flows use
-    and is more reliable than ListCloudServers on many international accounts."""
-    result = _merge_list_results("ECS", "NovaListServers", region or None, "servers")
+    Uses NovaListServersDetails to get full server info (status, flavor, image)."""
+    result = _merge_list_results("ECS", "NovaListServersDetails", region or None, "servers")
     result = _validate_and_count(result, "servers")
     empty = validate_empty_result(result, "ECS", "NovaListServers")
     if empty:
         return json.dumps({"ok": True, "service": "ECS", "operation": "NovaListServers", "data": None, "item_count": 0, "message": empty})
-    return _dump(result)
+    items = _extract_dict_list(result.data, "servers")
+    for item in items:
+        raw_status = item.get("status", "")
+        item["_status_display"] = _map_status(raw_status)
+        flavor = item.get("flavor", {})
+        if isinstance(flavor, dict):
+            item["_flavor_display"] = flavor.get("id", "")
+        else:
+            item["_flavor_display"] = str(flavor) if flavor else ""
+    table_md = format_table(items, ECS_COLUMNS)
+    d = result.to_dict()
+    if table_md:
+        d["_table"] = table_md
+    return json.dumps(d, ensure_ascii=True)
 
 
 def _validate_and_count(result: CloudResult, key: str) -> CloudResult:

@@ -4,6 +4,7 @@ from typing import Any
 from langchain_core.tools import tool
 
 from tools.common.koocli_runner import run_cloud_command
+from tools.common.table_formatter import format_table, VPC_COLUMNS, SUBNET_COLUMNS
 from tools.registry import ToolMeta, ToolCategory
 from cloud.result import CloudResult
 from cloud.validation import validate_empty_result
@@ -64,7 +65,12 @@ def list_vpcs(region: str = "") -> str:
     empty = validate_empty_result(result, "VPC", "ListVpcs")
     if empty:
         return json.dumps({"ok": True, "service": "VPC", "operation": "ListVpcs", "data": None, "item_count": 0, "message": empty})
-    return _dump(result)
+    items = result.data.get("vpcs", []) if isinstance(result.data, dict) else []
+    table_md = format_table(items, VPC_COLUMNS)
+    d = result.to_dict()
+    if table_md:
+        d["_table"] = table_md
+    return json.dumps(d, ensure_ascii=True)
 
 
 @tool
@@ -93,7 +99,12 @@ def list_subnets(vpc_id: str = "", region: str = "") -> str:
     empty = validate_empty_result(result, "VPC", "ListSubnets")
     if empty:
         return json.dumps({"ok": True, "service": "VPC", "operation": "ListSubnets", "data": None, "item_count": 0, "message": empty})
-    return _dump(result)
+    items = result.data.get("subnets", []) if isinstance(result.data, dict) else []
+    table_md = format_table(items, SUBNET_COLUMNS)
+    d = result.to_dict()
+    if table_md:
+        d["_table"] = table_md
+    return json.dumps(d, ensure_ascii=True)
 
 
 VPC_TOOLS: list[ToolMeta] = [

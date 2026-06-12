@@ -19,7 +19,7 @@ def chat(request: ChatRequest) -> ChatResponse:
         }},
     )
     try:
-        result = run_chat_turn(request.message, request.session_id)
+        result = run_chat_turn(request.message, request.session_id, is_voice=False)
         logger.info(
             "Chat response generated",
             extra={"structured_extra": {

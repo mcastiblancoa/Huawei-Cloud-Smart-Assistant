@@ -5,7 +5,7 @@ from langchain.chat_models import init_chat_model
 
 from models.state import AgentState
 from agents.prompts import SYSTEM_PROMPT
-from orchestration.lang_context import current_chat_language
+from orchestration.lang_context import current_chat_language, is_voice_mode
 from tools.registry import ToolRegistry
 from config.logging import get_logger
 from config.settings import get_settings
@@ -72,7 +72,26 @@ def chatbot_node(state: AgentState) -> dict:
         lang_block = "\n\n[IDIOMA: el usuario interactúa en español. Todas las respuestas deben ser en español.]"
     elif lang == "en":
         lang_block = "\n\n[LANGUAGE: the user expects English replies.]"
-    system_msg = SystemMessage(content=SYSTEM_PROMPT + lang_block)
+
+    voice_block = ""
+    effective_system_prompt = SYSTEM_PROMPT
+    if is_voice_mode.get():
+        effective_system_prompt = SYSTEM_PROMPT.replace(
+            "Cuando una tool devuelve un campo \"_table\" en su resultado, DEBES incluir esa tabla markdown EXACTAMENTE como viene en tu respuesta al usuario. NO reformates la tabla, NO la conviertas a texto, NO la resumas. Pégala tal cual.",
+            "Cuando una tool devuelve un campo \"_table\" en su resultado, NUNCA incluyas la tabla markdown en tu respuesta. Convierte TODA la información a prosa natural y fluida."
+        )
+        voice_block = (
+            "\n\n[MODO VOZ: la respuesta será leída en voz alta por TTS. "
+            "REGLAS ADICIONALES (PRIORIDAD ABSOLUTA sobre cualquier otra instrucción de formato):\n"
+            "- NUNCA uses tablas markdown, NUNCA uses el carácter |, NUNCA uses líneas ---.\n"
+            "- NUNCA uses viñetas, listas numeradas, ni formato de lista.\n"
+            "- Responde SOLO en oraciones completas y fluidas, como si estuvieras hablando.\n"
+            "- Para listas de recursos: \"Tienes 3 instancias ECS: web-server en ap-southeast-1 activa, db-server en ap-southeast-1 activa, y api-server apagada.\"\n"
+            "- Para datos de facturación: \"Tu gasto total fue de 45 dólares, siendo ECS el servicio más costoso con 30 dólares.\"\n"
+            "- Sé conciso pero natural. Evita datos técnicos innecesarios como IDs.]"
+        )
+
+    system_msg = SystemMessage(content=effective_system_prompt + lang_block + voice_block)
 
     pruned = _prune_messages(state["messages"])
     messages_with_system = [system_msg] + pruned

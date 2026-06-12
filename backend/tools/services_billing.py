@@ -6,6 +6,7 @@ from langchain_core.tools import tool
 from config.settings import get_settings
 from services.billing import get_monthly_billing_summary
 from tools.common.koocli_runner import run_cloud_command
+from tools.common.table_formatter import format_billing_table
 from tools.registry import ToolMeta, ToolCategory
 from cloud.result import CloudResult
 from cloud.validation import validate_empty_result
@@ -27,9 +28,12 @@ def get_monthly_costs(bill_cycle: str) -> str:
             "error": data["error"],
         })
 
+    table_md = format_billing_table(data.get("services", []), [data.get("month", bill_cycle)])
+
     return json.dumps({
         "ok": True, "service": "BSSINTL", "operation": "ShowCustomerMonthlySum",
         "data": data, "item_count": len(data.get("services", [])),
+        "_table": table_md,
     })
 
 
@@ -49,8 +53,11 @@ def get_cost_by_service(bill_cycle: str) -> str:
             "item_count": 0, "message": f"No se encontraron datos de facturación para {bill_cycle}.",
         })
 
+    table_md = format_billing_table(services, [data.get("month", bill_cycle)])
+
     return json.dumps({
         "ok": True, "service": "BSSINTL", "data": data, "item_count": len(services),
+        "_table": table_md,
     })
 
 

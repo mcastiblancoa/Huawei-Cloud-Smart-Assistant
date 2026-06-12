@@ -178,6 +178,8 @@ function App() {
   const [language, setLanguage] = useState(() => localStorage.getItem("language") || "es");
   const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "light");
   const [recordingLanguage, setRecordingLanguage] = useState(() => localStorage.getItem("recordingLanguage") || "en");
+  const [kokoroVoice, setKokoroVoice] = useState(() => localStorage.getItem("kokoroVoice") || "");
+  const [kokoroSpeed, setKokoroSpeed] = useState(() => parseFloat(localStorage.getItem("kokoroSpeed")) || 1.2);
   const [voiceSessionId, setVoiceSessionId] = useState("");
 
   const [chatThreads, setChatThreads] = useState(() => initThreads(language));
@@ -210,6 +212,14 @@ function App() {
   useEffect(() => {
     localStorage.setItem("recordingLanguage", recordingLanguage);
   }, [recordingLanguage]);
+
+  useEffect(() => {
+    localStorage.setItem("kokoroVoice", kokoroVoice);
+  }, [kokoroVoice]);
+
+  useEffect(() => {
+    localStorage.setItem("kokoroSpeed", String(kokoroSpeed));
+  }, [kokoroSpeed]);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(max-width: 768px)");
@@ -429,7 +439,7 @@ function App() {
     setStatus("processing");
     setErrorMessage("");
     try {
-      const { json, audio } = await sendVoiceAudio(blob, recordingLanguage, voiceSessionId);
+      const { json, audio } = await sendVoiceAudio(blob, recordingLanguage, voiceSessionId, kokoroVoice, kokoroSpeed);
 
       if (!json.transcription || json.transcription.trim() === "") {
         throw new Error(t.noTextError);
@@ -463,9 +473,17 @@ function App() {
   };
 
   const toggleRecording = () => {
-    if (status === "playing" && ttsAudioRef.current) {
-      ttsAudioRef.current.pause();
-      ttsAudioRef.current = null;
+    if (status === "playing") {
+      if (ttsAudioRef.current) {
+        ttsAudioRef.current.pause();
+        ttsAudioRef.current.currentTime = 0;
+        ttsAudioRef.current = null;
+      }
+      if (currentAudioUrlRef.current) {
+        URL.revokeObjectURL(currentAudioUrlRef.current);
+        currentAudioUrlRef.current = null;
+      }
+      setAudioUrl("");
       setStatus("success");
       return;
     }
@@ -569,6 +587,10 @@ function App() {
               audioUrl={audioUrl}
               theme={theme}
               language={language}
+              kokoroVoice={kokoroVoice}
+              setKokoroVoice={setKokoroVoice}
+              kokoroSpeed={kokoroSpeed}
+              setKokoroSpeed={setKokoroSpeed}
             />
           </div>
         )}

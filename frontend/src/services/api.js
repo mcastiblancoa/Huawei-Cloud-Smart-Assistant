@@ -14,13 +14,15 @@ export async function sendChatMessage(message, sessionId) {
   return response.json();
 }
 
-export async function sendVoiceAudio(audioBlob, language, sessionId) {
+export async function sendVoiceAudio(audioBlob, language, sessionId, voice, speed) {
   const extension = audioBlob.type.includes("ogg") ? "ogg" : "webm";
   const file = new File([audioBlob], `recording.${extension}`, { type: audioBlob.type || "audio/webm" });
   const formData = new FormData();
   formData.append("file", file);
   formData.append("language", language);
   if (sessionId) formData.append("session_id", sessionId);
+  if (voice) formData.append("voice", voice);
+  if (speed) formData.append("speed", speed);
 
   const response = await fetch(`${API_BASE_URL}/voice`, {
     method: "POST",

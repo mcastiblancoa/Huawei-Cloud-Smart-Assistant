@@ -4,12 +4,13 @@ from typing import Any
 from langchain_core.tools import tool
 
 from tools.common.koocli_runner import run_cloud_command
+from tools.common.table_formatter import format_table, EIP_COLUMNS
 from tools.registry import ToolMeta, ToolCategory
 from cloud.result import CloudResult
 from cloud.validation import validate_empty_result
 from config.settings import get_settings
 
-_PRIMARY_REGIONS = ["la-north-2", "ap-southeast-3"]
+_PRIMARY_REGIONS = ["la-north-2", "ap-southeast-1", "ap-southeast-3"]
 
 
 def _default_region(region: str) -> str:
@@ -64,7 +65,12 @@ def list_eips(region: str = "") -> str:
     empty = validate_empty_result(result, "EIP", "ListPublicips")
     if empty:
         return json.dumps({"ok": True, "service": "EIP", "operation": "ListPublicips", "data": None, "item_count": 0, "message": empty})
-    return _dump(result)
+    items = result.data.get("publicips", []) if isinstance(result.data, dict) else []
+    table_md = format_table(items, EIP_COLUMNS)
+    d = result.to_dict()
+    if table_md:
+        d["_table"] = table_md
+    return json.dumps(d, ensure_ascii=True)
 
 
 @tool

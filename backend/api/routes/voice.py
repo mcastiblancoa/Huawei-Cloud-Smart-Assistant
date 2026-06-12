@@ -26,6 +26,8 @@ async def voice_turn(
     file: UploadFile = File(...),
     language: str = Form("en"),
     session_id: str = Form(""),
+    voice: str = Form(""),
+    speed: float = Form(0),
 ) -> JSONResponse:
     validate_upload(file, max_size_mb=settings.max_upload_mb)
     temp_dir = Path(settings.temp_dir)
@@ -59,7 +61,7 @@ async def voice_turn(
             from uuid import uuid4
             session_id = f"voice-{uuid4().hex[:12]}"
 
-        agent_result = run_chat_turn(transcription, session_id)
+        agent_result = run_chat_turn(transcription, session_id, is_voice=True)
         reply = agent_result.get("reply", "")
         reply_clean = strip_html(reply)
 
@@ -67,10 +69,11 @@ async def voice_turn(
         tts_error: str | None = None
         if reply_clean and settings.kokoro_speech_url:
             try:
-                tts_voice = resolve_voice(language, settings)
+                tts_voice = voice if voice else resolve_voice(language, settings)
                 tts_lang = resolve_lang_code(language, settings)
+                tts_speed = speed if speed > 0 else None
                 audio_bytes = generate_speech(
-                    reply_clean, settings, voice=tts_voice, lang_code=tts_lang,
+                    reply_clean, settings, voice=tts_voice, lang_code=tts_lang, speed=tts_speed,
                 )
                 audio_b64 = base64.b64encode(audio_bytes).decode("ascii")
             except Exception as exc:

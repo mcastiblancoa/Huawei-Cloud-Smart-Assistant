@@ -7,14 +7,51 @@ from config.settings import get_settings
 from config.logging import get_logger
 from orchestration.router import route_intent
 from orchestration.formatter import format_response, _build_resource_context, _format_billing_natural, _format_resources_natural
-from orchestration.llm_formatter import format_with_llm
+from orchestration.llm_formatter import format_with_llm, format_billing_insights
+from orchestration.lang_context import is_voice_mode
 from tools.registry import ToolRegistry
+from tools.common.table_formatter import format_billing_table_multi
 
 logger = get_logger("orchestration.runner")
 
 _GREETINGS_ES = set()
 _GREETINGS_EN = set()
 _SMALL_TALK = set()
+
+def _count_table_rows(table_md: str) -> int:
+    lines = table_md.strip().split("\n")
+    count = 0
+    for line in lines:
+        if line.strip().startswith("|") and not re.match(r'^\|[-\s|:]+\|$', line.strip()):
+            count += 1
+    return max(0, count - 1)
+
+
+def _fix_counts_in_text(text: str, actual_count: int) -> str:
+    if actual_count <= 0:
+        return text
+    text = re.sub(
+        r'\b\d+(\s+(?:instancia|instance|servidor|server|recurso|resource)s?\b|\s+(?:ECS|EIP|VPC|ELB|RDS|SG)\b)',
+        lambda m: f'{actual_count}{m.group(1)}',
+        text,
+        flags=re.IGNORECASE,
+    )
+    return text
+
+
+def _replace_llm_table(reply: str, table_block: str) -> str:
+    actual_count = _count_table_rows(table_block)
+    table_pattern = re.compile(r'\|[^\n]+\|\n\|[-\s|:]+\|\n(?:\|[^\n]+\|\n)+', re.MULTILINE)
+    match = table_pattern.search(reply)
+    if match:
+        before = reply[:match.start()].rstrip()
+        before = _fix_counts_in_text(before, actual_count)
+        after = reply[match.end():].strip()
+        parts = [before, table_block, after] if after else [before, table_block]
+        return "\n\n".join(p for p in parts if p)
+    reply = _fix_counts_in_text(reply, actual_count)
+    return reply + "\n\n" + table_block
+
 
 _LAST_BILL_CYCLE: dict[str, str] = {}
 
@@ -102,6 +139,22 @@ def _execute_tool(registry: ToolRegistry, tool_name: str, params: dict) -> dict:
         return {"ok": False, "error": str(exc)}
 
 
+def _table_to_voice_prose(table_md: str, data: Any, response_type: str, user_query: str, language: str) -> str:
+    context = _build_resource_context(data, response_type) if data and isinstance(data, dict) else table_md
+    if context and context != "Total: 0":
+        voice_reply = format_with_llm(context, user_query, language, is_voice=True)
+        if voice_reply and voice_reply != context:
+            return voice_reply
+    if data and isinstance(data, dict):
+        if response_type == "billing":
+            natural = _format_billing_natural(data, language)
+        else:
+            natural = _format_resources_natural(data, response_type, language)
+        if natural:
+            return natural
+    return table_md
+
+
 def run_fast_path(message: str, language: str, session_id: str = "default") -> str | None:
     if _is_greeting(message):
         return _greeting_response(message, language)
@@ -118,13 +171,31 @@ def run_fast_path(message: str, language: str, session_id: str = "default") -> s
             else:
                 results.append({"month": cycle, "total": 0, "currency": "USD", "services": [], "error": payload.get("error")})
 
+        _LAST_BILL_CYCLE[session_id] = multi_months[-1]
+
+        table_md = format_billing_table_multi(results)
+        if table_md:
+            insights = format_billing_insights(results, message, language)
+            if is_voice_mode.get():
+                context = table_md
+                if insights:
+                    context += "\n\n" + insights
+                voice_reply = format_with_llm(context, message, language, is_voice=True)
+                if voice_reply and voice_reply != context:
+                    return voice_reply
+                parts = []
+                for r in results:
+                    parts.append(_format_billing_natural(r, language))
+                return "\n\n".join(parts)
+            if insights:
+                return table_md + "\n\n" + insights
+            return table_md
+
         context_parts = []
         for r in results:
             ctx = _build_resource_context(r, "billing")
             context_parts.append(ctx)
         context = "\n\n---\n\n".join(context_parts)
-
-        _LAST_BILL_CYCLE[session_id] = multi_months[-1]
 
         llm_response = format_with_llm(context, message, language)
         if llm_response != context:
@@ -139,11 +210,30 @@ def run_fast_path(message: str, language: str, session_id: str = "default") -> s
     if followup:
         payload = _execute_tool(registry, followup["tool"], followup["params"])
         data = payload.get("data")
-        context = _build_resource_context(data, followup["response_type"]) if data else "No data"
+        table_md = payload.get("_table", "")
 
         if followup["params"].get("bill_cycle"):
             _LAST_BILL_CYCLE[session_id] = followup["params"]["bill_cycle"]
 
+        if table_md:
+            insights = format_billing_insights([data] if data else [], message, language)
+            if is_voice_mode.get():
+                context = table_md
+                if insights:
+                    context += "\n\n" + insights
+                voice_reply = format_with_llm(context, message, language, is_voice=True)
+                if voice_reply and voice_reply != context:
+                    return voice_reply
+                if data:
+                    natural = _format_billing_natural(data, language)
+                    if natural:
+                        return natural
+                return context
+            if insights:
+                return table_md + "\n\n" + insights
+            return table_md
+
+        context = _build_resource_context(data, followup["response_type"]) if data else "No data"
         llm_response = format_with_llm(context, message, language)
         if llm_response != context:
             return llm_response
@@ -165,11 +255,29 @@ def run_fast_path(message: str, language: str, session_id: str = "default") -> s
 
     data = payload.get("data")
     msg = payload.get("message", "")
+    table_md = payload.get("_table", "")
 
     if decision.response_type == "billing" and decision.params.get("bill_cycle"):
         _LAST_BILL_CYCLE[session_id] = decision.params["bill_cycle"]
 
     if data and isinstance(data, dict):
+        if table_md:
+            if is_voice_mode.get():
+                billing_data = [data] if decision.response_type == "billing" else []
+                insights = format_billing_insights(billing_data, message, language) if billing_data else ""
+                context = table_md
+                if insights:
+                    context += "\n\n" + insights
+                return _table_to_voice_prose(context, data, decision.response_type, message, language)
+            billing_data = [data] if decision.response_type == "billing" else []
+            insights = format_billing_insights(billing_data, message, language) if billing_data else ""
+            table_with_extra = table_md + "\n\n" + insights if insights else table_md
+            context = _build_resource_context(data, decision.response_type)
+            if context and context != "Total: 0":
+                llm_response = format_with_llm(context, message, language)
+                if llm_response and llm_response != context and len(llm_response) > 30:
+                    return _replace_llm_table(llm_response, table_with_extra)
+            return table_with_extra
         context = _build_resource_context(data, decision.response_type)
         if context and context != "Total: 0":
             llm_response = format_with_llm(context, message, language)

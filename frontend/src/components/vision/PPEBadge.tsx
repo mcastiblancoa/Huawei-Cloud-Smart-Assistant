@@ -1,8 +1,10 @@
 const PPE_CONFIG = {
   hardhat:      { icon: "⛑️", labelEs: "Casco",        labelEn: "Hardhat",       color: "#22c55e" },
   helmet:       { icon: "⛑️", labelEs: "Casco",        labelEn: "Helmet",        color: "#22c55e" },
+  head:         { icon: "🚫", labelEs: "Sin casco",    labelEn: "No Hardhat",    color: "#ef4444" },
   safety_vest:  { icon: "🦺", labelEs: "Chaleco",      labelEn: "Safety Vest",   color: "#3b82f6" },
   vest:         { icon: "🦺", labelEs: "Chaleco",      labelEn: "Vest",          color: "#3b82f6" },
+  no_vest:      { icon: "🚫", labelEs: "Sin chaleco",  labelEn: "No Safety Vest", color: "#ef4444" },
   goggles:      { icon: "🥽", labelEs: "Gafas",        labelEn: "Goggles",       color: "#a855f7" },
   glasses:      { icon: "🥽", labelEs: "Gafas",        labelEn: "Glasses",       color: "#a855f7" },
   face_shield:  { icon: "🛡️", labelEs: "Prot. facial", labelEn: "Face Shield",   color: "#f59e0b" },
