@@ -236,6 +236,122 @@ def _resolve_language(session_id: str, text: str) -> str:
     return _detect_language(text)
 
 
+_CLOUD_KEYWORDS = frozenset({
+    "huawei", "cloud", "ecs", "evs", "vpc", "elb", "eip", "rds", "obs", "ims",
+    "sg", "nat", "vpn", "ces", "cts", "dcs", "dms", "css", "mrs", "cbr",
+    "as", "autoscaling", "functiongraph", "fgs", "smn", "kms", "iam",
+    "bss", "rms", "sis", "modelarts", "deh", "cce", "cci",
+    "server", "servers", "instancia", "instancias", "vm", "vms", "servidor", "servidores",
+    "virtual machine", "flavor", "flavors", "image", "images", "imagen", "imagenes",
+    "region", "regions", "zona", "zone", "zones",
+    "subnet", "subnets", "subred", "subredes", "cidr",
+    "security group", "security groups", "grupo de seguridad", "grupos de seguridad",
+    "load balancer", "load balancers", "balanceador", "balanceadores",
+    "listener", "listeners", "pool", "pools", "health check",
+    "public ip", "elastic ip", "eips",
+    "database", "databases", "base de datos", "bases de datos",
+    "mysql", "postgres", "sqlserver", "mariadb", "redis",
+    "bucket", "buckets", "object storage", "almacenamiento",
+    "billing", "factura", "facturas", "facturación", "costo", "costos", "coste", "gasto", "gastos", "presupuesto",
+    "deploy", "deployment", "desplegar", "despliegue", "desplegados", "provisionar", "lanzar",
+    "crear", "creadas", "creado", "borrar", "borrados", "eliminar", "eliminados",
+    "iniciar", "encender", "detener", "apagar", "reiniciar", "reboot",
+    "listar", "mostrar", "muestrame", "mostrarme", "ver", "verlas", "verlos",
+    "inventario", "recursos", "recurso", "tengo", "tienes",
+    "network", "networks", "red", "redes", "firewall", "puerto", "port", "ssh", "tcp", "udp",
+    "disco", "discos", "disk", "disks", "volume", "volumes", "volumen", "snapshot", "backup", "copia",
+    "monitor", "monitoring", "alerta", "log", "logs", "metric", "metrics", "métrica",
+    "api", "sdk", "cli", "koo", "hcloud", "endpoint",
+    "cuenta", "account", "proyecto", "project", "tenant", "domain",
+    "stack", "plantilla", "template", "terraform", "ansible",
+    "alta disponibilidad", "high availability", "escalabilidad", "scalability",
+    "latencia", "throughput", "rendimiento", "performance",
+    "ak", "sk", "access key", "secret key", "credenciales", "credentials",
+    "configurar", "config", "asociar", "asignar", "liberar", "attach", "detach",
+    "vpcs", "elbs", "rds", "sgs", "subnets",
+})
+
+_CLOUD_ABBREVS = frozenset({
+    "ecs", "evs", "vpc", "elb", "eip", "rds", "obs", "ims", "sg",
+    "nat", "vpn", "ces", "cts", "dcs", "dms", "css", "mrs", "cbr",
+    "cce", "cci", "fgs", "smn", "kms", "iam", "bss", "rms", "sis",
+})
+
+_OFF_TOPIC_PATTERNS = re.compile(
+    r"\b("
+    r"receta|recipe|cocinar|cook|horneo|bake|frio|frío|caliente|sopa|soup|pizza|pasta|carne|meat|"
+    r"futbol|fútbol|football|soccer|basketball|baloncesto|tenis|golf|nba|mlb|gol|goal|marcador|score|"
+    r"pelicula|película|movie|film|cine|cinema|serie|netflix|disney|spotify|"
+    r"clima|weather|lluvia|rain|sol|sun|temperatura|temperature|tormenta|storm|"
+    r"chiste|joke|broma|funny|risa|laugh|"
+    r"amor|love|novio|novia|boyfriend|girlfriend|casarse|marry|"
+    r"musica|música|song|cancion|canción|cantante|singer|band|grupo musical|"
+    r"libro|book|novela|novel|autor|author|leer|read|"
+    r"juego|game|jugar|play|consola|console|xbox|playstation|nintendo|"
+    r"dieta|diet|ejercicio|exercise|gym|gimnasio|peso|weight|salud|health|medicina|medicine|"
+    r"viaje|travel|vacaciones|vacation|hotel|vuelo|flight|turismo|tourism|"
+    r"historia|history|guerra|war|revolución|revolution|política|politics|presidente|president|"
+    r"filosofía|philosophy|religion|religión|dios|god|iglesia|church|"
+    r"animal|mascota|pet|perro|dog|gato|cat|caballo|horse|"
+    r"planta|plant|jardin|garden|flor|flower|"
+    r"moda|fashion|ropa|clothes|zapatos|shoes|"
+    r"coche|car|auto|automovil|automóvil|moto|motorcycle|"
+    r"pintura|painting|arte|art|dibujar|draw|"
+    r"poema|poem|cuento|story|tale|escribir|write me|"
+    r"astrología|astrology|horoscopo|horóscopo|zodiaco|zodiac"
+    r")\b",
+    re.I,
+)
+
+
+def _has_cloud_keyword(tokens: set[str], lower: str) -> bool:
+    if tokens & _CLOUD_KEYWORDS:
+        return True
+    for abbr in _CLOUD_ABBREVS:
+        for token in tokens:
+            if token.startswith(abbr) or token.startswith(abbr + "s"):
+                return True
+    if "vpc" in lower or "elb" in lower or "eip" in lower or "ecs" in lower:
+        return True
+    return False
+
+
+def _is_off_topic(text: str) -> bool:
+    lower = text.lower().strip()
+    if len(lower) < 5:
+        return False
+    tokens = set(re.findall(r"\w+", _strip_accents(lower)))
+    if _has_cloud_keyword(tokens, lower):
+        return False
+    if _OFF_TOPIC_PATTERNS.search(lower):
+        return True
+    if len(lower) > 8:
+        question_markers = re.search(
+            r"\b(qué|que|how|why|por qué|porque|cuando|when|where|donde|quién|who|cuál|cual|can|puedo|podría|explain|explica|tell me|dime|dame|haz|make|do|is|are|es|son|was|were)\b",
+            lower,
+            re.I,
+        )
+        if question_markers:
+            return True
+    return False
+
+
+def _off_topic_response(language: str) -> str:
+    if language == "es":
+        return (
+            "Este asistente está diseñado específicamente para ayudarte con **Huawei Cloud** "
+            "(infraestructura, servicios, recursos, facturación, despliegues, etc.). "
+            "No puedo responder preguntas fuera de ese ámbito.\n\n"
+            "¿Hay algo en lo que pueda ayudarte relacionado con tus servicios o recursos en Huawei Cloud?"
+        )
+    return (
+        "This assistant is designed specifically to help you with **Huawei Cloud** "
+        "(infrastructure, services, resources, billing, deployments, etc.). "
+        "I cannot answer questions outside that scope.\n\n"
+        "Is there anything I can help you with related to your Huawei Cloud services or resources?"
+    )
+
+
 def run_chat_turn(user_input: str, session_id: str, is_voice: bool = False) -> dict[str, Any]:
     metrics = MetricsCollector.get()
     tracer = Tracer.get()
@@ -247,6 +363,21 @@ def run_chat_turn(user_input: str, session_id: str, is_voice: bool = False) -> d
     lang_token = current_chat_language.set(language)
     voice_token = is_voice_mode.set(is_voice)
     try:
+        if _is_off_topic(user_input):
+            elapsed_ms = int((time.perf_counter() - started) * 1000)
+            tracer.end_span("chat_turn", "ok")
+            metrics.record_request(elapsed_ms, is_fast_path=True, tool_calls=0)
+            logger.info("Off-topic message rejected", extra={"structured_extra": {
+                "session_id": session_id, "elapsed_ms": elapsed_ms,
+            }})
+            return {
+                "reply": _off_topic_response(language),
+                "raw_messages": [],
+                "latency_ms": elapsed_ms,
+                "tool_calls": 0,
+                "path": "off_topic",
+            }
+
         fast_reply = run_fast_path(user_input, language, session_id=session_id)
         if fast_reply:
             elapsed_ms = int((time.perf_counter() - started) * 1000)
