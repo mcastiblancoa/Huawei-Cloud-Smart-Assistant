@@ -258,6 +258,9 @@ const extractKPIs = (content) => {
 
 const detectChartType = (table) => {
   if (!table?.headers?.length || !table?.rows?.length) return null;
+  const firstHeader = (table.headers[0] || "").toLowerCase();
+  const isDetailTable = /recurso|resource|detalle|detail|propiedad|property|par[áa]metro|parameter/i.test(firstHeader);
+  if (isDetailTable) return null;
   const numericColumns = [];
   table.headers.slice(1).forEach((header, offset) => {
     const index = offset + 1;
@@ -270,7 +273,6 @@ const detectChartType = (table) => {
   const rowCount = table.rows.length;
   const hasSingleNumeric = numericColumns.length === 1;
   const isDistribution = hasSingleNumeric && rowCount >= 2 && rowCount <= 10;
-  const firstHeader = (table.headers[0] || "").toLowerCase();
   const isCategorical = /tipo|type|categor[ií]a|category|servicio|service|recurso|resource|regi[oó]n|region|estado|status|nombre|name/i.test(firstHeader);
   const isTimeSeries = /mes|month|fecha|date|a[oñ]|year|enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre|jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec/i.test(firstHeader) ||
     table.rows.every((row) => /(enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre|jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec|\d{4}[-\/]\d{2}|\d{2}[-\/]\d{4})/i.test(String(row[0])));
@@ -357,18 +359,18 @@ function KPICards({ kpis, language }) {
         return (
           <motion.div
             key={kpi.key}
-            className="kpi-card"
-            initial={{ opacity: 0, y: 8 }}
+            //className="kpi-card"
+            //initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <div className="kpi-icon-wrap">
+            {/* <div className="kpi-icon-wrap">
               <Icon size={16} strokeWidth={1.8} />
-            </div>
-            <div className="kpi-content">
+            </div> */}
+            {/* <div className="kpi-content">
               <span className="kpi-value">{kpi.isCurrency ? formatCurrency(kpi.value) : kpi.value}</span>
               <span className="kpi-label">{label}</span>
-            </div>
+            </div> */}
           </motion.div>
         );
       })}

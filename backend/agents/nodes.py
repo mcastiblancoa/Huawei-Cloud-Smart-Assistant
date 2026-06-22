@@ -1,3 +1,4 @@
+import json
 import time
 
 from langchain_core.messages import SystemMessage, AIMessage, ToolMessage
@@ -41,14 +42,35 @@ def _get_llm_with_tools():
 
 
 def _prune_messages(messages: list, max_tool_chars: int = TOOL_RESULT_MAX_CHARS) -> list:
-    """Truncate long tool results and prune very old messages to keep context manageable."""
+    """Truncate long tool results and prune very old messages to keep context manageable.
+    Preserves _table and item_count when truncating JSON tool results."""
     pruned = []
     total_chars = 0
     for msg in messages:
         if isinstance(msg, ToolMessage):
             content = getattr(msg, "content", "")
             if isinstance(content, str) and len(content) > max_tool_chars:
-                truncated = content[:max_tool_chars] + f"\n...[truncated, {len(content)} chars total]"
+                try:
+                    data = json.loads(content)
+                    if isinstance(data, dict):
+                        table = data.get("_table", "")
+                        item_count = data.get("item_count")
+                        ok = data.get("ok")
+                        service = data.get("service", "")
+                        operation = data.get("operation", "")
+                        data_field = data.get("data")
+                        data_json = json.dumps(data_field, ensure_ascii=True) if data_field is not None else ""
+                        if len(data_json) > max_tool_chars:
+                            data_json = data_json[:max_tool_chars] + f"\n...[truncated, {len(data_json)} chars total]"
+                        summary = {"ok": ok, "service": service, "operation": operation, "item_count": item_count}
+                        if table:
+                            summary["_table"] = table
+                        summary["data"] = data_json
+                        truncated = json.dumps(summary, ensure_ascii=True)
+                    else:
+                        truncated = content[:max_tool_chars] + f"\n...[truncated, {len(content)} chars total]"
+                except (json.JSONDecodeError, TypeError):
+                    truncated = content[:max_tool_chars] + f"\n...[truncated, {len(content)} chars total]"
                 msg = ToolMessage(
                     content=truncated,
                     tool_call_id=msg.tool_call_id,

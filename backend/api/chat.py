@@ -33,10 +33,19 @@ def _get_graph():
 def _count_table_rows(table_md: str) -> int:
     lines = table_md.strip().split("\n")
     count = 0
-    for line in lines:
-        if line.strip().startswith("|") and not re.match(r'^\|[-\s|:]+\|$', line.strip()):
+    headers = 0
+    for i, line in enumerate(lines):
+        stripped = line.strip()
+        if not stripped.startswith("|"):
+            continue
+        if re.match(r'^\|[-\s|:]+\|$', stripped):
+            continue
+        prev = lines[i - 1].strip() if i > 0 else ""
+        if re.match(r'^\|[-\s|:]+\|$', prev):
+            headers += 1
+        else:
             count += 1
-    return max(0, count - 1)
+    return count
 
 
 def _strip_markdown_tables(text: str) -> str:
@@ -50,12 +59,19 @@ def _fix_counts_in_text(text: str, actual_count: int) -> str:
     if actual_count <= 0:
         return text
     text = re.sub(
-        r'\b\d+(\s+(?:instancia|instance|servidor|server|recurso|resource)s?\b|\s+(?:ECS|EIP|VPC|ELB|RDS|SG)\b)',
-        lambda m: f'{actual_count}{m.group(1)}',
+        r'(?:<strong>|\*\*)?\b\d+\b(?:</strong>|\*\*)?\s+((?:instancia|instance|servidor|server|recurso|resource)s?|(?:ECS|EIP|VPC|ELB|RDS|SG))\b(?:</strong>|\*\*)?',
+        lambda m: f'{actual_count} {m.group(1)}',
         text,
         flags=re.IGNORECASE,
     )
     return text
+
+
+_ORPHAN_ROW_RE = re.compile(r'^\s*\|[^\n]+\|\s*$', re.MULTILINE)
+
+
+def _strip_orphan_rows(text: str) -> str:
+    return _ORPHAN_ROW_RE.sub('', text).strip()
 
 
 def _replace_llm_table(reply: str, table_block: str) -> str:
@@ -65,18 +81,40 @@ def _replace_llm_table(reply: str, table_block: str) -> str:
     table_pattern = re.compile(r'\|[^\n]+\|\n\|[-\s|:]+\|\n(?:\|[^\n]+\|\n)+', re.MULTILINE)
     match = table_pattern.search(reply)
     if match:
-        before = reply[:match.start()].rstrip()
+        before = _strip_orphan_rows(reply[:match.start()].rstrip())
         before = _fix_counts_in_text(before, actual_count)
-        after = reply[match.end():].strip()
+        after = _strip_orphan_rows(reply[match.end():].strip())
         parts = [before, table_block, after] if after else [before, table_block]
         return "\n\n".join(p for p in parts if p)
     reply = _fix_counts_in_text(reply, actual_count)
+    reply = _strip_orphan_rows(reply)
     return reply + "\n\n" + table_block
+
+
+_DEPLOY_DELETE_TOOL_NAMES = {
+    "deploy_ecs_instance", "setup_elb_for_ecs", "create_rds_instance",
+    "stop_ecs", "reboot_ecs", "release_eip", "delete_rds_instance",
+    "manage_ecs", "manage_eip", "manage_obs_bucket",
+    "associate_eip", "create_eip",
+}
+
+_AUXILIARY_TABLE_HEADERS = {"vpc", "subnet", "security group", "cidr"}
+
+
+def _is_auxiliary_table(table_md: str) -> bool:
+    header_line = table_md.strip().split("\n")[0].lower() if table_md.strip() else ""
+    return any(h in header_line for h in _AUXILIARY_TABLE_HEADERS)
 
 
 def _extract_tables_from_tools(messages: list[BaseMessage]) -> list[str]:
     tables = []
     seen = set()
+    has_deploy_delete = False
+    for message in messages:
+        if isinstance(message, ToolMessage):
+            name = getattr(message, "name", "") or ""
+            if name in _DEPLOY_DELETE_TOOL_NAMES:
+                has_deploy_delete = True
     for message in messages:
         if isinstance(message, ToolMessage):
             content = getattr(message, "content", "")
@@ -86,6 +124,8 @@ def _extract_tables_from_tools(messages: list[BaseMessage]) -> list[str]:
                 data = json.loads(content)
                 table = data.get("_table", "")
                 if table and isinstance(table, str) and "|" in table:
+                    if has_deploy_delete and _is_auxiliary_table(table):
+                        continue
                     key = table.strip()
                     if key not in seen:
                         seen.add(key)
