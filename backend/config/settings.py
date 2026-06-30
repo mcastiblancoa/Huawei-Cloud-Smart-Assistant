@@ -44,8 +44,8 @@ class Settings(BaseSettings):
     maas_api_url: str = ""
     maas_api_key: str = ""
     open_api_base: str = ""
-    llm_model: str = "glm-5.1" #deepseek-v3.2
-    intent_model: str = "glm-5.1" #deepseek-v3.2
+    llm_model: str = "glm-5.2" #deepseek-v3.2
+    intent_model: str = "glm-5.2" #deepseek-v3.2
 
     whisper_asr_url: str = ""
 
@@ -65,7 +65,7 @@ class Settings(BaseSettings):
     schema_data_dir: str = str(_ROOT_DIR / "backend" / "schemas" / "data")
 
     koocli_timeout: int = 180
-    koocli_max_output: int = 100000
+    koocli_max_output: int = 500000
     koocli_max_retries: int = 2
 
     cache_ttl_seconds: int = 30

@@ -98,6 +98,101 @@ def validate_empty_result(result: CloudResult, service: str, operation: str) -> 
     return ""
 
 
+_TRUNCATION_MARKER = "...[Output truncated to"
+
+
+def _repair_truncated_json(json_str: str) -> Any | None:
+    marker_pos = json_str.find(_TRUNCATION_MARKER)
+    if marker_pos == -1:
+        return None
+    truncated = json_str[:marker_pos].rstrip()
+    for trim_suffix in (",", ",\n", "\n"):
+        if truncated.endswith(trim_suffix):
+            truncated = truncated[: -len(trim_suffix)]
+            break
+    open_braces = 0
+    open_brackets = 0
+    in_string = False
+    escape_next = False
+    for ch in truncated:
+        if escape_next:
+            escape_next = False
+            continue
+        if ch == "\\":
+            escape_next = True
+            continue
+        if ch == '"' and not escape_next:
+            in_string = not in_string
+            continue
+        if in_string:
+            continue
+        if ch == "{":
+            open_braces += 1
+        elif ch == "}":
+            open_braces -= 1
+        elif ch == "[":
+            open_brackets += 1
+        elif ch == "]":
+            open_brackets -= 1
+    if open_braces < 0 or open_brackets < 0:
+        return None
+    repaired = truncated + "]" * open_brackets + "}" * open_braces
+    try:
+        return json.loads(repaired)
+    except json.JSONDecodeError:
+        pass
+    if truncated.startswith("["):
+        last_item_end = truncated.rfind("}")
+        if last_item_end > 0:
+            candidate = truncated[: last_item_end + 1] + "]" * open_brackets + "}" * open_braces
+            try:
+                return json.loads(candidate)
+            except json.JSONDecodeError:
+                pass
+    elif truncated.startswith("{"):
+        for key in ("resources", "servers", "vpcs", "subnets", "instances", "data"):
+            array_key_pos = truncated.rfind(f'"{key}"')
+            if array_key_pos == -1:
+                continue
+            last_item_end = truncated.rfind("}")
+            if last_item_end > array_key_pos:
+                after_item = truncated[last_item_end + 1 :].lstrip()
+                if after_item.startswith(","):
+                    truncated_clean = truncated[: last_item_end + 1]
+                else:
+                    truncated_clean = truncated[: last_item_end + 1]
+                open_b = 0
+                open_br = 0
+                in_s = False
+                esc = False
+                for ch in truncated_clean:
+                    if esc:
+                        esc = False
+                        continue
+                    if ch == "\\":
+                        esc = True
+                        continue
+                    if ch == '"':
+                        in_s = not in_s
+                        continue
+                    if in_s:
+                        continue
+                    if ch == "{":
+                        open_b += 1
+                    elif ch == "}":
+                        open_b -= 1
+                    elif ch == "[":
+                        open_br += 1
+                    elif ch == "]":
+                        open_br -= 1
+                candidate = truncated_clean + "]" * max(open_br, 0) + "}" * max(open_b, 0)
+                try:
+                    return json.loads(candidate)
+                except json.JSONDecodeError:
+                    continue
+    return None
+
+
 def extract_json_from_koocli(raw: str) -> Any | None:
     if not raw:
         return None
@@ -109,9 +204,14 @@ def extract_json_from_koocli(raw: str) -> Any | None:
         start = start_list
     if start == -1:
         return None
+    json_str = cleaned[start:]
     try:
-        return json.loads(cleaned[start:])
+        return json.loads(json_str)
     except json.JSONDecodeError:
+        repaired = _repair_truncated_json(json_str)
+        if repaired is not None:
+            logger.info("Truncated JSON repaired successfully")
+            return repaired
         return None
 
 

@@ -223,7 +223,6 @@ ELB_COLUMNS = [
 SG_COLUMNS = [
     ("name", "Nombre"),
     ("_region", "Region"),
-    ("vpc_id", "VPC"),
 ]
 
 RDS_COLUMNS = [

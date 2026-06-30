@@ -21,6 +21,8 @@ export function SafetyDetection({ language, theme }) {
   const [latencyMs, setLatencyMs] = useState(null);
   const [backendDown, setBackendDown] = useState(false);
   const [statusMessage, setStatusMessage] = useState(null);
+  const [modelSource, setModelSource] = useState(null);
+  const [isCocoFallback, setIsCocoFallback] = useState(false);
 
   const lastSentRef = useRef(0);
   const abortRef = useRef(null);
@@ -63,6 +65,8 @@ export function SafetyDetection({ language, theme }) {
         setPpeSummary(result.ppe_summary || {});
         setAllDetections(result.all_detections || []);
         setLatencyMs(result.latency_ms);
+        setModelSource(result.model_source || null);
+        setIsCocoFallback(result.is_coco_fallback || false);
       } else if (result.status === "error") {
         if (!hasResultRef.current) {
           setStatusMessage("error");
@@ -165,6 +169,17 @@ export function SafetyDetection({ language, theme }) {
                 <span className="safety-latency">{latencyMs} ms</span>
               )}
             </div>
+
+            {isCocoFallback && (
+              <div className="safety-fallback-notice">
+                <TbShieldExclamation size={14} />
+                <span>
+                  {isEs
+                    ? "Modo heurístico: detección por color (modelo PPE no disponible). Para mejor precisión, ejecute: python download_ppe_model.py"
+                    : "Heuristic mode: color-based detection (PPE model not available). For better accuracy, run: python download_ppe_model.py"}
+                </span>
+              </div>
+            )}
 
             <div className="safety-kpi-row">
               <div className="safety-kpi-card">

@@ -387,16 +387,11 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 0.1rem;
-  opacity: 0;
-  pointer-events: none;
+  opacity: 1;
+  pointer-events: auto;
   transition: opacity 0.2s ease;
   flex-shrink: 0;
   padding-left: 0.25rem;
-}
-
-.sidebar-thread-item:hover .sidebar-thread-actions {
-  opacity: 1;
-  pointer-events: auto;
 }
 
 .sidebar-thread-item.active .sidebar-thread-btn {
@@ -1932,7 +1927,7 @@ button, a, input, textarea, select {
 .chat-rendered-message {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.35rem;
   width: 100%;
 }
 
@@ -1999,7 +1994,7 @@ button, a, input, textarea, select {
 .md-pro-content h2,
 .md-pro-content h3,
 .md-pro-content h4 {
-  margin: 1.25rem 0 0.75rem 0;
+  margin: 0.75rem 0 0.35rem 0;
   font-weight: 700;
   letter-spacing: -0.3px;
   color: var(--text-primary);
@@ -2015,24 +2010,19 @@ button, a, input, textarea, select {
 .md-pro-content h3 { font-size: 1.05rem; }
 
 .md-pro-content p {
-  margin: 0.75rem 0;
+  margin: 0.35rem 0;
   line-height: 1.8;
 }
 
 .md-pro-content ul,
 .md-pro-content ol {
-  margin: 1rem 0;
+  margin: 0.5rem 0;
   padding-left: 2rem;
 }
 
 .md-pro-content li {
-  margin: 0.5rem 0;
+  margin: 0.2rem 0;
   line-height: 1.8;
-  transition: color 0.2s ease;
-}
-
-.md-pro-content li:hover {
-  color: var(--hw-red);
 }
 
 .md-pro-content li::marker {
@@ -3139,6 +3129,25 @@ button, a, input, textarea, select {
   background: var(--bg-secondary);
   padding: 0.15rem 0.45rem;
   border-radius: 4px;
+}
+
+.safety-fallback-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+  padding: 0.4rem 0.6rem;
+  background: var(--hw-red-light, #fef2f2);
+  border: 1px solid var(--hw-red, #dc2626);
+  border-radius: 6px;
+  font-size: 0.7rem;
+  color: var(--hw-red, #dc2626);
+  line-height: 1.35;
+  margin-bottom: 0.5rem;
+}
+
+.safety-fallback-notice svg {
+  flex-shrink: 0;
+  margin-top: 1px;
 }
 
 /* ── KPI Row ── */

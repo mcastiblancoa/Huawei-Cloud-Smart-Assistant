@@ -506,9 +506,8 @@ function AssistantMessage({ content, durationMs, language }) {
   const tableBlocks = blocks.filter((block) => block.type === "table");
   const textBlocks = blocks.filter((block) => block.type !== "table" && block.type !== "report-header");
   const kpis = useMemo(() => extractKPIs(content), [content]);
-  const isCostContent = /gasto|cost|billing|factur|costos|\(USD\)|month|mayo|abril|statistics|resumen/i.test(content);
   const isResourceContent = /recurso|resource|desplegado|deployed|servicio|service|instance|imagen|image|vpc|security|segurid|clave|key|rds|obs|ecs|elb/i.test(content);
-  const showVisuals = isCostContent || isResourceContent || tableBlocks.length > 0;
+  const showVisuals = isResourceContent || tableBlocks.length > 0;
 
   const isBillingTable = useMemo(() => {
     return tableBlocks.map((block) => {
@@ -529,18 +528,12 @@ function AssistantMessage({ content, durationMs, language }) {
         return { chartType: "bar", model };
       }
       const chartType = detectChartType(block.table);
-      if (!chartType) return null;
+      if (!chartType || chartType === "donut") return null;
       return { chartType, model: buildChartModel(block.table, chartType) };
     });
   }, [tableBlocks, showVisuals, isBillingTable]);
 
   const getChartTitle = (chartType, index) => {
-    if (isCostContent) {
-      return language === "es" ? "Análisis de costos" : "Cost analysis";
-    }
-    if (chartType === "donut") {
-      return language === "es" ? "Distribución" : "Distribution";
-    }
     return language === "es" ? "Visualización de datos" : "Data visualization";
   };
 
@@ -585,7 +578,6 @@ function AssistantMessage({ content, durationMs, language }) {
   };
 
   const billingTableTitle = useMemo(() => {
-    if (!isCostContent) return null;
     const usdHeaders = tableBlocks.find((block) =>
       (block.table?.headers || []).some((h) => /\(USD\)/i.test(h))
     );
@@ -599,10 +591,10 @@ function AssistantMessage({ content, durationMs, language }) {
       return language === "es" ? `Costos ${labeled[0]}` : `Costs ${labeled[0]}`;
     }
     return language === "es" ? `Comparativa ${labeled.join(" vs ")}` : `Comparison ${labeled.join(" vs ")}`;
-  }, [content, isCostContent, tableBlocks, language]);
+  }, [content, tableBlocks, language]);
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-1">
       {kpis.length > 0 && <KPICards kpis={kpis} language={language} />}
       {textContent && <MarkdownRenderer content={textContent} />}
       {tableBlocks.map((block, index) => (
@@ -620,10 +612,7 @@ function AssistantMessage({ content, durationMs, language }) {
         const title = isBillingTable[index] && billingTableTitle
           ? billingTableTitle
           : getChartTitle(cm.chartType, index);
-        if (cm.chartType === "donut") {
-          return <DonutChartCard key={`donut-${index}`} model={cm.model} title={title} />;
-        }
-        return <BarChartCard key={`bar-${index}`} model={cm.model} title={title} isCostData={isCostContent} />;
+        return <BarChartCard key={`bar-${index}`} model={cm.model} title={title} isCostData={isBillingTable[index]} />;
       })}
       {durationLabel && (
         <motion.div
