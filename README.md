@@ -5,6 +5,8 @@
 <p align="center">
   <img src="docs/main_window_chat_panel.png" alt="Chat Panel" width="48%" />
   <img src="docs/main_window_voice_panel.png" alt="Voice Panel" width="48%" />
+  <img src="docs/feelings_recognition.png" alt="Feelings Recognition" width="48%" />
+  <img src="docs/industrial_safety.png" alt="Industrial Safety" width="48%" />
 </p>
 
 AI-powered Cloud Operations Assistant for **Huawei Cloud**. Interact via **voice** or **chat** to deploy infrastructure, query resources, manage billing, and execute administrative operations — all through natural language in English or Spanish.
